@@ -1,13 +1,13 @@
 import {vars, passant} from './data.js';
 import {checkAfterMove, attack} from './moves.js';
 import {cells, changeCell, pieces, changePieceCell} from './arrangePieces.js';
-import {movesExist} from './movesExitst.js';
+import { movesExist } from './movesExist.js';
 
 
 const checkmateOrStalemate = () => {
 
     const king = pieces[vars.kingID];
-    const attackingPiece = attack(vars.color,vars.kingRow, vars.kingColumn, null);
+    const attackingPiece = attack(vars.color,vars.kingRow, vars.kingColumn, null, 'makeCheck');
     if (attackingPiece) {
         for (let row = vars.kingRow - 1; row <= vars.kingRow + 1; row++) {
             if (row >= 0 && row < 8) {
@@ -26,7 +26,7 @@ const checkmateOrStalemate = () => {
             }
         }
         const secondPieceThatMakeCheck = attack(vars.color, vars.kingRow, vars.kingColumn,
-            [attackingPiece]);
+            [attackingPiece], 'makeCheck');
         if (secondPieceThatMakeCheck) {
             if(passant.id) {
                 let columnRighterOrLefter = 1;
@@ -52,6 +52,10 @@ const checkmateOrStalemate = () => {
             const savingPiece = attack(vars.oppositeColor,
                 attackingPiece.row, attackingPiece.column, savingPieces, 'killPiece');
             if(savingPiece) {
+                if(savingPiece.type === 'Pawn' && passant.id === attackingPiece.id && savingPiece.row === 3) {
+                    const columnDifference = savingPiece.column - passant.column;
+                    if(columnDifference === 1 || columnDifference === -1) return;
+                }
                 const savingPiecePreviousColumn = savingPiece.column;
                 const savingPiecePreviousRow = savingPiece.row;
                 savingPiece.column = attackingPiece.column;

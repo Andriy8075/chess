@@ -9,7 +9,8 @@ import {
 import {cells, changeCell, pieces, changePieceCell} from './arrangePieces.js';
 import {writeDownPosition, clear} from './repeatingMoves.js';
 const attack = (color, attackForRow, attackForColumn, ignorePieces, moveType) => {
-    let opponentColor
+    if(!moveType) moveType = 'makeCheck';
+    let opponentColor;
     if (color === 'white') opponentColor = 'black';
     else opponentColor = 'white';
     for (let currentPiece of pieces) {
@@ -125,7 +126,7 @@ const moves = {
                 }
                 if (Piece.row === 6 && toRow === 4 && !checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
                     makeMove(Piece, toRow, toColumn, opponentPiece, true, {
-                        id: 7 - Piece.id,
+                        id: Piece.id,
                         column: 7 - toColumn,
                     });
                 }
@@ -137,10 +138,14 @@ const moves = {
                     }
                 } else if ((Piece.row === 3) && (passant.column === toColumn)) {
                     const PieceThatKillsOnPassant = pieces[cells[3][passant.column]]
-                    changeCell(Piece.row, toColumn, null);
+                    const saving = PieceThatKillsOnPassant;
                     changePieceCell(cells[3][passant.column], null);
-                    if (!checkAfterMove(Piece, toRow, toColumn, null)) {
-                        kill(PieceThatKillsOnPassant.id);
+                    changeCell(Piece.row, toColumn, null);
+                    const check = checkAfterMove(Piece, toRow, toColumn, null);
+                    changePieceCell(saving.id, saving);
+                    changeCell(Piece.row, toColumn, saving.id);
+                    if (!check) {
+                        kill(saving.id);
                         makeMove(Piece, toRow, toColumn);
                         changeCell(3, toColumn, null);
                         const pocket = {
@@ -149,10 +154,6 @@ const moves = {
                             cellColumn: 7-toColumn,
                         }
                         socket.send(JSON.stringify(pocket));
-                    }
-                    else {
-                        pieces[cells[3][passant.column]] = PieceThatKillsOnPassant;
-                        changeCell(Piece.row, toColumn, PieceThatKillsOnPassant.id);
                     }
                 }
             }
@@ -253,13 +254,23 @@ const canPieceMove = {
                 break;
             case 'killPiece':
                 const columnDifference = toColumn - fromColumn;
-                const neighborColumns = columnDifference === 1 || columnDifference === -1;
-                if (fromRow - toRow === 1 && neighborColumns) {
-                    return true;
+                if (fromRow - toRow === 1 && (columnDifference === 1 || columnDifference === -1) && 
+                cells[toRow][toColumn]) {
+                    const piece = pieces[toRow][toColumn];
+                    if(!checkAfterMove(piece, toRow, toColumn, 'makeCheck')) return true;
                 }
                 else {
                     if (passant.column === toColumn && fromRow === toRow &&
-                        neighborColumns) return true;
+                        (columnDifference === 1 || columnDifference === -1)) {
+                            const ourPiece = pieces[cells[fromRow][fromColumn]];
+                            const PieceToKill = pieces[cells[fromRow][passant.column]];
+                            changePieceCell(PieceToKill.id, null);
+                            changeCell(PieceToKill.row, PieceToKill.column, null);
+                            const result = checkAfterMove(ourPiece, toRow, toColumn, null);
+                            changePieceCell(PieceToKill.id, PieceToKill);
+                            changeCell(PieceToKill.row, PieceToKill.column, PieceToKill.id);
+                            if(!result) return true;
+                        }
                 };
                 break;
             case 'hideKing':
@@ -377,6 +388,7 @@ const canPieceMove = {
     King: (fromRow, fromColumn, toRow, toColumn, moveType) => {
         const rowDifference = toRow - fromRow;
         const columnDifference = toColumn - fromColumn;
+        if (moveType === 'killPiece') moveType ='makeCheck';
         switch (moveType) {
             case 'makeCheck':
                 if ((rowDifference < 2) && (rowDifference > -2) && (columnDifference < 2) &&

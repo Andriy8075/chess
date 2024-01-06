@@ -1,5 +1,5 @@
 import {socket, vars} from './data.js';
-import {makeMove, moves} from './moves.js';
+import {makeMove, moves, canPieceMove} from './moves.js';
 import {pieces, cells} from './arrangePieces.js'
 const images = () => {
     const chooseColorImages = document.getElementsByClassName('chooseColorImages');
