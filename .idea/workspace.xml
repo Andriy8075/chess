@@ -4,7 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="84f7874e-03a9-4ea3-9c36-e8c96490c5f9" name="Changes" comment="" />
+    <list default="true" id="84f7874e-03a9-4ea3-9c36-e8c96490c5f9" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/setCellsSize.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arrangePieces.js" beforeDir="false" afterPath="$PROJECT_DIR$/arrangePieces.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cellOrOpponent.js" beforeDir="false" afterPath="$PROJECT_DIR$/cellOrOpponent.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cells.js" beforeDir="false" afterPath="$PROJECT_DIR$/cells.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/checkmateOrStalemate.js" beforeDir="false" afterPath="$PROJECT_DIR$/checkmateOrStalemate.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data.js" beforeDir="false" afterPath="$PROJECT_DIR$/data.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainClientScript.js" beforeDir="false" afterPath="$PROJECT_DIR$/mainClientScript.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moves.js" beforeDir="false" afterPath="$PROJECT_DIR$/moves.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ownPieces.js" beforeDir="false" afterPath="$PROJECT_DIR$/ownPieces.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -88,13 +100,13 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/andriy/WebstormProjects/chess2&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Admin/WebstormProjects/chess2/chess&quot;,
     &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_interpreter_path&quot;: &quot;/home/andriy/Завантажене/node-v20.9.0-linux-x64/bin/node&quot;,
+    &quot;nodejs_interpreter_path&quot;: &quot;node&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;file.status.colors&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
@@ -112,8 +124,8 @@
       <recent name="$PROJECT_DIR$/pictures" />
     </key>
   </component>
-  <component name="RunManager" selected="Node.js.Server.js">
-    <configuration name="Server.js" type="NodeJSConfigurationType" path-to-node="$USER_HOME$/Завантажене/node-v20.9.0-linux-x64/bin/node" nameIsGenerated="true" path-to-js-file="Server.js" working-dir="$PROJECT_DIR$/">
+  <component name="RunManager">
+    <configuration name="Server.js" type="NodeJSConfigurationType" path-to-node="node" nameIsGenerated="true" path-to-js-file="Server.js" working-dir="$PROJECT_DIR$/">
       <method v="2" />
     </configuration>
     <configuration name="testing.js" type="NodeJSConfigurationType" path-to-node="$USER_HOME$/Завантажене/node-v20.9.0-linux-x64/bin/node" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/testing.js" working-dir="$PROJECT_DIR$">
@@ -168,6 +180,7 @@
       <workItem from="1703965597910" duration="19000" />
       <workItem from="1704095334726" duration="10000" />
       <workItem from="1704111654117" duration="1000" />
+      <workItem from="1704552326868" duration="199000" />
     </task>
     <servers />
   </component>

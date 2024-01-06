@@ -51,8 +51,10 @@ const arrangePieces = (color) => {
         const pieceImage = document.createElement('img');
         pieceImage.classList.add('piece');
         pieceImage.style.position = 'absolute'
-        pieceImage.style.top = `${vars.cellSize*row}px`;
-        pieceImage.style.left = `${vars.cellSize*column}px`;
+        pieceImage.style.top = `${vars.cellSize*row}em`;
+        pieceImage.style.left = `${vars.cellSize*column}em`;
+        pieceImage.style.width = `${vars.cellSize}em`;
+        pieceImage.style.heigh = `${vars.cellSize}em`;
         board.appendChild(pieceImage);
         pieceImage.src = `pictures/${color}${type}.png`;
         const piece = new Piece(pieceImage, pieceID, color, type, row, column);

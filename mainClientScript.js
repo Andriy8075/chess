@@ -10,6 +10,10 @@ const CHAR_RETURN = 13;
 const inputAnotherPlayersIDHere = document.getElementById('inputAnotherPlayersIDHere');
 let connectedToID;
 
+const board = document.getElementById('boardImage');
+changeVar('cellSize', 6)
+board.style.width = `${8*vars.cellSize}em`;
+board.style.height = `${8*vars.cellSize}em`;
 const writeGameResultText = (text) => {
     const textField = document.getElementById('gameResult');
     textField.innerHTML = text;
@@ -45,8 +49,8 @@ socket.addEventListener('message', ({data}) => {
     switch (parsed.method) {
         case 'makeMove':
             const piece = pieces[parsed.pieceId];
-            piece.HTMLImage.style.top = `${vars.cellSize*(parsed.cellRow)}px`;
-            piece.HTMLImage.style.left = `${vars.cellSize*(parsed.cellColumn)}px`;
+            piece.HTMLImage.style.top = `${vars.cellSize*(parsed.cellRow)}em`;
+            piece.HTMLImage.style.left = `${vars.cellSize*(parsed.cellColumn)}em`;
             changeCell(parsed.cellRow, parsed.cellColumn, pieces[parsed.pieceId].id);
             changeCell(pieces[parsed.pieceId].row, pieces[parsed.pieceId].column, null);
             piece.row = (parsed.cellRow);

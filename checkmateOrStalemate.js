@@ -52,18 +52,18 @@ const checkmateOrStalemate = () => {
             const savingPiece = attack(vars.oppositeColor,
                 attackingPiece.row, attackingPiece.column, savingPieces, 'killPiece');
             if(savingPiece) {
-                const savingPieceCurrentColumn = savingPiece.column;
-                const savingPieceCurrentRow = savingPiece.row;
+                const savingPiecePreviousColumn = savingPiece.column;
+                const savingPiecePreviousRow = savingPiece.row;
                 savingPiece.column = attackingPiece.column;
                 savingPiece.row = attackingPiece.row;
                 changeCell(attackingPiece.row, attackingPiece.column, savingPiece.id);
-                changeCell(savingPieceCurrentRow, savingPieceCurrentColumn, null);
+                changeCell(savingPiecePreviousRow, savingPiecePreviousColumn, null);
                 const saveAttackingPiece = attackingPiece;
                 changePieceCell(attackingPiece.id, null);
                 const isAttackAfterMove = attack(vars.color, vars.kingRow, vars.kingColumn, null, 'makeCheck');
-                savingPiece.column = savingPieceCurrentColumn;
-                savingPiece.row = savingPieceCurrentRow;
-                changeCell(saveAttackingPiece, saveAttackingPiece, savingPiece.id);
+                savingPiece.column = savingPiecePreviousColumn;
+                savingPiece.row = savingPiecePreviousRow;
+                changeCell(savingPiecePreviousRow, savingPiecePreviousColumn, savingPiece.id);
                 changeCell(saveAttackingPiece.row, saveAttackingPiece.column, saveAttackingPiece.id);
                 changePieceCell(saveAttackingPiece.id, saveAttackingPiece);
                 if(isAttackAfterMove) {
@@ -79,16 +79,16 @@ const checkmateOrStalemate = () => {
         const saveForCell = (cellRow, cellColumn) => {
             const savingPiece = attack(vars.oppositeColor, cellRow, cellColumn, savingPieces, 'hideKing');
             if(savingPiece) {
-                const savingPieceCurrentColumn = savingPiece.column;
-                const savingPieceCurrentRow = savingPiece.row;
+                const savingPiecePreviousColumn = savingPiece.column;
+                const savingPiecePreviousRow = savingPiece.row;
                 savingPiece.column = cellColumn;
                 savingPiece.row = cellRow;
                 changeCell(cellRow, cellColumn, savingPiece.id);
-                changeCell(savingPieceCurrentRow, savingPieceCurrentColumn, null);
+                changeCell(savingPiecePreviousRow, savingPiecePreviousColumn, null);
                 const isAttackAfterMove = attack(vars.color, vars.kingRow, vars.kingColumn, null, 'makeCheck')
-                savingPiece.column = savingPieceCurrentColumn;
-                savingPiece.row = savingPieceCurrentRow;
-                changeCell(savingPieceCurrentRow, savingPieceCurrentColumn, savingPiece.id);
+                savingPiece.column = savingPiecePreviousColumn;
+                savingPiece.row = savingPiecePreviousRow;
+                changeCell(savingPiecePreviousRow, savingPiecePreviousColumn, savingPiece.id);
                 changeCell(cellRow, cellColumn, null);
                 if(isAttackAfterMove ) {
                     savingPieces.push(savingPiece);

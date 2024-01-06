@@ -5,11 +5,11 @@ import {Piece} from './piece.js';
 const cellOrOpponent = (cellOrOpponent) => {
     const moveOnClick = (isItPiece) => {
         if (vars.movePossibility) {
-            if(vars.choosedPiece) {
-                const pieceThatMoves = pieces[vars.choosedPiece];
+            if(vars.chosenPiece) {
+                const pieceThatMoves = pieces[vars.chosenPiece];
                 pieceThatMoves.wantMove(cellOrOpponent.row, cellOrOpponent.column, isItPiece ? cellOrOpponent : null);
             }
-            changeVar('choosedPiece', null );
+            changeVar('chosenPiece', null );
         }
     }
     let isItPiece;
@@ -17,8 +17,8 @@ const cellOrOpponent = (cellOrOpponent) => {
         isItPiece = true;
         cellOrOpponent.HTMLImage.addEventListener('click', () => { 
             if (vars.movePossibility) {
-                if(vars.choosedPiece) {
-                    const pieceThatMoves = pieces[vars.choosedPiece];
+                if(vars.chosenPiece) {
+                    const pieceThatMoves = pieces[vars.chosenPiece];
                     pieceThatMoves.wantMove(cellOrOpponent.row, cellOrOpponent.column, cellOrOpponent);
                 }
             }
@@ -27,8 +27,8 @@ const cellOrOpponent = (cellOrOpponent) => {
     else {
         cellOrOpponent.addEventListener('click', ()=> {
             if (vars.movePossibility) {
-                if(vars.choosedPiece) {
-                    const pieceThatMoves = pieces[vars.choosedPiece];
+                if(vars.chosenPiece) {
+                    const pieceThatMoves = pieces[vars.chosenPiece];
                     pieceThatMoves.wantMove(cellOrOpponent.row, cellOrOpponent.column, null);
                 }
             }

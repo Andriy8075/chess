@@ -9,10 +9,10 @@ const vars = {
     kingID: null,
     color: null,
     oppositeColor: null,
-    choosedPiece: null,
+    chosenPiece: null,
     ID: null,
     connectedToID: null,
-    cellSize: 150,
+    cellSize: null,
 }
 
 const getID = () => {

@@ -87,12 +87,12 @@ const makeMove = (Piece, toRow, toColumn, opponentPiece, clearPosition, passant)
 
     Piece.row = toRow;
     Piece.column = toColumn;
-    Piece.HTMLImage.style.top = `${vars.cellSize * toRow}px`;
-    Piece.HTMLImage.style.left = `${vars.cellSize * toColumn}px`;
+    Piece.HTMLImage.style.top = `${vars.cellSize * toRow}em`;
+    Piece.HTMLImage.style.left = `${vars.cellSize * toColumn}em`;
     Piece.HTMLImage.style.removeProperty("background-color");
     
     changeVar('movePossibility', false);
-    changeVar('choosedPiece', null );
+    changeVar('chosenPiece', null );
 
     if(clearPosition) {
         clear();
@@ -170,8 +170,8 @@ const moves = {
                     backgroundImage.setAttribute('id','backgroundImage');
                     backgroundImage.top = toRow;
                     backgroundImage.left = toColumn;
-                    backgroundImage.style.top = `${vars.cellSize * toRow}px`;
-                    backgroundImage.style.left = `${vars.cellSize * toColumn}px`;
+                    backgroundImage.style.top = `${vars.cellSize * toRow}em`;
+                    backgroundImage.style.left = `${vars.cellSize * toColumn}em`;
                     divBoard.appendChild(backgroundImage);
                     const finishImages = document.getElementsByClassName(
                         `${vars.color}FinishImages`);

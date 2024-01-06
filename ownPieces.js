@@ -6,13 +6,13 @@ const ownPieces = (pieceImage, id) => {
         if (vars.movePossibility) {
             if(pieceImage.style.backgroundColor) {
                 pieceImage.style.removeProperty("background-color");
-                changeVar('choosedPiece', null);
+                changeVar('chosenPiece', null);
             }
             else {
-                if (vars.choosedPiece) {
-                    pieces[vars.choosedPiece].HTMLImage.style.removeProperty("background-color");
+                if (vars.chosenPiece) {
+                    pieces[vars.chosenPiece].HTMLImage.style.removeProperty("background-color");
                 }
-                changeVar('choosedPiece', id);
+                changeVar('chosenPiece', id);
                 pieceImage.style.backgroundColor = '#d5cd7f';
             }
         }
