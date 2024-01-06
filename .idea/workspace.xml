@@ -5,17 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="84f7874e-03a9-4ea3-9c36-e8c96490c5f9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/setCellsSize.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/arrangePieces.js" beforeDir="false" afterPath="$PROJECT_DIR$/arrangePieces.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cellOrOpponent.js" beforeDir="false" afterPath="$PROJECT_DIR$/cellOrOpponent.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cells.js" beforeDir="false" afterPath="$PROJECT_DIR$/cells.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/checkmateOrStalemate.js" beforeDir="false" afterPath="$PROJECT_DIR$/checkmateOrStalemate.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data.js" beforeDir="false" afterPath="$PROJECT_DIR$/data.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server.js" beforeDir="false" afterPath="$PROJECT_DIR$/Server.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mainClientScript.js" beforeDir="false" afterPath="$PROJECT_DIR$/mainClientScript.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/moves.js" beforeDir="false" afterPath="$PROJECT_DIR$/moves.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ownPieces.js" beforeDir="false" afterPath="$PROJECT_DIR$/ownPieces.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notEnoughPieces.js" beforeDir="false" afterPath="$PROJECT_DIR$/notEnoughPieces.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/styles.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -124,7 +120,7 @@
       <recent name="$PROJECT_DIR$/pictures" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Node.js.Server.js">
     <configuration name="Server.js" type="NodeJSConfigurationType" path-to-node="node" nameIsGenerated="true" path-to-js-file="Server.js" working-dir="$PROJECT_DIR$/">
       <method v="2" />
     </configuration>
@@ -181,6 +177,7 @@
       <workItem from="1704095334726" duration="10000" />
       <workItem from="1704111654117" duration="1000" />
       <workItem from="1704552326868" duration="199000" />
+      <workItem from="1704552537802" duration="3734000" />
     </task>
     <servers />
   </component>

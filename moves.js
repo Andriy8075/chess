@@ -8,7 +8,6 @@ import {
 } from './data.js';
 import {cells, changeCell, pieces, changePieceCell} from './arrangePieces.js';
 import {writeDownPosition, clear} from './repeatingMoves.js';
-
 const attack = (color, attackForRow, attackForColumn, ignorePieces, moveType) => {
     let opponentColor
     if (color === 'white') opponentColor = 'black';

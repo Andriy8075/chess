@@ -10,6 +10,7 @@ const CHAR_RETURN = 13;
 const inputAnotherPlayersIDHere = document.getElementById('inputAnotherPlayersIDHere');
 let connectedToID;
 
+
 const board = document.getElementById('boardImage');
 changeVar('cellSize', 6)
 board.style.width = `${8*vars.cellSize}em`;
@@ -18,6 +19,8 @@ const writeGameResultText = (text) => {
     const textField = document.getElementById('gameResult');
     textField.innerHTML = text;
     changeVar('movePossibility', false);
+    changeVar('inGame', false);
+    deleteConnectedToID();
 }
 
 const endTheGame = (method, text) => {
@@ -30,12 +33,21 @@ const endTheGame = (method, text) => {
     socket.send(JSON.stringify(pocket));
 }
 
+const deleteConnectedToID = () => {
+    changeVar('connectedToID', null);
+    const pocket = {
+        method: 'deleteConnectedToID',
+    }
+    socket.send(JSON.stringify(pocket));
+}
+
 socket.addEventListener('open', () => {
     const ID = localStorage.getItem("ID");
     if(ID) changeVar('ID', ID);
     else changeVar('ID', getID());
     inputAnotherPlayersIDHere.style.display = 'flex';
     input.style.display = 'flex';
+    deleteConnectedToID();
     const pocket = {
         method: 'assignID',
         ID: vars.ID,

@@ -6,7 +6,7 @@ const notEnoughPieces = () => {
     for (const Piece of pieces) {
         if (Piece) {
             const type = Piece.type;
-            if (type === ('Rook' || 'Queen' || 'Pawn')) return;
+            if (type === 'Rook' || type === 'Queen' || type === 'Pawn') return;
             allPieces++;
             if (Piece.color === white) whitePieces++;
             else blackPieces++;

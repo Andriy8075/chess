@@ -100,6 +100,11 @@ ws.on('connection', (connection) => {
                     }
                 }
                 break;
+            case 'deleteConnectedToID':
+                for(const client of ws.clients) {
+                    if(client === connection) client.connectedTo = null;
+                }
+                break;
             default: 
                 sendPocket(parsed);
                 break;    
