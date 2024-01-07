@@ -28,18 +28,20 @@ const attack = (color, attackForRow, attackForColumn, ignorePieces, moveType) =>
                 continue;
             }
         }
-        if(currentPiece.canMove(attackForRow, attackForColumn, moveType)) return currentPiece
+        if(currentPiece.canMove(attackForRow, attackForColumn, moveType)) return currentPiece;
     }
 }
 const kill = (id) => {
-    pieces[id].HTMLImage.remove()
-    changePieceCell(id, null);
-    const pocket = {
-        method: 'kill',
-        pieceId: id,
-        ID: vars.ID,
+    if(pieces[id]){
+        pieces[id].HTMLImage.remove()
+        changePieceCell(id, null);
+        const pocket = {
+            method: 'kill',
+            pieceId: id,
+            ID: vars.ID,
+        }
+        socket.send(JSON.stringify(pocket));
     }
-    socket.send(JSON.stringify(pocket));
 }
 
 const checkAfterMove = (Piece, toRow, toColumn, opponentPiece) => {
@@ -51,8 +53,8 @@ const checkAfterMove = (Piece, toRow, toColumn, opponentPiece) => {
     changeCell(previousRow, previousColumn, null);
     const isItKing = Piece.type === 'King';
     if (isItKing) {
-        changeVar('kingRow', toRow)
-        changeVar('kingColumn', toColumn)
+        changeVar('kingRow', toRow);
+        changeVar('kingColumn', toColumn);
     }
 
     let result;
@@ -81,7 +83,7 @@ const makeMove = (Piece, toRow, toColumn, opponentPiece, clearPosition, passant)
     changeCell(toRow, toColumn, Piece.id);
     changeCell(Piece.row, Piece.column, null);
     if (opponentPiece) {
-        kill(opponentPiece.id)
+        kill(opponentPiece.id);
         clearPosition = true;
     }
 
@@ -93,6 +95,7 @@ const makeMove = (Piece, toRow, toColumn, opponentPiece, clearPosition, passant)
     
     changeVar('movePossibility', false);
     changeVar('chosenPiece', null );
+    changeVar('moveOnPassantExist', false);
 
     if(clearPosition) {
         clear();
@@ -234,8 +237,8 @@ const moves = {
     King: (Piece, toRow, toColumn, opponentPiece) => {
         if (canPieceMove.King(Piece.row, Piece.column, toRow, toColumn, 'withCastling') &&
             !checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
-            changeVar('kingRow', toRow)
-            changeVar('kingColumn', toColumn)
+            changeVar('kingRow', toRow);
+            changeVar('kingColumn', toColumn);
             makeMove(Piece, toRow, toColumn, opponentPiece);
             pieceForCastlingMoved('king');
         }
@@ -244,35 +247,43 @@ const moves = {
 
 const canPieceMove = {
     Pawn: (fromRow, fromColumn, toRow, toColumn, moveType) => {
+        const columnDifference = toColumn - fromColumn;
         switch (moveType) {
             case 'makeCheck':
                 if (fromRow - toRow === -1) {
-                    if (toColumn - fromColumn === 1 || toColumn - fromColumn === -1) {
+                    if (columnDifference === 1 || columnDifference === -1) {
                         return true;
                     }
                 };
                 break;
             case 'killPiece':
-                const columnDifference = toColumn - fromColumn;
                 if (fromRow - toRow === 1 && (columnDifference === 1 || columnDifference === -1) && 
                 cells[toRow][toColumn]) {
                     const piece = pieces[toRow][toColumn];
                     if(!checkAfterMove(piece, toRow, toColumn, 'makeCheck')) return true;
                 }
                 else {
-                    if (passant.column === toColumn && fromRow === toRow &&
-                        (columnDifference === 1 || columnDifference === -1)) {
-                            const ourPiece = pieces[cells[fromRow][fromColumn]];
-                            const PieceToKill = pieces[cells[fromRow][passant.column]];
-                            changePieceCell(PieceToKill.id, null);
-                            changeCell(PieceToKill.row, PieceToKill.column, null);
-                            const result = checkAfterMove(ourPiece, toRow, toColumn, null);
-                            changePieceCell(PieceToKill.id, PieceToKill);
-                            changeCell(PieceToKill.row, PieceToKill.column, PieceToKill.id);
-                            if(!result) return true;
-                        }
+                    return canPieceMove['Pawn'](fromRow, fromColumn, toRow, toColumn, 'passant');
                 };
                 break;
+            case 'passant':
+                if(toRow === 3) toRow = 2;
+                if (passant.column === toColumn && (fromRow === 3 &&  toRow === 2) &&
+                    (columnDifference === 1 || columnDifference === -1)) {
+                    const ourPiece = pieces[cells[fromRow][fromColumn]];
+                    const PieceToKill = pieces[cells[fromRow][passant.column]];
+                    changePieceCell(PieceToKill.id, null);
+                    changeCell(PieceToKill.row, PieceToKill.column, null);
+                    const result = checkAfterMove(ourPiece, toRow, toColumn, null);
+                    changePieceCell(PieceToKill.id, PieceToKill);
+                    changeCell(PieceToKill.row, PieceToKill.column, PieceToKill.id);
+                    if(!result){
+                        changeVar('moveOnPassantExist', true);
+                        return true;
+                    } 
+                }
+                break;
+
             case 'hideKing':
                 const rowDifference = fromRow - toRow;
                 if (fromColumn === toColumn) {
@@ -280,11 +291,7 @@ const canPieceMove = {
                     if (toRow === 4 && fromRow === 6) return true;
                 }
                 else {
-                    const columnDifference = toColumn - fromColumn;
-                    if (passant.column === toColumn && rowDifference === 1 && (columnDifference === 1 ||
-                        columnDifference === -1)) {
-                        return true;
-                    }
+                    return canPieceMove['Pawn'](fromRow, fromColumn, toRow, toColumn, 'passant');
                 };
                 break;
         }
@@ -314,7 +321,7 @@ const canPieceMove = {
                 let column = fromColumn + 1;
                 for (let row = fromRow + 1; row < toRow; row++, column++) {
                     if (!cells[row][column]) continue;
-                    else return
+                    else return;
                 }
                 return true;
             }
@@ -388,7 +395,7 @@ const canPieceMove = {
     King: (fromRow, fromColumn, toRow, toColumn, moveType) => {
         const rowDifference = toRow - fromRow;
         const columnDifference = toColumn - fromColumn;
-        if (moveType === 'killPiece') moveType ='makeCheck';
+        if (moveType === 'killPiece' || moveType === 'hideKing') moveType ='makeCheck';
         switch (moveType) {
             case 'makeCheck':
                 if ((rowDifference < 2) && (rowDifference > -2) && (columnDifference < 2) &&
@@ -397,7 +404,7 @@ const canPieceMove = {
                 };
                 break;
             case 'withCastling':
-                const piece = pieces[cells[fromRow][fromColumn]]
+                const piece = pieces[cells[fromRow][fromColumn]];
                 if ((rowDifference < 2) && (rowDifference > -2) && (columnDifference < 2) &&
                     (columnDifference > -2)) {
                     return true;
@@ -415,7 +422,7 @@ const canPieceMove = {
                                 piecesForCastlingNeverMoved.king) {
                                 if (vars.color === 'white') {
                                     rookID = 25;
-                                    getRook(rookID)
+                                    getRook(rookID);
                                     for (let i = 0; i <= 4; i++) {
                                         if (attack(vars.color, 7, i, null)) return;
                                     }

@@ -2,7 +2,8 @@ import {ownPieces} from './ownPieces.js';
 import {nameCells} from './cells.js';
 import {vars, changeVar} from './data.js';
 import {cellOrOpponent} from './cellOrOpponent.js';
-import {Piece} from './piece.js'
+import {Piece} from './piece.js';
+
 let cells;
 
 const changeCell = (row, column, input) =>{
@@ -35,8 +36,8 @@ const arrangePieces = (color) => {
         changeVar('oppositeColor', 'white');
         pieceID = 32;
         changePieceID = ()  => pieceID--;
-        changeVar('kingRow', 7)
-        changeVar('kingColumn', 3)
+        changeVar('kingRow', 7);
+        changeVar('kingColumn', 3);
         changeVar('kingID', 5);
     }
 
@@ -50,7 +51,7 @@ const arrangePieces = (color) => {
         const board = document.getElementById('pieces');
         const pieceImage = document.createElement('img');
         pieceImage.classList.add('piece');
-        pieceImage.style.position = 'absolute'
+        pieceImage.style.position = 'absolute';
         pieceImage.style.top = `${vars.cellSize*row}em`;
         pieceImage.style.left = `${vars.cellSize*column}em`;
         pieceImage.style.width = `${vars.cellSize}em`;

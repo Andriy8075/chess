@@ -84,11 +84,8 @@ const movesExist = {
                     !checkAfterMove(piece, row-1, column+1, enemyPiece)) return true;
             }
         }
-
-        if(passant.column && piece.row === 3) {
-            const columnDifference = passant.column - piece.column;
-            if((columnDifference === 1 || columnDifference === -1) && 
-            piece.canMove(3, passant.column, 'killPiece')) return true;
+        if(passant.column) {
+            if(piece.canMove(2, passant.column, 'passant')) return true;
         }
     },
 

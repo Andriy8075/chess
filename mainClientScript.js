@@ -12,7 +12,7 @@ let connectedToID;
 
 
 const board = document.getElementById('boardImage');
-changeVar('cellSize', 6)
+changeVar('cellSize', 6);
 board.style.width = `${8*vars.cellSize}em`;
 board.style.height = `${8*vars.cellSize}em`;
 const writeGameResultText = (text) => {
@@ -80,7 +80,7 @@ socket.addEventListener('message', ({data}) => {
             const end = checkmateOrStalemate();
             if (end) {
                 if (end === 'checkmate') {
-                    endTheGame('win', 'You have checkmate and lost')
+                    endTheGame('win', 'You have checkmate and lost');
                 }
                 if (end === 'stalemate') {
                     endTheGame('stalemate', 'You have a draw. Reason: stalemate');
@@ -118,7 +118,7 @@ socket.addEventListener('message', ({data}) => {
             writeGameResultText('Your opponent disconnected, so you win');
             break;
         case 'clearArrayCellAfterPassant':
-            changeCell(4, parsed.cellColumn, null)
+            changeCell(4, parsed.cellColumn, null);
             break;    
         case 'changePawnToPiece':
             const pawn = pieces[parsed.pawn];

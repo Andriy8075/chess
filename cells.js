@@ -8,7 +8,7 @@ const nameCells = () => {
             const area = document.createElement('area');
             area.shape = 'rectangle';
             area.coords = `${column*vars.cellSize*16},${row*vars.cellSize*16},
-            ${(column*vars.cellSize+vars.cellSize)*16},${(row*vars.cellSize+vars.cellSize)*16}`
+            ${(column*vars.cellSize+vars.cellSize)*16},${(row*vars.cellSize+vars.cellSize)*16}`;
             board.appendChild(area);
             area.row = row; 
             area.column = column;

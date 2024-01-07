@@ -16,4 +16,4 @@ class Piece {
     }
 }
 
-export { Piece };
+export {Piece}

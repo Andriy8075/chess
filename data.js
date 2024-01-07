@@ -13,6 +13,7 @@ const vars = {
     ID: null,
     connectedToID: null,
     cellSize: null,
+    moveOnPassantExist: false,
 }
 
 const getID = () => {

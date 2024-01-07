@@ -1,4 +1,3 @@
-'use strict';
 
 const fs = require('node:fs');
 const http = require('node:http');
@@ -40,7 +39,7 @@ ws.on('connection', (connection) => {
                 }
                 for(const client of ws.clients) {
                     if(client === connection) {
-                        client.ID = parsed.ID
+                        client.ID = parsed.ID;
                         client.send(JSON.stringify(pocket));
                     }
                 }

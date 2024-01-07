@@ -6,7 +6,7 @@ const images = () => {
     const finishImages = document.getElementsByClassName('finishImage');
     function onColorChoose(color) {
         if (color === 'random') {
-            const colorNumber = Math.random()
+            const colorNumber = Math.random();
             if (colorNumber < 0.5) color = 'white';
             else color = 'black'
         }
@@ -63,14 +63,14 @@ const images = () => {
                 }
                 let pieceToKill;
                 if(cellsElement) {
-                    const isBackgroundColor = pieces[cellsElement].HTMLImage.style.backgroundColor
+                    const isBackgroundColor = pieces[cellsElement].HTMLImage.style.backgroundColor;
                     if (isBackgroundColor) pieceToKill = pieces[cellsElement];
                     else pieceToKill = pieces[cells[0][pawn.column+1]];
                 }
                 else {
                     pieceToKill = pieces[cells[0][pawn.column+1]];
                 }
-                 makeMove(pawn, pieceToKill.row, pieceToKill.column, pieceToKill)
+                makeMove(pawn, pieceToKill.row, pieceToKill.column, pieceToKill);
                 changePawnToAnotherPiece();
             }
         })

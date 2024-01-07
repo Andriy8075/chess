@@ -28,34 +28,14 @@ const checkmateOrStalemate = () => {
         const secondPieceThatMakeCheck = attack(vars.color, vars.kingRow, vars.kingColumn,
             [attackingPiece], 'makeCheck');
         if (secondPieceThatMakeCheck) {
-            if(passant.id) {
-                let columnRighterOrLefter = 1;
-                const save = (columnRighterOrLefter) => {
-                    if(cells[3][passant.id+columnRighterOrLefter]) {
-                        const savingPiece = pieces[cells[3][passant.id+columnRighterOrLefter]];
-                        if(savingPiece.type === 'Pawn' && savingPiece.color === vars.color) {
-                            const PieceThatKillsOnPassant = pieces[cells[3][passant.column]];
-                            changeCell(PieceThatKillsOnPassant.row, toColumn, null);
-                            changePieceCell(passant.id, null);
-                            if (!checkAfterMove(savingPiece, toRow, toColumn, null)) return true;
-                        }
-                    }
-                }
-                if (save(columnRighterOrLefter)) return;
-                columnRighterOrLefter = -1;
-                if (save(columnRighterOrLefter)) return;
-                return 'checkmate';
-            }
+            return 'checkmate';
         }
-        let savingPieces = [king];
-        const saveForPiece = () => {
+        let ignoringPieces = [king];
+        const killAttackingPiece = () => {
             const savingPiece = attack(vars.oppositeColor,
-                attackingPiece.row, attackingPiece.column, savingPieces, 'killPiece');
+                attackingPiece.row, attackingPiece.column, ignoringPieces, 'killPiece');
             if(savingPiece) {
-                if(savingPiece.type === 'Pawn' && passant.id === attackingPiece.id && savingPiece.row === 3) {
-                    const columnDifference = savingPiece.column - passant.column;
-                    if(columnDifference === 1 || columnDifference === -1) return;
-                }
+                if(vars.moveOnPassantExist) return;
                 const savingPiecePreviousColumn = savingPiece.column;
                 const savingPiecePreviousRow = savingPiece.row;
                 savingPiece.column = attackingPiece.column;
@@ -71,41 +51,40 @@ const checkmateOrStalemate = () => {
                 changeCell(saveAttackingPiece.row, saveAttackingPiece.column, saveAttackingPiece.id);
                 changePieceCell(saveAttackingPiece.id, saveAttackingPiece);
                 if(isAttackAfterMove) {
-                    savingPieces.push(savingPiece);
-                    return saveForPiece();
+                    ignoringPieces.push(savingPiece);
+                    return killAttackingPiece();
                 }
-                savingPieces = [king];
-                return 'can kill piece';
+                ignoringPieces = [king];
+                return true;
             } 
-            savingPieces = [king];
-            return 'cannot kill piece';
+            ignoringPieces = [king];
         }
-        const saveForCell = (cellRow, cellColumn) => {
-            const savingPiece = attack(vars.oppositeColor, cellRow, cellColumn, savingPieces, 'hideKing');
+        const hideKing = (cellRow, cellColumn) => {
+            const savingPiece = attack(vars.oppositeColor, cellRow, cellColumn, ignoringPieces, 'hideKing');
             if(savingPiece) {
+                if(vars.moveOnPassantExist) return true;
                 const savingPiecePreviousColumn = savingPiece.column;
                 const savingPiecePreviousRow = savingPiece.row;
                 savingPiece.column = cellColumn;
                 savingPiece.row = cellRow;
                 changeCell(cellRow, cellColumn, savingPiece.id);
                 changeCell(savingPiecePreviousRow, savingPiecePreviousColumn, null);
-                const isAttackAfterMove = attack(vars.color, vars.kingRow, vars.kingColumn, null, 'makeCheck')
+                const isAttackAfterMove = attack(vars.color, vars.kingRow, vars.kingColumn, null, 'makeCheck');
                 savingPiece.column = savingPiecePreviousColumn;
                 savingPiece.row = savingPiecePreviousRow;
                 changeCell(savingPiecePreviousRow, savingPiecePreviousColumn, savingPiece.id);
                 changeCell(cellRow, cellColumn, null);
                 if(isAttackAfterMove ) {
-                    savingPieces.push(savingPiece);
-                    return saveForCell();
+                    ignoringPieces.push(savingPiece);
+                    return hideKing();
                 }
-                savingPieces = [king];
-                return 'can kill piece';
+                ignoringPieces = [king];
+                return true;
             } 
-            savingPieces = [king];
-            return 'cannot kill piece';
+            ignoringPieces = [king];
         }
-        if (saveForPiece() === 'cannot kill piece') {
-            savingPieces = [king];
+        if (!killAttackingPiece()) {
+            ignoringPieces = [king];
             if (attackingPiece.type === 'Pawn' ||
                 attackingPiece.type === 'Knight') return 'checkmate';
             const checkFromRook = () => {
@@ -113,7 +92,7 @@ const checkmateOrStalemate = () => {
                     if (attackingPiece.row < vars.kingRow) {
                         for (let currentCellRow = vars.kingRow - 1; currentCellRow > attackingPiece.row;
                              currentCellRow--) {
-                            if (saveForCell(currentCellRow, vars.kingColumn) === 'can kill piece') {
+                            if (hideKing(currentCellRow, vars.kingColumn)) {
                                 return;
                             }
                         }
@@ -121,7 +100,7 @@ const checkmateOrStalemate = () => {
                     } else {
                         for (let currentCellRow = vars.kingRow + 1; currentCellRow < attackingPiece.row;
                              currentCellRow++) {
-                            if (saveForCell(currentCellRow, vars.kingColumn) === 'can kill piece') {
+                            if (hideKing(currentCellRow, vars.kingColumn)) {
                                 return;
                             }
                         }
@@ -132,7 +111,7 @@ const checkmateOrStalemate = () => {
                         for (let currentCellColumn = vars.kingColumn - 1;
                              currentCellColumn > attackingPiece.column;
                              currentCellColumn--) {
-                            if (saveForCell(vars.kingRow, currentCellColumn) === 'can kill piece') {
+                            if (hideKing(vars.kingRow, currentCellColumn)) {
                                 return;
                             }
                         }
@@ -140,7 +119,7 @@ const checkmateOrStalemate = () => {
                     } else {
                         for (let currentCellColumn = vars.kingColumn + 1; currentCellColumn < attackingPiece.column;
                              currentCellColumn++) {
-                            if (saveForCell(vars.kingRow, currentCellColumn) === 'can kill piece') {
+                            if (hideKing(vars.kingRow, currentCellColumn)) {
                                 return;
                             }
                         }
@@ -154,7 +133,7 @@ const checkmateOrStalemate = () => {
                         let currentCellColumn = vars.kingColumn - 1;
                         for (let currentCellRow = vars.kingRow - 1; currentCellRow > attackingPiece.row;
                              currentCellRow--, currentCellColumn--) {
-                            if (saveForCell(currentCellRow, currentCellColumn) === 'can kill piece') {
+                            if (hideKing(currentCellRow, currentCellColumn)) {
                                 return;
                             }
                         }
@@ -163,7 +142,7 @@ const checkmateOrStalemate = () => {
                         let currentCellColumn = vars.kingColumn + 1;
                         for (let currentCellRow = vars.kingRow - 1; currentCellRow > attackingPiece.row;
                              currentCellRow--, currentCellColumn++) {
-                            if (saveForCell(currentCellRow, currentCellColumn) === 'can kill piece') {
+                            if (hideKing(currentCellRow, currentCellColumn)) {
                                 return;
                             }
                         }
@@ -174,7 +153,7 @@ const checkmateOrStalemate = () => {
                         let currentCellColumn = vars.kingColumn - 1;
                         for (let currentCellRow = vars.kingRow + 1; currentCellRow < attackingPiece.row;
                              currentCellRow++, currentCellColumn--) {
-                            if (saveForCell(currentCellRow, currentCellColumn) === 'can kill piece') {
+                            if (hideKing(currentCellRow, currentCellColumn)) {
                                 return;
                             }
                         }
@@ -183,7 +162,7 @@ const checkmateOrStalemate = () => {
                         let currentCellColumn = vars.kingColumn + 1;
                         for (let currentCellRow = vars.kingRow + 1; currentCellRow < attackingPiece.row;
                              currentCellRow++, currentCellColumn++) {
-                            if (saveForCell(currentCellRow, currentCellColumn) === 'can kill piece') {
+                            if (hideKing(currentCellRow, currentCellColumn)) {
                                 return;
                             }
                         }
