@@ -11,7 +11,7 @@ const changeCell = (row, column, input) =>{
 }
 
 let pieces = [];
-const changePieceCell = (id, input) => {
+const changePiecesArray = (id, input) => {
     pieces[id] = input;
 }
 
@@ -60,7 +60,7 @@ const arrangePieces = (color) => {
         pieceImage.src = `pictures/${color}${type}.png`;
         const piece = new Piece(pieceImage, pieceID, color, type, row, column);
         cells[row][column] = pieceID;
-        changePieceCell(pieceID, piece);
+        changePiecesArray(pieceID, piece);
         if (opponent) {
             cellOrOpponent(piece);
         }
@@ -89,4 +89,4 @@ const arrangePieces = (color) => {
     nameCells();
 }
 
-export {cells, arrangePieces, pieces, changeCell, changePieceCell};
+export {cells, arrangePieces, pieces, changeCell, changePiecesArray};

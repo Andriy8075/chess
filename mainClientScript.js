@@ -28,7 +28,7 @@ const endTheGame = (method, text) => {
     writeGameResultText(text);
     const pocket = {
         method: method,
-        ID: vars.ID,
+        userId: vars.userId,
         text: text,
     }
     socket.send(JSON.stringify(pocket));
@@ -43,18 +43,18 @@ const deleteConnectedToID = () => {
 }
 
 socket.addEventListener('open', () => {
-    const ID = localStorage.getItem("ID");
-    if(ID) changeVar('ID', ID);
-    else changeVar('ID', getID());
+    const userId = localStorage.getItem("userId");
+    if(userId) changeVar('userId', userId);
+    else changeVar('userId', getID());
     inputAnotherPlayersIDHere.style.display = 'flex';
     input.style.display = 'flex';
     deleteConnectedToID();
     const pocket = {
         method: 'assignID',
-        ID: vars.ID,
+        userId: vars.userId,
     };
     socket.send(JSON.stringify(pocket));
-    localStorage.removeItem('ID');
+    localStorage.removeItem('userId');
 });
 const move = (parsed) => {
     const piece = pieces[parsed.pieceId];
@@ -105,13 +105,13 @@ socket.addEventListener('message', ({data}) => {
             break;
         case 'assignID':
             const yourIDLabel = document.getElementById(`id`);
-            yourIDLabel.innerHTML = `Your ID: ${parsed.ID}`;
+            yourIDLabel.innerHTML = `Your ID: ${parsed.userId}`;
             break;
         case 'connectToID':
             if(!vars.inGame) {
                 const labelConnectTo = document.getElementById(`connected`);
-                labelConnectTo.innerHTML = `You are connected to player with ID ${parsed.ID}`;
-                connectedToID = parsed.ID;
+                labelConnectTo.innerHTML = `You are connected to player with ID ${parsed.userId}`;
+                connectedToID = parsed.userId;
                 const images= document.getElementsByClassName('chooseColorImages');
                 for (const image of images) {
                     image.style.display = 'flex';
@@ -139,7 +139,7 @@ socket.addEventListener('message', ({data}) => {
             }
             move({
                     method: 'makeMove',
-                    ID: vars.ID,
+                    userId: vars.userId,
                     pieceId: pawn.id,
                     cellRow: parsed.cellRow,
                     cellColumn: parsed.cellColumn,
@@ -164,7 +164,7 @@ input.addEventListener('keydown', (event) => {
         if(!vars.inGame) {
             const pocket = {
                 method: 'connectToID',
-                from: vars.ID,
+                from: vars.userId,
                 to: value,
             };
             socket.send(JSON.stringify(pocket));
@@ -174,7 +174,7 @@ input.addEventListener('keydown', (event) => {
 
 const exit = document.getElementById('exit');
 exit.addEventListener('click', () => {
-    localStorage.setItem("ID", vars.ID);
+    localStorage.setItem("userId", vars.userId);
     location.reload();
 })
 

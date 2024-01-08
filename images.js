@@ -13,7 +13,7 @@ const images = () => {
         const pocket = {
             method: 'chooseColor',
             color: color,
-            ID: vars.ID,
+            userId: vars.userId,
         }
         socket.send(JSON.stringify(pocket));
     }
@@ -45,7 +45,7 @@ const images = () => {
                 makeMove(pawn, row, column, pieceToKill, true, null, true)
                 const pocket = {
                     method: 'changePawnToPiece',
-                    ID: vars.ID,
+                    userId: vars.userId,
                     pawn: pawn.id,
                     type: type,
                     cellRow: 7 - row,

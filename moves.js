@@ -6,7 +6,7 @@ import {
     pieceForCastlingMoved,
     changeVar,
 } from './data.js';
-import {cells, changeCell, pieces, changePieceCell} from './arrangePieces.js';
+import {cells, changeCell, pieces, changePiecesArray} from './arrangePieces.js';
 import {writeDownPosition, clear} from './repeatingMoves.js';
 const attack = (color, attackForRow, attackForColumn, ignorePieces, moveType, i = 1) => {
     if(!moveType) moveType = 'makeCheck';
@@ -32,12 +32,12 @@ const attack = (color, attackForRow, attackForColumn, ignorePieces, moveType, i 
 const kill = (id, sendPocket) => {
     if(pieces[id]){
         pieces[id].HTMLImage.remove()
-        changePieceCell(id, null);
+        changePiecesArray(id, null);
         if(!sendPocket) {
             const pocket = {
                 method: 'kill',
                 pieceId: id,
-                ID: vars.ID,
+                userId: vars.userId,
             }
             socket.send(JSON.stringify(pocket));
         }
@@ -106,7 +106,7 @@ const makeMove = (Piece, toRow, toColumn, opponentPiece, clearPosition, passant,
     if(!sendPocket) {
         const pocket = {
             method: 'makeMove',
-            ID: vars.ID,
+            userId: vars.userId,
             pieceId: Piece.id,
             cellRow: 7 - toRow,
             cellColumn: 7 - toColumn,
@@ -142,10 +142,10 @@ const moves = {
                     }
                 } else if ((Piece.row === 3) && (passant.column === toColumn)) {
                     const PieceThatKillsOnPassant = pieces[cells[3][passant.column]]
-                    changePieceCell(cells[3][passant.column], null);
+                    changePiecesArray(cells[3][passant.column], null);
                     changeCell(Piece.row, toColumn, null);
                     const check = checkAfterMove(Piece, toRow, toColumn, null);
-                    changePieceCell(PieceThatKillsOnPassant.id, PieceThatKillsOnPassant);
+                    changePiecesArray(PieceThatKillsOnPassant.id, PieceThatKillsOnPassant);
                     changeCell(Piece.row, toColumn, PieceThatKillsOnPassant.id);
                     if (!check) {
                         kill(PieceThatKillsOnPassant.id);
@@ -153,7 +153,7 @@ const moves = {
                         changeCell(3, toColumn, null);
                         const pocket = {
                             method: 'clearArrayCellAfterPassant',
-                            ID: vars.ID,
+                            userId: vars.userId,
                             cellColumn: 7-toColumn,
                         }
                         socket.send(JSON.stringify(pocket));
@@ -274,10 +274,10 @@ const canPieceMove = {
                     (columnDifference === 1 || columnDifference === -1)) {
                     const ourPiece = pieces[cells[fromRow][fromColumn]];
                     const PieceToKill = pieces[cells[fromRow][passant.column]];
-                    changePieceCell(PieceToKill.id, null);
+                    changePiecesArray(PieceToKill.id, null);
                     changeCell(PieceToKill.row, PieceToKill.column, null);
                     const result = checkAfterMove(ourPiece, toRow, toColumn, null);
-                    changePieceCell(PieceToKill.id, PieceToKill);
+                    changePiecesArray(PieceToKill.id, PieceToKill);
                     changeCell(PieceToKill.row, PieceToKill.column, PieceToKill.id);
                     if(!result){
                         changeVar('moveOnPassantExist', true);

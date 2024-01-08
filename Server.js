@@ -19,8 +19,8 @@ const ws = new WebSocket.Server({server});
 
 const sendPocket = (parsed) => {
     for(const client of ws.clients) {
-        if(client.connectedTo === parsed.ID) {
-            delete parsed.ID;
+        if(client.connectedTo === parsed.userId) {
+            delete parsed.userId;
             client.send(JSON.stringify(parsed));
             break;
         }
@@ -32,21 +32,21 @@ ws.on('connection', (connection) => {
         const parsed = JSON.parse(message);
         switch (parsed.method) {
             case 'assignID':
-                connection.ID = parsed.ID;
+                connection.usreId = parsed.userId;
                 const pocket = {
                     method: 'assignID',
-                    ID: parsed.ID,
+                    userId: parsed.userId,
                 }
                 for(const client of ws.clients) {
                     if(client === connection) {
-                        client.ID = parsed.ID;
+                        client.userId = parsed.userId;
                         client.send(JSON.stringify(pocket));
                     }
                 }
                 break;
             case 'chooseColor':
                  for (const client of ws.clients) {
-                     if (client.connectedTo === parsed.ID) {
+                     if (client.connectedTo === parsed.userId) {
                          let oppositeColor;
                          if (parsed.color === 'white') {
                              oppositeColor = 'black';
@@ -59,7 +59,7 @@ ws.on('connection', (connection) => {
                          }
                          client.send(JSON.stringify(pocket));
                      }
-                     if (parsed.ID === client.ID) {
+                     if (parsed.userId === client.userId) {
                          const pocket = {
                              method: 'receiveColor',
                              color: parsed.color,
@@ -74,12 +74,12 @@ ws.on('connection', (connection) => {
                 let findRequiredID = false;
                 for(const client of ws.clients) {
                     if(!client.connectedTo){
-                        if(client.ID === parsed.to) {
+                        if(client.userId === parsed.to) {
                             findRequiredID = true;
                             client.connectedTo = parsed.from;
                             const pocket = {
                                 method: 'connectToID',
-                                ID: parsed.from,
+                                userId: parsed.from,
                             }
                             client.send(JSON.stringify(pocket));
                             break;
@@ -88,11 +88,11 @@ ws.on('connection', (connection) => {
                 }
                 if(findRequiredID){
                     for(const client of ws.clients) {
-                        if(client.ID === parsed.from) {
+                        if(client.userId === parsed.from) {
                             client.connectedTo = parsed.to;
                             const pocket = {
                                 method: 'connectToID',
-                                ID: parsed.to,
+                                userId: parsed.to,
                             }
                             client.send(JSON.stringify(pocket));
                         }
@@ -111,7 +111,7 @@ ws.on('connection', (connection) => {
     });
     connection.on('close', () => {
         for(const client of ws.clients) {
-            if(connection.ID ===  client.connectedTo) {
+            if(connection.userId ===  client.connectedTo) {
                 const pocket = {
                     method: 'disconnect',
                 }

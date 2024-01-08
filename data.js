@@ -10,7 +10,7 @@ const vars = {
     color: null,
     oppositeColor: null,
     chosenPiece: null,
-    ID: null,
+    userId: null,
     connectedToID: null,
     cellSize: null,
     moveOnPassantExist: false,
@@ -19,9 +19,9 @@ const vars = {
 }
 
 const getID = () => {
-    const ID = Math.random().toString().slice(2)
-    vars.ID = ID;
-    return ID;
+    const userId = Math.random().toString().slice(2)
+    vars.userId = userId;
+    return userId;
 }
 
 const changeVar = (variable, value) => {
