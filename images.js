@@ -28,7 +28,7 @@ const images = () => {
                         pawn = piece;
                         pawn.HTMLImage.style.removeProperty("background-color");
                         break;
-                    };
+                    }
                 }
             }
             const changePawnToAnotherPiece = () => {

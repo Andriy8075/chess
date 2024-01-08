@@ -1,4 +1,4 @@
-import {vars, passant} from './data.js';
+import {vars} from './data.js';
 import {checkAfterMove, attack} from './moves.js';
 import {cells, changeCell, pieces, changePieceCell} from './arrangePieces.js';
 import { movesExist } from './movesExist.js';
@@ -31,6 +31,12 @@ const checkmateOrStalemate = () => {
             return 'checkmate';
         }
         let ignoringPieces = [king];
+        const pushIgnorePieces = (lastIgnorePieceId) => {
+            for(let id = 1; id <= lastIgnorePieceId; id++) {
+                const piece = pieces[id];
+                if(piece) ignoringPieces.push(piece);
+            }
+        }
         const killAttackingPiece = () => {
             const savingPiece = attack(vars.oppositeColor,
                 attackingPiece.row, attackingPiece.column, ignoringPieces, 'killPiece');
@@ -51,7 +57,7 @@ const checkmateOrStalemate = () => {
                 changeCell(saveAttackingPiece.row, saveAttackingPiece.column, saveAttackingPiece.id);
                 changePieceCell(saveAttackingPiece.id, saveAttackingPiece);
                 if(isAttackAfterMove) {
-                    ignoringPieces.push(savingPiece);
+                    pushIgnorePieces(savingPiece.id);
                     return killAttackingPiece();
                 }
                 ignoringPieces = [king];
@@ -75,7 +81,7 @@ const checkmateOrStalemate = () => {
                 changeCell(savingPiecePreviousRow, savingPiecePreviousColumn, savingPiece.id);
                 changeCell(cellRow, cellColumn, null);
                 if(isAttackAfterMove ) {
-                    ignoringPieces.push(savingPiece);
+                    pushIgnorePieces(savingPiece.id);
                     return hideKing();
                 }
                 ignoringPieces = [king];

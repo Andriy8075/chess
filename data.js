@@ -22,8 +22,8 @@ const getID = () => {
     return ID;
 }
 
-const changeVar = (varibale, value) => {
-    vars[varibale] = value;
+const changeVar = (variable, value) => {
+    vars[variable] = value;
 }
 
 const piecesForCastlingNeverMoved = {

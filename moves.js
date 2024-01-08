@@ -10,9 +10,6 @@ import {cells, changeCell, pieces, changePieceCell} from './arrangePieces.js';
 import {writeDownPosition, clear} from './repeatingMoves.js';
 const attack = (color, attackForRow, attackForColumn, ignorePieces, moveType) => {
     if(!moveType) moveType = 'makeCheck';
-    let opponentColor;
-    if (color === 'white') opponentColor = 'black';
-    else opponentColor = 'white';
     for (let currentPiece of pieces) {
         if(!currentPiece) continue;
         if(currentPiece.color === color) continue;

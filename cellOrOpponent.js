@@ -3,15 +3,6 @@ import {pieces} from './arrangePieces.js';
 import {Piece} from './piece.js';
 
 const cellOrOpponent = (cellOrOpponent) => {
-    const moveOnClick = (isItPiece) => {
-        if (vars.movePossibility) {
-            if(vars.chosenPiece) {
-                const pieceThatMoves = pieces[vars.chosenPiece];
-                pieceThatMoves.wantMove(cellOrOpponent.row, cellOrOpponent.column, isItPiece ? cellOrOpponent : null);
-            }
-            changeVar('chosenPiece', null );
-        }
-    }
     let isItPiece;
     if (cellOrOpponent instanceof Piece) {
         isItPiece = true;
