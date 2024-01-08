@@ -31,7 +31,7 @@ const images = () => {
                     }
                 }
             }
-            const changePawnToAnotherPiece = () => {
+            const changePawnToAnotherPiece = (row, column, pieceToKill) => {
                 pawn.HTMLImage.src = finishImage.src;
                 const type = finishImage.id.slice(5);
                 pawn.type = type;
@@ -42,18 +42,21 @@ const images = () => {
                 pawn.canMove = (toRow, toColumn, moveType) => {
                     if(canPieceMove[pawn.type](pawn.row, pawn.column, toRow, toColumn, moveType)) return true;
                 }
-
+                makeMove(pawn, row, column, pieceToKill, true, null, true)
                 const pocket = {
                     method: 'changePawnToPiece',
                     ID: vars.ID,
                     pawn: pawn.id,
                     type: type,
+                    cellRow: 7 - row,
+                    cellColumn: 7 - column,
+                    opponentId: pieceToKill ? pieceToKill.id : null,
                 }
                 socket.send(JSON.stringify(pocket));
             }
             if (backgroundImage) {
-                makeMove(pawn, backgroundImage.top, backgroundImage.left, null);
-                changePawnToAnotherPiece();
+                //makeMove(pawn, backgroundImage.style.top, backgroundImage.style.left/cellSize, null);
+                changePawnToAnotherPiece(vars.finishImageRow, vars.finishImageColumn);
                 backgroundImage.remove();
             }
             else {
@@ -63,15 +66,15 @@ const images = () => {
                 }
                 let pieceToKill;
                 if(cellsElement) {
-                    const isBackgroundColor = pieces[cellsElement].HTMLImage.style.backgroundColor;
-                    if (isBackgroundColor) pieceToKill = pieces[cellsElement];
+                    const piece = pieces[cellsElement];
+                    if (piece.color === vars.oppositeColor && piece.HTMLImage.style.backgroundColor)
+                        pieceToKill = pieces[cellsElement];
                     else pieceToKill = pieces[cells[0][pawn.column+1]];
                 }
                 else {
                     pieceToKill = pieces[cells[0][pawn.column+1]];
                 }
-                makeMove(pawn, pieceToKill.row, pieceToKill.column, pieceToKill);
-                changePawnToAnotherPiece();
+                changePawnToAnotherPiece(pieceToKill.row, pieceToKill.column, pieceToKill);
             }
         })
     }

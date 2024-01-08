@@ -14,6 +14,8 @@ const vars = {
     connectedToID: null,
     cellSize: null,
     moveOnPassantExist: false,
+    finishImageColumn: null,
+    finishImageRow: null,
 }
 
 const getID = () => {

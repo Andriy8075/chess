@@ -5,6 +5,7 @@ import {checkmateOrStalemate} from './checkmateOrStalemate.js';
 import {notEnoughPieces} from "./notEnoughPieces.js";
 import {images} from "./images.js";
 import {clear, writeDownPosition, draw} from './repeatingMoves.js';
+import {makeMove} from "./moves.js";
 
 const CHAR_RETURN = 13;
 const inputAnotherPlayersIDHere = document.getElementById('inputAnotherPlayersIDHere');
@@ -55,41 +56,48 @@ socket.addEventListener('open', () => {
     socket.send(JSON.stringify(pocket));
     localStorage.removeItem('ID');
 });
+const move = (parsed) => {
+    const piece = pieces[parsed.pieceId];
+    piece.HTMLImage.style.top = `${vars.cellSize*(parsed.cellRow)}em`;
+    piece.HTMLImage.style.left = `${vars.cellSize*(parsed.cellColumn)}em`;
+    changeCell(parsed.cellRow, parsed.cellColumn, pieces[parsed.pieceId].id);
+    changeCell(pieces[parsed.pieceId].row, pieces[parsed.pieceId].column, null);
+    piece.row = (parsed.cellRow);
+    piece.column = (parsed.cellColumn);
+    setPassant(parsed.passant);
+    changeVar('movePossibility', true);
+    if(parsed.clear) clear();
+    else {
+        writeDownPosition();
+        const end = draw();
+        if(end) {
+            endTheGame('repeatingTheSameMoves', 'You have a draw. Reason: repeating the same moves');
+        }
+    }
+    const end = checkmateOrStalemate();
+    if (end) {
+        if (end === 'checkmate') {
+            endTheGame('win', 'You have checkmate and lost');
+        }
+        if (end === 'stalemate') {
+            endTheGame('stalemate', 'You have a draw. Reason: stalemate');
+        }
+    }
+    if(notEnoughPieces()) {
+        endTheGame('notEnoughPieces',
+            'You have a draw. Reason: not enough pieces to continue game');
+    }
+}
+const kil = (parsed) => {
+    pieces[parsed.pieceId].HTMLImage.remove();
+    pieces[parsed.pieceId] = null;
+}
 
 socket.addEventListener('message', ({data}) => {
     const parsed = JSON.parse(data);
     switch (parsed.method) {
         case 'makeMove':
-            const piece = pieces[parsed.pieceId];
-            piece.HTMLImage.style.top = `${vars.cellSize*(parsed.cellRow)}em`;
-            piece.HTMLImage.style.left = `${vars.cellSize*(parsed.cellColumn)}em`;
-            changeCell(parsed.cellRow, parsed.cellColumn, pieces[parsed.pieceId].id);
-            changeCell(pieces[parsed.pieceId].row, pieces[parsed.pieceId].column, null);
-            piece.row = (parsed.cellRow);
-            piece.column = (parsed.cellColumn);
-            setPassant(parsed.passant);
-            changeVar('movePossibility', true);
-            if(parsed.clear) clear();
-            else {
-                writeDownPosition();
-                const end = draw();
-                if(end) {
-                    endTheGame('repeatingTheSameMoves', 'You have a draw. Reason: repeating the same moves');
-                }
-            }
-            const end = checkmateOrStalemate();
-            if (end) {
-                if (end === 'checkmate') {
-                    endTheGame('win', 'You have checkmate and lost');
-                }
-                if (end === 'stalemate') {
-                    endTheGame('stalemate', 'You have a draw. Reason: stalemate');
-                }
-            }
-            if(notEnoughPieces()) {
-                endTheGame('notEnoughPieces',
-                    'You have a draw. Reason: not enough pieces to continue game');
-            }
+            move(parsed);
             break;
         case 'kill':
             pieces[parsed.pieceId].HTMLImage.remove();
@@ -124,6 +132,20 @@ socket.addEventListener('message', ({data}) => {
             const pawn = pieces[parsed.pawn];
             pawn.type = parsed.type;
             pawn.HTMLImage.src = `pictures/${vars.oppositeColor}${parsed.type}.png`;
+            if(parsed.opponentId) {
+                kil({
+                    pieceId: parsed.opponentId,
+                })
+            }
+            move({
+                    method: 'makeMove',
+                    ID: vars.ID,
+                    pieceId: pawn.id,
+                    cellRow: parsed.cellRow,
+                    cellColumn: parsed.cellColumn,
+                    clear: true,
+                    passant: null,
+                })
             break;
         case 'win':
             writeGameResultText('You win by making checkmate');
