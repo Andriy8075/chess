@@ -8,9 +8,11 @@ import {
 } from './data.js';
 import {cells, changeCell, pieces, changePieceCell} from './arrangePieces.js';
 import {writeDownPosition, clear} from './repeatingMoves.js';
-const attack = (color, attackForRow, attackForColumn, ignorePieces, moveType) => {
+const attack = (color, attackForRow, attackForColumn, ignorePieces, moveType, i = 1) => {
     if(!moveType) moveType = 'makeCheck';
-    for (let currentPiece of pieces) {
+    for(i ; i <= 32; i++) {
+        const currentPiece = pieces[i];
+    //for (let currentPiece of pieces) {
         if(!currentPiece) continue;
         if(currentPiece.color === color) continue;
         if (ignorePieces) {
@@ -41,7 +43,7 @@ const kill = (id) => {
     }
 }
 
-const checkAfterMove = (Piece, toRow, toColumn, opponentPiece) => {
+const checkAfterMove = (Piece, toRow, toColumn, killingPiece, i) => {
     const previousRow = Piece.row;
     const previousColumn = Piece.column;
     Piece.row = toRow;
@@ -55,13 +57,13 @@ const checkAfterMove = (Piece, toRow, toColumn, opponentPiece) => {
     }
 
     let result;
-    if (opponentPiece) {
-        if (attack(vars.color, vars.kingRow, vars.kingColumn, [opponentPiece], 'makeCheck')) {
+    if (killingPiece) {
+        if (attack(vars.color, vars.kingRow, vars.kingColumn, [killingPiece], 'makeCheck', i)) {
             result = true;
         }
     }
     else {
-        if (attack(vars.color, vars.kingRow, vars.kingColumn, null, 'makeCheck')) {
+        if (attack(vars.color, vars.kingRow, vars.kingColumn, null, 'makeCheck', i)) {
             result = true;
         }
     }
@@ -71,7 +73,7 @@ const checkAfterMove = (Piece, toRow, toColumn, opponentPiece) => {
     }
     Piece.row = previousRow;
     Piece.column = previousColumn;
-    changeCell(toRow, toColumn, opponentPiece ? opponentPiece.id : null);
+    changeCell(toRow, toColumn, killingPiece ? killingPiece.id : null);
     changeCell(previousRow, previousColumn, Piece.id);
     return result;
 }
