@@ -58,19 +58,19 @@ socket.addEventListener('open', () => {
 });
 const move = (parsed) => {
     const piece = pieces[parsed.pieceId];
-    piece.HTMLImage.style.top = `${vars.cellSize*(parsed.cellRow)}em`;
-    piece.HTMLImage.style.left = `${vars.cellSize*(parsed.cellColumn)}em`;
+    piece.HTMLImage.style.top = `${vars.cellSize * (parsed.cellRow)}em`;
+    piece.HTMLImage.style.left = `${vars.cellSize * (parsed.cellColumn)}em`;
     changeCell(parsed.cellRow, parsed.cellColumn, pieces[parsed.pieceId].id);
     changeCell(pieces[parsed.pieceId].row, pieces[parsed.pieceId].column, null);
     piece.row = (parsed.cellRow);
     piece.column = (parsed.cellColumn);
     setPassant(parsed.passant);
     changeVar('movePossibility', true);
-    if(parsed.clear) clear();
+    if (parsed.clear) clear();
     else {
         writeDownPosition();
         const end = draw();
-        if(end) {
+        if (end) {
             endTheGame('repeatingTheSameMoves', 'You have a draw. Reason: repeating the same moves');
         }
     }
@@ -83,14 +83,10 @@ const move = (parsed) => {
             endTheGame('stalemate', 'You have a draw. Reason: stalemate');
         }
     }
-    if(notEnoughPieces()) {
+    if (notEnoughPieces()) {
         endTheGame('notEnoughPieces',
             'You have a draw. Reason: not enough pieces to continue game');
     }
-}
-const kil = (parsed) => {
-    pieces[parsed.pieceId].HTMLImage.remove();
-    pieces[parsed.pieceId] = null;
 }
 
 socket.addEventListener('message', ({data}) => {
@@ -133,9 +129,8 @@ socket.addEventListener('message', ({data}) => {
             pawn.type = parsed.type;
             pawn.HTMLImage.src = `pictures/${vars.oppositeColor}${parsed.type}.png`;
             if(parsed.opponentId) {
-                kil({
-                    pieceId: parsed.opponentId,
-                })
+                pieces[parsed.opponentId].HTMLImage.remove();
+                pieces[parsed.opponentId] = null;
             }
             move({
                     method: 'makeMove',
