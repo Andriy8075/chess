@@ -1,5 +1,5 @@
 import {socket, vars} from './data.js';
-import {makeMove, moves, canPieceMove} from './moves.js';
+import {doMove, moves, canPieceMove} from './moves.js';
 import {pieces, cells} from './arrangePieces.js'
 const images = () => {
     const chooseColorImages = document.getElementsByClassName('chooseColorImages');
@@ -42,7 +42,7 @@ const images = () => {
                 pawn.canMove = (toRow, toColumn, moveType) => {
                     if(canPieceMove[pawn.type](pawn.row, pawn.column, toRow, toColumn, moveType)) return true;
                 }
-                makeMove(pawn, row, column, pieceToKill, true, null, true)
+                doMove(pawn, row, column, pieceToKill, true, null, true)
                 const pocket = {
                     method: 'changePawnToPiece',
                     userId: vars.userId,
@@ -55,7 +55,6 @@ const images = () => {
                 socket.send(JSON.stringify(pocket));
             }
             if (backgroundImage) {
-                //makeMove(pawn, backgroundImage.style.top, backgroundImage.style.left/cellSize, null);
                 changePawnToAnotherPiece(vars.finishImageRow, vars.finishImageColumn);
                 backgroundImage.remove();
             }

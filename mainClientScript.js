@@ -5,7 +5,7 @@ import {checkmateOrStalemate} from './checkmateOrStalemate.js';
 import {notEnoughPieces} from "./notEnoughPieces.js";
 import {images} from "./images.js";
 import {clear, writeDownPosition, draw} from './repeatingMoves.js';
-import {makeMove} from "./moves.js";
+import {doMove} from "./moves.js";
 
 const CHAR_RETURN = 13;
 const inputAnotherPlayersIDHere = document.getElementById('inputAnotherPlayersIDHere');
@@ -91,19 +91,19 @@ const move = (parsed) => {
 
 socket.addEventListener('message', ({data}) => {
     const parsed = JSON.parse(data);
-    switch (parsed.method) {
-        case 'makeMove':
-            move(parsed);
-            break;
-        case 'kill':
+    const methods = {
+        doMove: () => {
+            move(parsed)
+        },
+        kill: () => {
             pieces[parsed.pieceId].HTMLImage.remove();
             pieces[parsed.pieceId] = null;
-            break;
-        case 'assignID':
+        },
+        assignID: () => {
             const yourIDLabel = document.getElementById(`id`);
             yourIDLabel.innerHTML = `Your ID: ${parsed.userId}`;
-            break;
-        case 'connectToID':
+        },
+        connectToID: () => {
             if(!vars.inGame) {
                 const labelConnectTo = document.getElementById(`connected`);
                 labelConnectTo.innerHTML = `You are connected to player with ID ${parsed.userId}`;
@@ -114,17 +114,18 @@ socket.addEventListener('message', ({data}) => {
                 }
                 changeVar('inGame', true);
             }
-            break;
-        case 'receiveColor':
+        },
+        receiveColor: () => {
             arrangePieces(parsed.color);
-            break;
-        case 'disconnect':
+        },
+        disconnect: () => {
             writeGameResultText('Your opponent disconnected, so you win');
-            break;
-        case 'clearArrayCellAfterPassant':
-            changeCell(4, parsed.cellColumn, null);
-            break;    
-        case 'changePawnToPiece':
+        },
+        clearArrayCellAfterPassant: () => {
+            const passantRow = 4;
+            changeCell(passantRow, parsed.cellColumn, null);
+        },
+        changePawnToPiece: () => {
             const pawn = pieces[parsed.pawn];
             pawn.type = parsed.type;
             pawn.HTMLImage.src = `pictures/${vars.oppositeColor}${parsed.type}.png`;
@@ -133,23 +134,86 @@ socket.addEventListener('message', ({data}) => {
                 pieces[parsed.opponentId] = null;
             }
             move({
-                    method: 'makeMove',
-                    userId: vars.userId,
-                    pieceId: pawn.id,
-                    cellRow: parsed.cellRow,
-                    cellColumn: parsed.cellColumn,
-                    clear: true,
-                    passant: null,
-                })
-            break;
-        case 'win':
+                method: 'doMove',
+                userId: vars.userId,
+                pieceId: pawn.id,
+                cellRow: parsed.cellRow,
+                cellColumn: parsed.cellColumn,
+                clear: true,
+                passant: null,
+            })
+        },
+        win: () => {
             writeGameResultText('You win by making checkmate');
-            break;
-        default:
-            if(parsed.text) {
-                writeGameResultText(parsed.text);
-            }
+        },
     }
+    const method = methods[parsed.method];
+    if(method) method()
+    else {
+        if(parsed.text) {
+            writeGameResultText(parsed.text);
+        }
+    }
+
+    // switch (parsed.method) {
+    //     case 'doMove':
+    //         move(parsed);
+    //         break;
+    //     case 'kill':
+    //         pieces[parsed.pieceId].HTMLImage.remove();
+    //         pieces[parsed.pieceId] = null;
+    //         break;
+    //     case 'assignID':
+    //         const yourIDLabel = document.getElementById(`id`);
+    //         yourIDLabel.innerHTML = `Your ID: ${parsed.userId}`;
+    //         break;
+    //     case 'connectToID':
+    //         if(!vars.inGame) {
+    //             const labelConnectTo = document.getElementById(`connected`);
+    //             labelConnectTo.innerHTML = `You are connected to player with ID ${parsed.userId}`;
+    //             connectedToID = parsed.userId;
+    //             const images= document.getElementsByClassName('chooseColorImages');
+    //             for (const image of images) {
+    //                 image.style.display = 'flex';
+    //             }
+    //             changeVar('inGame', true);
+    //         }
+    //         break;
+    //     case 'receiveColor':
+    //         arrangePieces(parsed.color);
+    //         break;
+    //     case 'disconnect':
+    //         writeGameResultText('Your opponent disconnected, so you win');
+    //         break;
+    //     case 'clearArrayCellAfterPassant':
+    //         changeCell(4, parsed.cellColumn, null);
+    //         break;
+    //     case 'changePawnToPiece':
+    //         const pawn = pieces[parsed.pawn];
+    //         pawn.type = parsed.type;
+    //         pawn.HTMLImage.src = `pictures/${vars.oppositeColor}${parsed.type}.png`;
+    //         if(parsed.opponentId) {
+    //             pieces[parsed.opponentId].HTMLImage.remove();
+    //             pieces[parsed.opponentId] = null;
+    //         }
+    //         move({
+    //                 method: 'doMove',
+    //                 userId: vars.userId,
+    //                 pieceId: pawn.id,
+    //                 cellRow: parsed.cellRow,
+    //                 cellColumn: parsed.cellColumn,
+    //                 clear: true,
+    //                 passant: null,
+    //             })
+    //         break;
+    //     case 'win':
+    //         writeGameResultText('You win by making checkmate');
+    //         break;
+    //     default:
+    //         if(parsed.text) {
+    //             writeGameResultText(parsed.text);
+    //         }
+    //}
 })
 
 const input = document.getElementById('input');

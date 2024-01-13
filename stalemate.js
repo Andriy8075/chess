@@ -1,4 +1,4 @@
-import {vars, passant} from './data.js';
+import {vars, passant, changeVar} from './data.js';
 import {cells, pieces} from './arrangePieces.js';
 import {checkAfterMove} from './moves.js';
 
@@ -17,7 +17,7 @@ const canMoveTo = (Piece, rowMoveTo, columnMoveTo) => {
     }
 }
 
-const movesExist = {
+const moveExist = {
     Rook: (piece, column, row) => {
         if (column > 0) {
             if (canMoveTo(piece, row, column - 1)) {
@@ -84,8 +84,11 @@ const movesExist = {
                     !checkAfterMove(piece, row-1, column+1, enemyPiece)) return true;
             }
         }
-        if(passant.column) {
-            if(piece.canMove(2, passant.column, 'passant')) return true;
+        if(passant.id) {
+            if(piece.canMove(2, passant.column, 'passant')) {
+                changeVar('moveOnPassantExist', false);
+                return true;
+            }
         }
     },
 
@@ -121,14 +124,21 @@ const movesExist = {
     },
 
     Queen: (piece, column, row) => {
-        if(movesExist.Rook(piece, column, row)) return true;
-        if(movesExist.Bishop(piece, column, row)) return true;
+        if(moveExist.Rook(piece, column, row)) return true;
+        if(moveExist.Bishop(piece, column, row)) return true;
     },
 
     King: (piece, column, row) => {
-        if(movesExist.Rook(piece, column, row)) return true;
-        if(movesExist.Bishop(piece, column, row)) return true;
+        if(moveExist.Rook(piece, column, row)) return true;
+        if(moveExist.Bishop(piece, column, row)) return true;
     },
 }
 
-export {movesExist}
+const stalemate = () => {
+    for (const Piece of pieces) {
+        if (Piece && Piece.color === vars.color && moveExist[Piece.type](Piece, Piece.column, Piece.row)) return;
+    }
+    return 'stalemate';
+}
+
+export {stalemate}

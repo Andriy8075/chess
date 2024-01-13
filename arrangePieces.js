@@ -34,7 +34,8 @@ const arrangePieces = (color) => {
     else {
         order = ['Rook', 'Knight', 'Bishop', 'King', 'Queen', 'Bishop', 'Knight', 'Rook'];
         changeVar('oppositeColor', 'white');
-        pieceID = 32;
+        const countOfPieces = 32;
+        pieceID = countOfPieces;
         changePieceID = ()  => pieceID--;
         changeVar('kingRow', 7);
         changeVar('kingColumn', 3);

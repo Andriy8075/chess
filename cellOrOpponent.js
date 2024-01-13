@@ -3,9 +3,7 @@ import {pieces} from './arrangePieces.js';
 import {Piece} from './piece.js';
 
 const cellOrOpponent = (cellOrOpponent) => {
-    let isItPiece;
     if (cellOrOpponent instanceof Piece) {
-        isItPiece = true;
         cellOrOpponent.HTMLImage.addEventListener('click', () => { 
             if (vars.movePossibility) {
                 if(vars.chosenPiece) {

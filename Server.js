@@ -30,8 +30,8 @@ const sendPocket = (parsed) => {
 ws.on('connection', (connection) => {
     connection.on('message', (message) => {
         const parsed = JSON.parse(message);
-        switch (parsed.method) {
-            case 'assignID':
+        const methods = {
+            assignID: () => {
                 connection.usreId = parsed.userId;
                 const pocket = {
                     method: 'assignID',
@@ -43,33 +43,33 @@ ws.on('connection', (connection) => {
                         client.send(JSON.stringify(pocket));
                     }
                 }
-                break;
-            case 'chooseColor':
-                 for (const client of ws.clients) {
-                     if (client.connectedTo === parsed.userId) {
-                         let oppositeColor;
-                         if (parsed.color === 'white') {
-                             oppositeColor = 'black';
-                         }else {
-                             oppositeColor = 'white';
-                         }
-                         const pocket = {
-                             method: 'receiveColor',
-                             color: oppositeColor,
-                         }
-                         client.send(JSON.stringify(pocket));
-                     }
-                     if (parsed.userId === client.userId) {
-                         const pocket = {
-                             method: 'receiveColor',
-                             color: parsed.color,
-                         }
-                         client.send(JSON.stringify(pocket));
-                     }
-                 }
-                 break;
-            case 'connectToID':
-                if (parsed.to === parsed.from) break;
+            },
+            chooseColor: () => {
+                for (const client of ws.clients) {
+                    if (client.connectedTo === parsed.userId) {
+                        let oppositeColor;
+                        if (parsed.color === 'white') {
+                            oppositeColor = 'black';
+                        }else {
+                            oppositeColor = 'white';
+                        }
+                        const pocket = {
+                            method: 'receiveColor',
+                            color: oppositeColor,
+                        }
+                        client.send(JSON.stringify(pocket));
+                    }
+                    if (parsed.userId === client.userId) {
+                        const pocket = {
+                            method: 'receiveColor',
+                            color: parsed.color,
+                        }
+                        client.send(JSON.stringify(pocket));
+                    }
+                }
+            },
+            connectToID: () => {
+                if (parsed.to === parsed.from) return;
 
                 let findRequiredID = false;
                 for(const client of ws.clients) {
@@ -98,16 +98,94 @@ ws.on('connection', (connection) => {
                         }
                     }
                 }
-                break;
-            case 'deleteConnectedToID':
+            },
+            deleteConnectedToID: () => {
                 for(const client of ws.clients) {
                     if(client === connection) client.connectedTo = null;
                 }
-                break;
-            default: 
-                sendPocket(parsed);
-                break;    
+            },
         }
+        const method = methods[parsed.method];
+        if(method) method();
+        else sendPocket(parsed);
+        // switch (parsed.method) {
+        //     case 'assignID':
+        //         connection.usreId = parsed.userId;
+        //         const pocket = {
+        //             method: 'assignID',
+        //             userId: parsed.userId,
+        //         }
+        //         for(const client of ws.clients) {
+        //             if(client === connection) {
+        //                 client.userId = parsed.userId;
+        //                 client.send(JSON.stringify(pocket));
+        //             }
+        //         }
+        //         break;
+        //     case 'chooseColor':
+        //          for (const client of ws.clients) {
+        //              if (client.connectedTo === parsed.userId) {
+        //                  let oppositeColor;
+        //                  if (parsed.color === 'white') {
+        //                      oppositeColor = 'black';
+        //                  }else {
+        //                      oppositeColor = 'white';
+        //                  }
+        //                  const pocket = {
+        //                      method: 'receiveColor',
+        //                      color: oppositeColor,
+        //                  }
+        //                  client.send(JSON.stringify(pocket));
+        //              }
+        //              if (parsed.userId === client.userId) {
+        //                  const pocket = {
+        //                      method: 'receiveColor',
+        //                      color: parsed.color,
+        //                  }
+        //                  client.send(JSON.stringify(pocket));
+        //              }
+        //          }
+        //          break;
+        //     case 'connectToID':
+        //         if (parsed.to === parsed.from) break;
+        //
+        //         let findRequiredID = false;
+        //         for(const client of ws.clients) {
+        //             if(!client.connectedTo){
+        //                 if(client.userId === parsed.to) {
+        //                     findRequiredID = true;
+        //                     client.connectedTo = parsed.from;
+        //                     const pocket = {
+        //                         method: 'connectToID',
+        //                         userId: parsed.from,
+        //                     }
+        //                     client.send(JSON.stringify(pocket));
+        //                     break;
+        //                 }
+        //             }
+        //         }
+        //         if(findRequiredID){
+        //             for(const client of ws.clients) {
+        //                 if(client.userId === parsed.from) {
+        //                     client.connectedTo = parsed.to;
+        //                     const pocket = {
+        //                         method: 'connectToID',
+        //                         userId: parsed.to,
+        //                     }
+        //                     client.send(JSON.stringify(pocket));
+        //                 }
+        //             }
+        //         }
+        //         break;
+        //     case 'deleteConnectedToID':
+        //         for(const client of ws.clients) {
+        //             if(client === connection) client.connectedTo = null;
+        //         }
+        //         break;
+        //     default:
+        //         sendPocket(parsed);
+        //         break;
+        // }
     });
     connection.on('close', () => {
         for(const client of ws.clients) {

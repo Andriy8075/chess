@@ -1,14 +1,17 @@
-import {vars} from './data.js';
+import {changeVar, vars} from './data.js';
 import {checkAfterMove, attack} from './moves.js';
 import {cells, pieces} from './arrangePieces.js';
-import { movesExist } from './movesExist.js';
+import {stalemate} from './stalemate.js';
 
 
 const checkmateOrStalemate = () => {
 
     const king = pieces[vars.kingID];
     const attackingPiece = attack(vars.color,vars.kingRow, vars.kingColumn, null, 'makeCheck');
-    if (attackingPiece) {
+    if (!attackingPiece) return stalemate();
+
+
+    else { //check for checkmate
         for (let row = vars.kingRow - 1; row <= vars.kingRow + 1; row++) {
             if (row >= 0 && row < 8) {
                 for (let column = vars.kingColumn - 1; column <= vars.kingColumn + 1; column++) {
@@ -35,7 +38,10 @@ const checkmateOrStalemate = () => {
             const savingPiece = attack(vars.oppositeColor,
                 attackingPiece.row, attackingPiece.column, ignoringPieces, 'killPiece', i);
             if(savingPiece) {
-                if(vars.moveOnPassantExist) return;
+                if(vars.moveOnPassantExist) {
+                    changeVar('moveOnPassantExist', false);
+                    return true;
+                }
                 if(checkAfterMove(savingPiece, attackingPiece.row, attackingPiece.column, attackingPiece)) {
                     return killAttackingPiece(savingPiece.id+1);
                 }
@@ -158,12 +164,6 @@ const checkmateOrStalemate = () => {
                 } else return checkFromBishop();
             }
         }
-    } else {
-        
-        for (const Piece of pieces) {
-            if (Piece && Piece.color === vars.color && movesExist[Piece.type](Piece, Piece.column, Piece.row)) return;
-         }
-        return 'stalemate';
     }
 }
 
