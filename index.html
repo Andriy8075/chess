@@ -1,41 +1,92 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-        <meta charset="UTF-8">
-        <link href="styles.css" rel="stylesheet">
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <link href="styles.css" rel="stylesheet" />
+  </head>
 
-<body>
-<div class="globalDiv" id="globalDiv">
-    <div class="divBoard" id="divBoard">
-        <img id="boardImage" src="pictures/board.png" alt="board" class="board" usemap="#board">
-        <map name="board" id="boardMap">
-        </map>
+  <body>
+    <div class="globalDiv" id="globalDiv">
+      <div class="divBoard" id="divBoard">
+        <img
+          id="boardImage"
+          src="pictures/board.png"
+          alt="board"
+          class="board"
+          usemap="#board"
+        />
+        <map name="board" id="boardMap"> </map>
         <div class="pieces" id="pieces"></div>
-    </div>
-    <div class ="messages" id="+messages">
+      </div>
+      <div class="messages" id="+messages">
         <h3 id="id">Connection error</h3>
-        <h3 class="inputAnotherPlayersIDHere" id="inputAnotherPlayersIDHere">Input another player`s userId here:</h3>
-        <input id="input" class ="input">
+        <h3 class="inputAnotherPlayersIDHere" id="inputAnotherPlayersIDHere">
+          Input another player`s userId here:
+        </h3>
+        <input id="input" class="input" />
         <h3 id="connected"></h3>
         <h3 id="gameResult" class="gameResult"></h3>
         <div id="imagesDiv" class="imagesDiv">
-            <img src="pictures/whitePawn.png" class="chooseColorImages" id="white">
-            <img src="pictures/random.png" class="chooseColorImages" id="random">
-            <img src="pictures/blackPawn.png" class="chooseColorImages" id="black">
-            <img src="pictures/blackQueen.png" class="blackFinishImages finishImage" id="blackQueen">
-            <img src="pictures/blackRook.png" class="blackFinishImages finishImage" id="blackRook">
-            <img src="pictures/blackKnight.png" class="blackFinishImages finishImage" id="blackKnight">
-            <img src="pictures/blackBishop.png" class="blackFinishImages finishImage" id="blackBishop">
-            <img src="pictures/whiteQueen.png" class="whiteFinishImages finishImage" id="whiteQueen">
-            <img src="pictures/whiteRook.png" class="whiteFinishImages finishImage" id="whiteRook">
-            <img src="pictures/whiteKnight.png" class="whiteFinishImages finishImage" id="whiteKnight">
-            <img src="pictures/whiteBishop.png" class="whiteFinishImages finishImage" id="whiteBishop">
+          <img
+            src="pictures/whitePawn.png"
+            class="chooseColorImages"
+            id="white"
+          />
+          <img
+            src="pictures/random.png"
+            class="chooseColorImages"
+            id="random"
+          />
+          <img
+            src="pictures/blackPawn.png"
+            class="chooseColorImages"
+            id="black"
+          />
+          <img
+            src="pictures/blackQueen.png"
+            class="blackFinishImages finishImage"
+            id="blackQueen"
+          />
+          <img
+            src="pictures/blackRook.png"
+            class="blackFinishImages finishImage"
+            id="blackRook"
+          />
+          <img
+            src="pictures/blackKnight.png"
+            class="blackFinishImages finishImage"
+            id="blackKnight"
+          />
+          <img
+            src="pictures/blackBishop.png"
+            class="blackFinishImages finishImage"
+            id="blackBishop"
+          />
+          <img
+            src="pictures/whiteQueen.png"
+            class="whiteFinishImages finishImage"
+            id="whiteQueen"
+          />
+          <img
+            src="pictures/whiteRook.png"
+            class="whiteFinishImages finishImage"
+            id="whiteRook"
+          />
+          <img
+            src="pictures/whiteKnight.png"
+            class="whiteFinishImages finishImage"
+            id="whiteKnight"
+          />
+          <img
+            src="pictures/whiteBishop.png"
+            class="whiteFinishImages finishImage"
+            id="whiteBishop"
+          />
         </div>
         <button id="exit" class="exit">Exit game</button>
+      </div>
     </div>
-</div>
 
-<script type="module" src="mainClientScript.js"></script>
-</body>
+    <script type="module" src="mainClientScript.js"></script>
+  </body>
 </html>
