@@ -1,0 +1,63 @@
+.globalDiv {
+    display: flex;
+    grid-row: 1;
+    flex-direction: row;
+}
+
+.divBoard {
+    display: flex;
+    position: relative;
+}
+
+.board {
+    position: relative;
+}
+
+.pieces {
+    position: absolute;
+}
+
+.messages {
+    padding: 2em;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 60em;
+}
+
+.input {
+    display: none;
+    width: 20em;
+}
+
+.inputAnotherPlayersIDHere {
+    display: none;
+}
+
+.chooseColorImages {
+    display: none;
+    width: 10em;
+    height: 10em;
+}
+
+.finishImage {
+    display: none;
+    width: 10em;
+    height: 10em;
+}
+
+.imagesDiv {
+    display: flex;
+    flex-direction: row;
+}
+
+.gameResult {
+    color: red;
+}
+
+.exit {
+    font-size: 1.5em;
+    background-color: #ffeaea;
+    width: 6em;
+    height: 3em;
+}
