@@ -20,8 +20,6 @@ const writeGameResultText = (text) => {
   const textField = document.getElementById("gameResult");
   textField.innerHTML = text;
   changeVar("movePossibility", false);
-  changeVar("inGame", false);
-  deleteConnectedToID();
 };
 
 const endTheGame = (method, text) => {
@@ -34,21 +32,13 @@ const endTheGame = (method, text) => {
   socket.send(JSON.stringify(pocket));
 };
 
-const deleteConnectedToID = () => {
-  changeVar("connectedToID", null);
-  const pocket = {
-    method: "deleteConnectedToID",
-  };
-  socket.send(JSON.stringify(pocket));
-};
-
 socket.addEventListener("open", () => {
   const userId = localStorage.getItem("userId");
   if (userId) changeVar("userId", userId);
   else changeVar("userId", getID());
   inputAnotherPlayersIDHere.style.display = "flex";
   input.style.display = "flex";
-  deleteConnectedToID();
+  //deleteConnectedToID();
   const pocket = {
     method: "assignID",
     userId: vars.userId,

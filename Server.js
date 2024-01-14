@@ -13,106 +13,81 @@ server.listen(7992, () => {});
 
 const ws = new WebSocket.Server({ server });
 
-const sendPocket = (parsed) => {
-  for (const client of ws.clients) {
-    if (client.connectedTo === parsed.userId) {
-      delete parsed.userId;
-      client.send(JSON.stringify(parsed));
-      break;
-    }
-  }
-};
+const sockets = {};
+
+const sendPocket = (user, data) => {
+
+  if(sockets[user] && sockets[user].readyState === WebSocket.OPEN)
+    sockets[user].send(JSON.stringify(data));
+    return true;
+}
 
 ws.on("connection", (connection) => {
   connection.on("message", (message) => {
     const parsed = JSON.parse(message);
     const methods = {
       assignID: () => {
-        connection.usreId = parsed.userId;
+        connection.id = parsed.userId;
+        sockets[parsed.userId] = connection;
         const pocket = {
           method: "assignID",
           userId: parsed.userId,
         };
-        for (const client of ws.clients) {
-          if (client === connection) {
-            client.userId = parsed.userId;
-            client.send(JSON.stringify(pocket));
-          }
-        }
+        sendPocket(parsed.userId, pocket);
       },
       chooseColor: () => {
-        for (const client of ws.clients) {
-          if (client.connectedTo === parsed.userId) {
-            let oppositeColor;
-            if (parsed.color === "white") {
-              oppositeColor = "black";
-            } else {
-              oppositeColor = "white";
-            }
-            const pocket = {
-              method: "receiveColor",
-              color: oppositeColor,
-            };
-            client.send(JSON.stringify(pocket));
-          }
-          if (parsed.userId === client.userId) {
-            const pocket = {
-              method: "receiveColor",
-              color: parsed.color,
-            };
-            client.send(JSON.stringify(pocket));
-          }
+        let oppositeColor;
+        if (parsed.color === "white") {
+          oppositeColor = "black";
+        } else {
+          oppositeColor = "white";
         }
+        const ourPocket = {
+          method: "receiveColor",
+          color: parsed.color,
+        };
+
+        const opponentPocket = {
+          method: "receiveColor",
+          color: oppositeColor,
+        };
+
+        sendPocket(parsed.userId, ourPocket);
+        const opponentID = sockets[parsed.userId].connectedTo;
+        sendPocket(opponentID, opponentPocket);
       },
       connectToID: () => {
         if (parsed.to === parsed.from) return;
-
-        let findRequiredID = false;
-        for (const client of ws.clients) {
-          if (!client.connectedTo) {
-            if (client.userId === parsed.to) {
-              findRequiredID = true;
-              client.connectedTo = parsed.from;
-              const pocket = {
-                method: "connectToID",
-                userId: parsed.from,
-              };
-              client.send(JSON.stringify(pocket));
-              break;
-            }
-          }
-        }
+        const pocket = {
+          method: "connectToID",
+          userId: parsed.from,
+        };
+        const findRequiredID = sendPocket(parsed.to, pocket);
         if (findRequiredID) {
-          for (const client of ws.clients) {
-            if (client.userId === parsed.from) {
-              client.connectedTo = parsed.to;
-              const pocket = {
-                method: "connectToID",
-                userId: parsed.to,
-              };
-              client.send(JSON.stringify(pocket));
-            }
-          }
-        }
-      },
-      deleteConnectedToID: () => {
-        for (const client of ws.clients) {
-          if (client === connection) client.connectedTo = null;
+          sockets[parsed.from].connectedTo = parsed.to;
+          sockets[parsed.to].connectedTo = parsed.from;
+          const pocket = {
+            method: "connectToID",
+            userId: parsed.to,
+          };
+          sendPocket(parsed.from, pocket);
         }
       },
     };
     const method = methods[parsed.method];
     if (method) method();
-    else sendPocket(parsed);
+    else sendPocket(sockets[parsed.userId].connectedTo, parsed);
   });
   connection.on("close", () => {
-    for (const client of ws.clients) {
-      if (connection.userId === client.connectedTo) {
-        const pocket = {
-          method: "disconnect",
-        };
-        client.send(JSON.stringify(pocket));
-      }
+    const opponentId = connection.connectedTo;
+    const opponent = sockets[opponentId];
+    if(opponent) {
+      opponent.connectedTo = null;
     }
+    delete sockets[connection.id];
+    const pocket = {
+      method: "disconnect",
+    };
+    sendPocket(opponentId, pocket);
   });
 });
