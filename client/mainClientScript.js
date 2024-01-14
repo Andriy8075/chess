@@ -3,7 +3,7 @@ import {changeVar, getID, setPassant, socket, vars} from "./data.js";
 import {checkmateOrStalemate} from "./endOfGame/checkmateOrStalemate.js";
 import {notEnoughPieces} from "./endOfGame/notEnoughPieces.js";
 import {images} from "./onClick/images.js";
-import {clear, draw, writeDownPosition} from "./endOfGame/repeatingMoves.js";
+import {clear, repeatingTheSameMoves, writeDownPosition} from "./endOfGame/repeatingMoves.js";
 import {doMove} from "./moves/doMoveAndKill.js";
 
 const CHAR_RETURN = 13;
@@ -52,9 +52,9 @@ const move = (parsed) => {
     changeVar("movePossibility", true);
     if (parsed.clear) clear(); else {
         writeDownPosition();
-        const end = draw();
+        const end = repeatingTheSameMoves();
         if (end) {
-            endTheGame("repeatingTheSameMoves", "You have a draw. Reason: repeating the same wantMove",);
+            endTheGame("repeatingTheSameMoves", "You have a draw. Reason: repeating the same moves",);
         }
     }
     const end = checkmateOrStalemate();

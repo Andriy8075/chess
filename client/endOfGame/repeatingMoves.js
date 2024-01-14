@@ -50,7 +50,7 @@ const compareArrays = (array1, array2) => {
     } else if (array1 === array2) return true;
 };
 
-const draw = () => {
+const repeatingTheSameMoves = () => {
     const currentMove = previousMoves[previousMoves.length - 1];
     let theSameMoves = -1;
     for (let i = 1; i <= previousMoves.length; i++) {
@@ -59,4 +59,4 @@ const draw = () => {
     if (theSameMoves >= 2) return true;
 };
 
-export {writeDownPosition, clear, draw};
+export {writeDownPosition, clear, repeatingTheSameMoves};
