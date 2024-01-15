@@ -1,5 +1,5 @@
 import {cellOrOpponent} from "../onClick/cellOrOpponent.js";
-import {vars} from "../data.js";
+import {gameState} from "../data.js";
 
 const nameCells = () => {
     for (let row = 0; row < 8; row++) {
@@ -7,8 +7,8 @@ const nameCells = () => {
             const board = document.getElementById("boardMap");
             const area = document.createElement("area");
             area.shape = "rectangle";
-            area.coords = `${column * vars.cellSize * 16},${row * vars.cellSize * 16},
-            ${(column * vars.cellSize + vars.cellSize) * 16},${(row * vars.cellSize + vars.cellSize) * 16}`;
+            area.coords = `${column * gameState.cellSize * 16},${row * gameState.cellSize * 16},
+            ${(column * gameState.cellSize + gameState.cellSize) * 16},${(row * gameState.cellSize + gameState.cellSize) * 16}`;
             board.appendChild(area);
             area.row = row;
             area.column = column;

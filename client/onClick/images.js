@@ -1,4 +1,4 @@
-import {socket, vars} from "../data.js";
+import {socket, gameState} from "../data.js";
 import {wantMove} from "../moves/wantMove.js";
 import {doMove} from "../moves/doMoveAndKill.js";
 import {canPieceMove} from "../moves/canPieceMove.js";
@@ -14,7 +14,7 @@ const images = () => {
             if (colorNumber < 0.5) color = "white"; else color = "black";
         }
         const pocket = {
-            method: "chooseColor", color: color, userId: vars.userId,
+            method: "chooseColor", color: color, userId: gameState.userId,
         };
         socket.send(JSON.stringify(pocket));
     }
@@ -25,7 +25,7 @@ const images = () => {
             let pawn;
             for (const piece of pieces) {
                 if (piece) {
-                    if (piece.color === vars.color && piece.HTMLImage.style.backgroundColor) {
+                    if (piece.color === gameState.color && piece.HTMLImage.style.backgroundColor) {
                         pawn = piece;
                         pawn.HTMLImage.style.removeProperty("background-color");
                         break;
@@ -46,7 +46,7 @@ const images = () => {
                 doMove(pawn, row, column, pieceToKill, true, null, true);
                 const pocket = {
                     method: "changePawnToPiece",
-                    userId: vars.userId,
+                    userId: gameState.userId,
                     pawn: pawn.id,
                     type: type,
                     cellRow: 7 - row,
@@ -56,7 +56,7 @@ const images = () => {
                 socket.send(JSON.stringify(pocket));
             };
             if (backgroundImage) {
-                changePawnToAnotherPiece(vars.finishImageRow, vars.finishImageColumn);
+                changePawnToAnotherPiece(gameState.finishImageRow, gameState.finishImageColumn);
                 backgroundImage.remove();
             } else {
                 let cellsElement;
@@ -66,7 +66,7 @@ const images = () => {
                 let pieceToKill;
                 if (cellsElement) {
                     const piece = pieces[cellsElement];
-                    if (piece.color === vars.oppositeColor && piece.HTMLImage.style.backgroundColor) pieceToKill = pieces[cellsElement]; else pieceToKill = pieces[cells[0][pawn.column + 1]];
+                    if (piece.color === gameState.oppositeColor && piece.HTMLImage.style.backgroundColor) pieceToKill = pieces[cellsElement]; else pieceToKill = pieces[cells[0][pawn.column + 1]];
                 } else {
                     pieceToKill = pieces[cells[0][pawn.column + 1]];
                 }

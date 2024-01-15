@@ -1,5 +1,5 @@
 import {cells, changeCell, changePiecesArray, pieces,} from "../arrangePieces/arrangePieces.js";
-import {changeVar, passant, piecesForCastlingNeverMoved, vars,} from "../data.js";
+import {changeVar, passant, piecesForCastlingNeverMoved, gameState,} from "../data.js";
 import {attack, checkAfterMove} from "./check.js";
 import {doMove} from "./doMoveAndKill.js";
 
@@ -152,37 +152,37 @@ const canPieceMove = {
                         let rookID;
                         if (columnDifference === -2) {
                             if (piecesForCastlingNeverMoved.leftRook && piecesForCastlingNeverMoved.king) {
-                                for (let i = 0; i <= vars.kingColumn; i++) {
-                                    if (attack(vars.color, 7, i)) return;
+                                for (let i = 0; i <= gameState.kingColumn; i++) {
+                                    if (attack(gameState.color, 7, i)) return;
                                 }
-                                for (let i = 1; i <= vars.kingColumn - 1; i++) {
+                                for (let i = 1; i <= gameState.kingColumn - 1; i++) {
                                     if (cells[7][i]) return;
                                 }
-                                if (vars.color === "white") {
+                                if (gameState.color === "white") {
                                     rookID = 25;
                                 } else {
                                     rookID = 8;
                                 }
                                 const rook = pieces[rookID];
-                                doMove(rook, 7, vars.kingColumn - 1, null, true);
+                                doMove(rook, 7, gameState.kingColumn - 1, null, true);
                                 return true;
                             }
                         }
                         if (columnDifference === 2) {
                             if (piecesForCastlingNeverMoved.rightRook && piecesForCastlingNeverMoved.king) {
-                                for (let i = vars.kingColumn; i <= 7; i++) {
-                                    if (attack(vars.color, 7, i)) return;
+                                for (let i = gameState.kingColumn; i <= 7; i++) {
+                                    if (attack(gameState.color, 7, i)) return;
                                 }
-                                for (let i = vars.kingColumn + 1; i <= 6; i++) {
+                                for (let i = gameState.kingColumn + 1; i <= 6; i++) {
                                     if (cells[7][i]) return;
                                 }
-                                if (vars.color === "white") {
+                                if (gameState.color === "white") {
                                     rookID = 32;
                                 } else {
                                     rookID = 1;
                                 }
                                 const rook = pieces[rookID];
-                                doMove(rook, 7, vars.kingColumn + 1, null, true);
+                                doMove(rook, 7, gameState.kingColumn + 1, null, true);
                                 return true;
                             }
                         }

@@ -1,6 +1,6 @@
 import {ownPieces} from "../onClick/ownPieces.js";
 import {nameCells} from "./cells.js";
-import {changeVar, vars} from "../data.js";
+import {changeVar, gameState} from "../data.js";
 import {cellOrOpponent} from "../onClick/cellOrOpponent.js";
 import {Piece} from "./piece.js";
 
@@ -20,7 +20,7 @@ const arrangePieces = (color) => {
     let order;
     let pieceID;
     let changePieceID;
-    if (vars.color === "white") {
+    if (gameState.color === "white") {
         order = ["Rook", "Knight", "Bishop", "Queen", "King", "Bishop", "Knight", "Rook",];
         changeVar("oppositeColor", "black");
         changeVar("movePossibility", true);
@@ -51,10 +51,10 @@ const arrangePieces = (color) => {
         const pieceImage = document.createElement("img");
         pieceImage.classList.add("piece");
         pieceImage.style.position = "absolute";
-        pieceImage.style.top = `${vars.cellSize * row}em`;
-        pieceImage.style.left = `${vars.cellSize * column}em`;
-        pieceImage.style.width = `${vars.cellSize}em`;
-        pieceImage.style.heigh = `${vars.cellSize}em`;
+        pieceImage.style.top = `${gameState.cellSize * row}em`;
+        pieceImage.style.left = `${gameState.cellSize * column}em`;
+        pieceImage.style.width = `${gameState.cellSize}em`;
+        pieceImage.style.heigh = `${gameState.cellSize}em`;
         board.appendChild(pieceImage);
         pieceImage.src = `pictures/${color}${type}.png`;
         const piece = new Piece(pieceImage, pieceID, color, type, row, column);
@@ -69,16 +69,16 @@ const arrangePieces = (color) => {
     };
 
     for (let column = 0; column < 8; column++) {
-        createElement(vars.oppositeColor, order[column], 0, column, true);
+        createElement(gameState.oppositeColor, order[column], 0, column, true);
     }
     for (let column = 0; column < 8; column++) {
-        createElement(vars.oppositeColor, "Pawn", 1, column, true);
+        createElement(gameState.oppositeColor, "Pawn", 1, column, true);
     }
     for (let column = 0; column < 8; column++) {
-        createElement(vars.color, "Pawn", 6, column, false);
+        createElement(gameState.color, "Pawn", 6, column, false);
     }
     for (let column = 0; column < 8; column++) {
-        createElement(vars.color, order[column], 7, column, false);
+        createElement(gameState.color, order[column], 7, column, false);
     }
     const images = document.getElementsByClassName("chooseColorImages");
     for (const image of images) {

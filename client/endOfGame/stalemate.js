@@ -1,4 +1,4 @@
-import {changeVar, passant, vars} from "../data.js";
+import {changeVar, passant, gameState} from "../data.js";
 import {cells, pieces} from "../arrangePieces/arrangePieces.js";
 import {checkAfterMove} from "../moves/check.js";
 
@@ -9,7 +9,7 @@ const canMoveTo = (Piece, rowMoveTo, columnMoveTo) => {
         }
     } else {
         let enemyPiece = pieces[cells[rowMoveTo][columnMoveTo]];
-        if (enemyPiece.color === vars.oppositeColor) {
+        if (enemyPiece.color === gameState.oppositeColor) {
             if (!checkAfterMove(Piece, rowMoveTo, columnMoveTo, enemyPiece)) return true;
         }
     }
@@ -66,7 +66,7 @@ const moveExist = {
             const CellsMinus1Element = cells[row - 1][column - 1];
             if (CellsMinus1Element) {
                 enemyPiece = pieces[CellsMinus1Element];
-                if (enemyPiece.color === vars.oppositeColor && !checkAfterMove(piece, row - 1, column - 1, enemyPiece)) return true;
+                if (enemyPiece.color === gameState.oppositeColor && !checkAfterMove(piece, row - 1, column - 1, enemyPiece)) return true;
             }
         }
 
@@ -74,7 +74,7 @@ const moveExist = {
             const CellsPlus1Element = cells[row - 1][column + 1];
             if (CellsPlus1Element) {
                 enemyPiece = pieces[CellsPlus1Element];
-                if (enemyPiece.color === vars.oppositeColor && !checkAfterMove(piece, row - 1, column + 1, enemyPiece)) return true;
+                if (enemyPiece.color === gameState.oppositeColor && !checkAfterMove(piece, row - 1, column + 1, enemyPiece)) return true;
             }
         }
         if (passant.id) {
@@ -117,7 +117,7 @@ const moveExist = {
 
 const stalemate = () => {
     for (const Piece of pieces) {
-        if (Piece && Piece.color === vars.color && moveExist[Piece.type](Piece, Piece.column, Piece.row)) return;
+        if (Piece && Piece.color === gameState.color && moveExist[Piece.type](Piece, Piece.column, Piece.row)) return;
     }
     return "stalemate";
 };

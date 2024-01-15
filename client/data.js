@@ -1,30 +1,30 @@
 const socket = new WebSocket("ws://127.0.0.2:7992/play");
 
-const vars = {
+const gameState = {
     inGame: false,
     movePossibility: false,
-    kingRow: null,
-    kingColumn: null,
-    kingID: null,
-    color: null,
-    oppositeColor: null,
-    chosenPiece: null,
-    userId: null,
-    connectedToID: null,
-    cellSize: null,
+    kingRow: undefined,
+    kingColumn: undefined,
+    kingID: undefined,
+    color: undefined,
+    oppositeColor: undefined,
+    chosenPiece: undefined,
+    userId: undefined,
+    connectedToID: undefined,
+    cellSize: undefined,
     moveOnPassantExist: false,
-    finishImageColumn: null,
-    finishImageRow: null,
+    finishImageColumn: undefined,
+    finishImageRow: undefined,
 };
 
 const getID = () => {
-    const userId = Math.random().toString().slice(2);
-    vars.userId = userId;
+    const userId = Math.random().toString().slice(2); // use another method
+    gameState.userId = userId;
     return userId;
 };
 
 const changeVar = (variable, value) => {
-    vars[variable] = value;
+    gameState[variable] = value;
 };
 
 const piecesForCastlingNeverMoved = {
@@ -48,5 +48,5 @@ const setPassant = (objectWithData) => {
 };
 
 export {
-    socket, vars, passant, piecesForCastlingNeverMoved, setPassant, pieceForCastlingMoved, changeVar, getID,
+    socket, gameState, passant, piecesForCastlingNeverMoved, setPassant, pieceForCastlingMoved, changeVar, getID,
 };

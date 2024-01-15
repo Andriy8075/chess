@@ -1,5 +1,5 @@
 import {changeCell, pieces} from "../arrangePieces/arrangePieces.js";
-import {changeVar, vars} from "../data.js";
+import {changeVar, gameState} from "../data.js";
 
 const attack = (color, attackForRow, attackForColumn, ignorePieces, moveType, i = 1,) => {
     if (!moveType) moveType = "makeCheck";
@@ -45,11 +45,11 @@ const checkAfterMove = (Piece, toRow, toColumn, killingPiece) => {
 
     let result;
     if (killingPiece) {
-        if (attack(vars.color, vars.kingRow, vars.kingColumn, [killingPiece])) {
+        if (attack(gameState.color, gameState.kingRow, gameState.kingColumn, [killingPiece])) {
             result = true;
         }
     } else {
-        if (attack(vars.color, vars.kingRow, vars.kingColumn)) {
+        if (attack(gameState.color, gameState.kingRow, gameState.kingColumn)) {
             result = true;
         }
     }

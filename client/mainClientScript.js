@@ -1,5 +1,5 @@
 import {arrangePieces, changeCell, pieces,} from "./arrangePieces/arrangePieces.js";
-import {changeVar, getID, setPassant, socket, vars} from "./data.js";
+import {changeVar, getID, setPassant, socket, gameState} from "./data.js";
 import {checkmateOrStalemate} from "./endOfGame/checkmateOrStalemate.js";
 import {notEnoughPieces} from "./endOfGame/notEnoughPieces.js";
 import {images} from "./onClick/images.js";
@@ -12,8 +12,8 @@ let connectedToID;
 
 const board = document.getElementById("boardImage");
 changeVar("cellSize", 6);
-board.style.width = `${8 * vars.cellSize}em`;
-board.style.height = `${8 * vars.cellSize}em`;
+board.style.width = `${8 * gameState.cellSize}em`;
+board.style.height = `${8 * gameState.cellSize}em`;
 const writeGameResultText = (text) => {
     const textField = document.getElementById("gameResult");
     textField.innerHTML = text;
@@ -23,7 +23,7 @@ const writeGameResultText = (text) => {
 const endTheGame = (method, text) => {
     writeGameResultText(text);
     const pocket = {
-        method: method, userId: vars.userId, text: text,
+        method: method, userId: gameState.userId, text: text,
     };
     socket.send(JSON.stringify(pocket));
 };
@@ -35,15 +35,15 @@ socket.addEventListener("open", () => {
     input.style.display = "flex";
     //deleteConnectedToID();
     const pocket = {
-        method: "assignID", userId: vars.userId,
+        method: "assignID", userId: gameState.userId,
     };
     socket.send(JSON.stringify(pocket));
     localStorage.removeItem("userId");
 });
 const move = (parsed) => {
     const piece = pieces[parsed.pieceId];
-    piece.HTMLImage.style.top = `${vars.cellSize * parsed.cellRow}em`;
-    piece.HTMLImage.style.left = `${vars.cellSize * parsed.cellColumn}em`;
+    piece.HTMLImage.style.top = `${gameState.cellSize * parsed.cellRow}em`;
+    piece.HTMLImage.style.left = `${gameState.cellSize * parsed.cellColumn}em`;
     changeCell(parsed.cellRow, parsed.cellColumn, pieces[parsed.pieceId].id);
     changeCell(pieces[parsed.pieceId].row, pieces[parsed.pieceId].column, null);
     piece.row = parsed.cellRow;
@@ -83,7 +83,7 @@ socket.addEventListener("message", ({data}) => {
             const yourIDLabel = document.getElementById(`id`);
             yourIDLabel.innerHTML = `Your ID: ${parsed.userId}`;
         }, connectToID: () => {
-            if (!vars.inGame) {
+            if (!gameState.inGame) {
                 const labelConnectTo = document.getElementById(`connected`);
                 labelConnectTo.innerHTML = `You are connected to player with ID ${parsed.userId}`;
                 connectedToID = parsed.userId;
@@ -103,14 +103,14 @@ socket.addEventListener("message", ({data}) => {
         }, changePawnToPiece: () => {
             const pawn = pieces[parsed.pawn];
             pawn.type = parsed.type;
-            pawn.HTMLImage.src = `pictures/${vars.oppositeColor}${parsed.type}.png`;
+            pawn.HTMLImage.src = `pictures/${gameState.oppositeColor}${parsed.type}.png`;
             if (parsed.opponentId) {
                 pieces[parsed.opponentId].HTMLImage.remove();
                 pieces[parsed.opponentId] = null;
             }
             move({
                 method: "doMove",
-                userId: vars.userId,
+                userId: gameState.userId,
                 pieceId: pawn.id,
                 cellRow: parsed.cellRow,
                 cellColumn: parsed.cellColumn,
@@ -133,9 +133,9 @@ const input = document.getElementById("input");
 input.addEventListener("keydown", (event) => {
     if (event.keyCode === CHAR_RETURN) {
         let value = input.value.trim();
-        if (!vars.inGame) {
+        if (!gameState.inGame) {
             const pocket = {
-                method: "connectToID", from: vars.userId, to: value,
+                method: "connectToID", from: gameState.userId, to: value,
             };
             socket.send(JSON.stringify(pocket));
         }
@@ -144,7 +144,7 @@ input.addEventListener("keydown", (event) => {
 
 const exit = document.getElementById("exit");
 exit.addEventListener("click", () => {
-    localStorage.setItem("userId", vars.userId);
+    localStorage.setItem("userId", gameState.userId);
     location.reload();
 });
 

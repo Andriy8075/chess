@@ -1,5 +1,5 @@
 import {changeCell, changePiecesArray, pieces,} from "../arrangePieces/arrangePieces.js";
-import {changeVar, socket, vars} from "../data.js";
+import {changeVar, socket, gameState} from "../data.js";
 import {clear, writeDownPosition} from "../endOfGame/repeatingMoves.js";
 
 const kill = (id, dontSendPocket) => {
@@ -8,7 +8,7 @@ const kill = (id, dontSendPocket) => {
         changePiecesArray(id, null);
         if (!dontSendPocket) {
             const pocket = {
-                method: "kill", pieceId: id, userId: vars.userId,
+                method: "kill", pieceId: id, userId: gameState.userId,
             };
             socket.send(JSON.stringify(pocket));
         }
@@ -24,8 +24,8 @@ const doMove = (Piece, toRow, toColumn, opponentPiece, clearPosition, passant, d
 
     Piece.row = toRow;
     Piece.column = toColumn;
-    Piece.HTMLImage.style.top = `${vars.cellSize * toRow}em`;
-    Piece.HTMLImage.style.left = `${vars.cellSize * toColumn}em`;
+    Piece.HTMLImage.style.top = `${gameState.cellSize * toRow}em`;
+    Piece.HTMLImage.style.left = `${gameState.cellSize * toColumn}em`;
     Piece.HTMLImage.style.removeProperty("background-color");
 
     changeVar("movePossibility", false);
@@ -40,7 +40,7 @@ const doMove = (Piece, toRow, toColumn, opponentPiece, clearPosition, passant, d
     if (!dontSendPocket) {
         const pocket = {
             method: "doMove",
-            userId: vars.userId,
+            userId: gameState.userId,
             pieceId: Piece.id,
             cellRow: 7 - toRow,
             cellColumn: 7 - toColumn,

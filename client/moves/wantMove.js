@@ -1,5 +1,5 @@
 import {cells, changeCell, pieces} from "../arrangePieces/arrangePieces.js";
-import {changeVar, passant, pieceForCastlingMoved, socket, vars,} from "../data.js";
+import {changeVar, passant, pieceForCastlingMoved, socket, gameState,} from "../data.js";
 import {checkAfterMove} from "./check.js";
 import {doMove, kill} from "./doMoveAndKill.js";
 import {canPieceMove} from "./canPieceMove.js";
@@ -22,14 +22,14 @@ const wantMove = {
                 }
             } else {
                 if (canPieceMove["Pawn"](Piece.row, Piece.column, toRow, toColumn, "killPiece",)) {
-                    if (vars.moveOnPassantExist) {
+                    if (gameState.moveOnPassantExist) {
                         changeVar("moveOnPassantExist", false);
                         const PieceThatKillsOnPassant = pieces[cells[3][passant.column]];
                         kill(PieceThatKillsOnPassant.id);
                         doMove(Piece, 2, toColumn, null, true);
                         changeCell(3, toColumn, null);
                         const pocket = {
-                            method: "clearArrayCellAfterPassant", userId: vars.userId, cellColumn: 7 - toColumn,
+                            method: "clearArrayCellAfterPassant", userId: gameState.userId, cellColumn: 7 - toColumn,
                         };
                         socket.send(JSON.stringify(pocket));
                     } else if (!checkAfterMove(Piece, toRow, toColumn, opponentPiece)) doMove(Piece, toRow, toColumn, opponentPiece, true);
@@ -38,7 +38,7 @@ const wantMove = {
         } else {
             if (toColumn === Piece.column && !opponentPiece) {
                 if (!checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
-                    const backgroundImage = new Image(vars.cellSize, vars.cellSize);
+                    const backgroundImage = new Image(gameState.cellSize, gameState.cellSize);
                     const divBoard = document.getElementById("divBoard");
                     backgroundImage.style.color = "#d5cd7f";
                     backgroundImage.style.zIndex = "5";
@@ -47,12 +47,12 @@ const wantMove = {
                     backgroundImage.setAttribute("id", "backgroundImage");
                     backgroundImage.top = toRow;
                     backgroundImage.left = toColumn;
-                    backgroundImage.style.top = `${vars.cellSize * toRow}em`;
-                    backgroundImage.style.left = `${vars.cellSize * toColumn}em`;
+                    backgroundImage.style.top = `${gameState.cellSize * toRow}em`;
+                    backgroundImage.style.left = `${gameState.cellSize * toColumn}em`;
                     divBoard.appendChild(backgroundImage);
                     changeVar("finishImageColumn", toColumn);
                     changeVar("finishImageRow", toRow);
-                    const finishImages = document.getElementsByClassName(`${vars.color}FinishImages`,);
+                    const finishImages = document.getElementsByClassName(`${gameState.color}FinishImages`,);
                     for (let image of finishImages) {
                         image.style.display = "flex";
                     }
@@ -61,7 +61,7 @@ const wantMove = {
             if ((toColumn - Piece.column === 1 || toColumn - Piece.column === -1) && opponentPiece) {
                 if (!checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
                     pieces[cells[0][toColumn]].HTMLImage.style.backgroundColor = "#d5cd7f";
-                    const finishImages = document.getElementsByClassName(`${vars.color}FinishImages`,);
+                    const finishImages = document.getElementsByClassName(`${gameState.color}FinishImages`,);
                     for (let image of finishImages) {
                         image.style.display = "flex";
                     }
