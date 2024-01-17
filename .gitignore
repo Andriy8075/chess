@@ -2,3 +2,4 @@ node_modules
 toDo
 .vscode
 .idea
+.eslintrc.js
