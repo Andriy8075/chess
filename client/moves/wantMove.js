@@ -40,13 +40,13 @@ const wantMove = {
                 if (!checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
                     const backgroundImage = new Image(gameState.cellSize, gameState.cellSize);
                     const divBoard = document.getElementById("divBoard");
-                    backgroundImage.style.color = "#d5cd7f";
+                    backgroundImage.style.backgroundColor = "#d5cd7f";
                     backgroundImage.style.zIndex = "5";
                     backgroundImage.style.display = "flex";
                     backgroundImage.style.position = "absolute";
                     backgroundImage.setAttribute("id", "backgroundImage");
-                    backgroundImage.top = toRow;
-                    backgroundImage.left = toColumn;
+                    backgroundImage.style.width = `${gameState.cellSize}em`;
+                    backgroundImage.style.height = `${gameState.cellSize}em`;
                     backgroundImage.style.top = `${gameState.cellSize * toRow}em`;
                     backgroundImage.style.left = `${gameState.cellSize * toColumn}em`;
                     divBoard.appendChild(backgroundImage);
