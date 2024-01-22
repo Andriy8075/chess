@@ -16,7 +16,7 @@ const canMoveTo = (Piece, rowMoveTo, columnMoveTo) => {
 };
 
 const moveExist = {
-    Rook: (piece, column, row) => {
+    rook: (piece, column, row) => {
         if (column > 0) {
             if (canMoveTo(piece, row, column - 1)) {
                 return true;
@@ -37,7 +37,8 @@ const moveExist = {
                 return true;
             }
         }
-    }, Bishop: (piece, column, row) => {
+    },
+    bishop: (piece, column, row) => {
         if (column > 0 && row > 0) {
             if (canMoveTo(piece, row - 1, column - 1)) {
                 return true;
@@ -59,7 +60,8 @@ const moveExist = {
                 return true;
             }
         }
-    }, Pawn: (piece, column, row) => {
+    },
+    pawn: (piece, column, row) => {
         if (!cells[row - 1][column] && !checkAfterMove(piece, row - 1, column, null)) return true;
         let enemyPiece;
         if (column > 0) {
@@ -84,8 +86,7 @@ const moveExist = {
             }
         }
     },
-
-    Knight: (piece, column, row) => {
+    knight: (piece, column, row) => {
         if (column > 0) {
             if (row > 1) if (canMoveTo(piece, row - 2, column - 1)) return true;
             if (row < 6) if (canMoveTo(piece, row + 2, column - 1)) return true;
@@ -103,15 +104,14 @@ const moveExist = {
             }
         }
     },
-
-    Queen: (piece, column, row) => {
-        if (moveExist.Rook(piece, column, row)) return true;
-        if (moveExist.Bishop(piece, column, row)) return true;
+    queen: (piece, column, row) => {
+        if (moveExist.rook(piece, column, row)) return true;
+        if (moveExist.bishop(piece, column, row)) return true;
     },
 
-    King: (piece, column, row) => {
-        if (moveExist.Rook(piece, column, row)) return true;
-        if (moveExist.Bishop(piece, column, row)) return true;
+    king: (piece, column, row) => {
+        if (moveExist.rook(piece, column, row)) return true;
+        if (moveExist.bishop(piece, column, row)) return true;
     },
 };
 

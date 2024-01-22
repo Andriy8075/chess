@@ -29,10 +29,10 @@ const methods = {
   assignID: (connection, data) => {
     connection.id = data.userId;
     sockets[data.userId] = connection;
-    const pocket = {
-      method: 'assignID', userId: data.userId,
-    };
-    sendPacket(data.userId, pocket);
+    // const pocket = {
+    //   method: 'assignID', userId: data.userId,
+    // };
+    // sendPacket(data.userId, pocket);
   },
   chooseColor: (connection, data) => {
     const oppositeColor = data.color === 'white' ? 'black' : 'white';

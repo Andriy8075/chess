@@ -34,7 +34,7 @@ const images = () => {
             }
             const changePawnToAnotherPiece = (row, column, pieceToKill) => {
                 pawn.HTMLImage.src = finishImage.src;
-                const type = finishImage.id.slice(5);
+                const type = finishImage.id.slice(5).toLowerCase();
                 pawn.type = type;
                 for (let image of finishImages) {
                     image.style.display = "none";

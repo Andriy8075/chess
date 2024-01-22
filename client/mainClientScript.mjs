@@ -1,12 +1,14 @@
-import {arrangePieces, changeCell, pieces,} from "./arrangePieces/arrangePieces.mjs";
+import {arrangePieces, changeCell, changePiecesArray, pieces,} from "./arrangePieces/arrangePieces.mjs";
 import {changeVar, getID, setPassant, socket, gameState} from "./data.mjs";
-import {checkmateOrStalemate} from "./endOfGame/checkmateOrStalemate.mjs";
+import {checkmate} from "./endOfGame/checkmate.mjs";
 import {notEnoughPieces} from "./endOfGame/notEnoughPieces.mjs";
 import {images} from "./onClick/images.mjs";
 import {clear, repeatingTheSameMoves, writeDownPosition} from "./endOfGame/repeatingMoves.mjs";
 import {doMove} from "./moves/doMoveAndKill.mjs";
+import {attack} from "./moves/check.mjs";
+import {stalemate} from "./endOfGame/stalemate.mjs";
 
-const CHAR_RETURN = 13;
+//const CHAR_RETURN = 13;
 const inputAnotherPlayersIDHere = document.getElementById("inputAnotherPlayersIDHere",);
 let connectedToID;
 
@@ -20,7 +22,7 @@ const writeGameResultText = (text) => {
     changeVar("movePossibility", false);
 };
 
-const endTheGame = (method, text) => {
+const endGame = (method, text) => {
     writeGameResultText(text);
     const pocket = {
         method: method, userId: gameState.userId, text: text,
@@ -34,6 +36,8 @@ socket.addEventListener("open", () => {
     inputAnotherPlayersIDHere.style.display = "flex";
     input.style.display = "flex";
     //deleteConnectedToID();
+    const yourIDLabel = document.getElementById(`id`);
+    yourIDLabel.innerHTML = `Your ID: ${gameState.userId}`;
     const pocket = {
         method: "assignID", userId: gameState.userId,
     };
@@ -48,27 +52,48 @@ const move = (parsed) => {
     changeCell(pieces[parsed.pieceId].row, pieces[parsed.pieceId].column, null);
     piece.row = parsed.cellRow;
     piece.column = parsed.cellColumn;
+    if(parsed.kill) {
+        pieces[parsed.kill].HTMLImage.remove();
+        pieces[parsed.kill] = null;
+    }
+
     setPassant(parsed.passant);
     changeVar("movePossibility", true);
-    if (parsed.clear) clear(); else {
+    if (notEnoughPieces()) {
+        endGame("notEnoughPieces", "You have a draw. Reason: not enough pieces to continue game",);
+        return;
+    }
+    const attackingPiece = attack(gameState.color, gameState.kingRow, gameState.kingColumn, null);
+    if(attackingPiece) {
+        if (checkmate(attackingPiece)) {
+            endGame("win", "You have checkmate and lost");
+            return;
+        }
+    }
+    else {
+        if (stalemate()) {
+            endGame("stalemate", "You have a draw. Reason: stalemate");
+            return;
+        }
+    }
+    if (parsed.clear) {
+        clear();
+    }
+    else {
         writeDownPosition();
         const end = repeatingTheSameMoves();
         if (end) {
-            endTheGame("repeatingTheSameMoves", "You have a draw. Reason: repeating the same moves",);
+            endGame("repeatingTheSameMoves", "You have a draw. Reason: repeating the same moves",);
         }
     }
-    const end = checkmateOrStalemate();
-    if (end) {
-        if (end === "checkmate") {
-            endTheGame("win", "You have checkmate and lost");
-        }
-        if (end === "stalemate") {
-            endTheGame("stalemate", "You have a draw. Reason: stalemate");
-        }
-    }
-    if (notEnoughPieces()) {
-        endTheGame("notEnoughPieces", "You have a draw. Reason: not enough pieces to continue game",);
-    }
+    // if (end) {
+    //     if (end === "checkmate") {
+    //         endGame("win", "You have checkmate and lost");
+    //     }
+    //     if (end === "stalemate") {
+    //         endGame("stalemate", "You have a draw. Reason: stalemate");
+    //     }
+    // }
 };
 
 socket.addEventListener("message", ({data}) => {
@@ -76,13 +101,16 @@ socket.addEventListener("message", ({data}) => {
     const methods = {
         doMove: () => {
             move(parsed);
-        }, kill: () => {
-            pieces[parsed.pieceId].HTMLImage.remove();
-            pieces[parsed.pieceId] = null;
-        }, assignID: () => {
-            const yourIDLabel = document.getElementById(`id`);
-            yourIDLabel.innerHTML = `Your ID: ${parsed.userId}`;
-        }, connectToID: () => {
+        },
+        // kill: () => {
+        //     pieces[parsed.pieceId].HTMLImage.remove();
+        //     pieces[parsed.pieceId] = null;
+        // },
+        // assignID: () => {
+        //     const yourIDLabel = document.getElementById(`id`);
+        //     yourIDLabel.innerHTML = `Your ID: ${parsed.userId}`;
+        // },
+        connectToID: () => {
             if (!gameState.inGame) {
                 const labelConnectTo = document.getElementById(`connected`);
                 labelConnectTo.innerHTML = `You are connected to player with ID ${parsed.userId}`;
@@ -93,14 +121,20 @@ socket.addEventListener("message", ({data}) => {
                 }
                 changeVar("inGame", true);
             }
-        }, receiveColor: () => {
+        },
+        receiveColor: () => {
             arrangePieces(parsed.color);
-        }, disconnect: () => {
+        },
+        disconnect: () => {
             writeGameResultText("Your opponent disconnected, so you win");
-        }, clearArrayCellAfterPassant: () => {
+        },
+        killOnPassant: () => {
             const passantRow = 4;
             changeCell(passantRow, parsed.cellColumn, null);
-        }, changePawnToPiece: () => {
+            pieces[parsed.pieceId].HTMLImage.remove();
+            changePiecesArray(parsed.pieceId, null);
+        },
+        changePawnToPiece: () => {
             const pawn = pieces[parsed.pawn];
             pawn.type = parsed.type;
             pawn.HTMLImage.src = `pictures/${gameState.oppositeColor}${parsed.type}.png`;
@@ -117,7 +151,8 @@ socket.addEventListener("message", ({data}) => {
                 clear: true,
                 passant: null,
             });
-        }, win: () => {
+        },
+        win: () => {
             writeGameResultText("You win by making checkmate");
         },
     };
@@ -131,7 +166,7 @@ socket.addEventListener("message", ({data}) => {
 
 const input = document.getElementById("input");
 input.addEventListener("keydown", (event) => {
-    if (event.keyCode === CHAR_RETURN) {
+    if (event.key === 'Enter') {
         let value = input.value.trim();
         if (!gameState.inGame) {
             const pocket = {

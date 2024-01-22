@@ -21,7 +21,7 @@ const arrangePieces = (color) => {
     let pieceID;
     let changePieceID;
     if (gameState.color === "white") {
-        order = ["Rook", "Knight", "Bishop", "Queen", "King", "Bishop", "Knight", "Rook",];
+        order = ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook",];
         changeVar("oppositeColor", "black");
         changeVar("movePossibility", true);
         pieceID = 1;
@@ -30,7 +30,7 @@ const arrangePieces = (color) => {
         changeVar("kingColumn", 4);
         changeVar("kingID", 29);
     } else {
-        order = ["Rook", "Knight", "Bishop", "King", "Queen", "Bishop", "Knight", "Rook",];
+        order = ["rook", "knight", "bishop", "king", "queen", "bishop", "knight", "rook",];
         changeVar("oppositeColor", "white");
         const countOfPieces = 32;
         pieceID = countOfPieces;
@@ -56,7 +56,7 @@ const arrangePieces = (color) => {
         pieceImage.style.width = `${gameState.cellSize}em`;
         pieceImage.style.heigh = `${gameState.cellSize}em`;
         board.appendChild(pieceImage);
-        pieceImage.src = `pictures/${color}${type}.png`;
+        pieceImage.src = `pictures/${color}${type.charAt(0).toUpperCase() + type.slice(1)}.png`;
         const piece = new Piece(pieceImage, pieceID, color, type, row, column);
         cells[row][column] = pieceID;
         changePiecesArray(pieceID, piece);
@@ -72,10 +72,10 @@ const arrangePieces = (color) => {
         createElement(gameState.oppositeColor, order[column], 0, column, true);
     }
     for (let column = 0; column < 8; column++) {
-        createElement(gameState.oppositeColor, "Pawn", 1, column, true);
+        createElement(gameState.oppositeColor, "pawn", 1, column, true);
     }
     for (let column = 0; column < 8; column++) {
-        createElement(gameState.color, "Pawn", 6, column, false);
+        createElement(gameState.color, "pawn", 6, column, false);
     }
     for (let column = 0; column < 8; column++) {
         createElement(gameState.color, order[column], 7, column, false);

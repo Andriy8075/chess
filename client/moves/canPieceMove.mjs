@@ -4,7 +4,7 @@ import {attack, checkAfterMove} from "./check.mjs";
 import {doMove} from "./doMoveAndKill.mjs";
 
 const canPieceMove = {
-    Pawn: (fromRow, fromColumn, toRow, toColumn, moveType) => {
+    pawn: (fromRow, fromColumn, toRow, toColumn, moveType) => {
         const columnDifference = toColumn - fromColumn;
         const moveTypes = {
             makeCheck: () => {
@@ -15,7 +15,7 @@ const canPieceMove = {
                     const killingPiece = pieces[cells[toRow][toColumn]];
                     if (!checkAfterMove(killingPiece, toRow, toColumn, killingPiece, "makeCheck",)) return true;
                 } else {
-                    return canPieceMove["Pawn"](fromRow, fromColumn, toRow, toColumn, "passant",);
+                    return canPieceMove.pawn(fromRow, fromColumn, toRow, toColumn, "passant",);
                 }
             }, passant: () => {
                 if (toRow === 3) toRow = 2;
@@ -39,14 +39,14 @@ const canPieceMove = {
                     if (rowDifference === 1) return true;
                     if (toRow === 4 && fromRow === 6 && !cells[5][fromColumn]) return true;
                 } else {
-                    return canPieceMove["Pawn"](fromRow, fromColumn, toRow, toColumn, "passant",);
+                    return canPieceMove.pawn(fromRow, fromColumn, toRow, toColumn, "passant",);
                 }
             },
         };
         return moveTypes[moveType]();
     },
 
-    Knight: (fromRow, fromColumn, toRow, toColumn) => {
+    knight: (fromRow, fromColumn, toRow, toColumn) => {
         const rowDifference = toRow - fromRow;
         const columnDifference = toColumn - fromColumn;
         if (rowDifference === 1 || rowDifference === -1) {
@@ -61,7 +61,7 @@ const canPieceMove = {
         }
     },
 
-    Bishop: (fromRow, fromColumn, toRow, toColumn) => {
+    bishop: (fromRow, fromColumn, toRow, toColumn) => {
         const rowDifference = toRow - fromRow;
         const columnDifference = toColumn - fromColumn;
         if (rowDifference === columnDifference) {
@@ -96,7 +96,7 @@ const canPieceMove = {
         }
     },
 
-    Rook: (fromRow, fromColumn, toRow, toColumn) => {
+    rook: (fromRow, fromColumn, toRow, toColumn) => {
         if (fromColumn === toColumn) {
             if (toRow > fromRow) {
                 for (let row = fromRow + 1; row < toRow; row++) {
@@ -125,14 +125,14 @@ const canPieceMove = {
         }
     },
 
-    Queen: function (fromRow, fromColumn, toRow, toColumn) {
-        const rook = this.Rook(toRow, toColumn, fromRow, fromColumn);
+    queen: function (fromRow, fromColumn, toRow, toColumn) {
+        const rook = this.rook(toRow, toColumn, fromRow, fromColumn);
         if (rook) return true;
-        const bishop = this.Bishop(toRow, toColumn, fromRow, fromColumn);
+        const bishop = this.bishop(toRow, toColumn, fromRow, fromColumn);
         if (bishop) return true;
     },
 
-    King: (fromRow, fromColumn, toRow, toColumn, moveType) => {
+    king: (fromRow, fromColumn, toRow, toColumn, moveType) => {
         const rowDifference = toRow - fromRow;
         const columnDifference = toColumn - fromColumn;
         if (moveType === "killPiece" || moveType === "hideKing") moveType = "makeCheck";

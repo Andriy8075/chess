@@ -1,11 +1,11 @@
-import {cells, changeCell, pieces} from "../arrangePieces/arrangePieces.mjs";
+import {cells, changeCell, pieces, changePiecesArray} from "../arrangePieces/arrangePieces.mjs";
 import {changeVar, passant, pieceForCastlingMoved, socket, gameState,} from "../data.mjs";
 import {checkAfterMove} from "./check.mjs";
-import {doMove, kill} from "./doMoveAndKill.mjs";
+import {doMove} from "./doMoveAndKill.mjs";
 import {canPieceMove} from "./canPieceMove.mjs";
 
 const wantMove = {
-    Pawn: (Piece, toRow, toColumn, opponentPiece) => {
+    pawn: (Piece, toRow, toColumn, opponentPiece) => {
         if (Piece.row !== 1) {
             const rowDifference = Piece.row - toRow;
             if (toColumn === Piece.column && !opponentPiece) {
@@ -21,15 +21,21 @@ const wantMove = {
                     });
                 }
             } else {
-                if (canPieceMove["Pawn"](Piece.row, Piece.column, toRow, toColumn, "killPiece",)) {
+                if (canPieceMove.pawn(Piece.row, Piece.column, toRow, toColumn, "killPiece",)) {
                     if (gameState.moveOnPassantExist) {
                         changeVar("moveOnPassantExist", false);
                         const PieceThatKillsOnPassant = pieces[cells[3][passant.column]];
-                        kill(PieceThatKillsOnPassant.id);
+                        const killId = PieceThatKillsOnPassant.id
+                        pieces[killId].HTMLImage.remove();
+                        changePiecesArray(killId, null);
+                        //kill(PieceThatKillsOnPassant.id);
                         doMove(Piece, 2, toColumn, null, true);
                         changeCell(3, toColumn, null);
                         const pocket = {
-                            method: "clearArrayCellAfterPassant", userId: gameState.userId, cellColumn: 7 - toColumn,
+                            method: "killOnPassant",
+                            userId: gameState.userId,
+                            cellColumn: 7 - toColumn,
+                            pieceId: killId,
                         };
                         socket.send(JSON.stringify(pocket));
                     } else if (!checkAfterMove(Piece, toRow, toColumn, opponentPiece)) doMove(Piece, toRow, toColumn, opponentPiece, true);
@@ -52,7 +58,8 @@ const wantMove = {
                     divBoard.appendChild(backgroundImage);
                     changeVar("finishImageColumn", toColumn);
                     changeVar("finishImageRow", toRow);
-                    const finishImages = document.getElementsByClassName(`${gameState.color}FinishImages`,);
+                    const finishImages =
+                        document.getElementsByClassName(`${gameState.color}FinishImages`,);
                     for (let image of finishImages) {
                         image.style.display = "flex";
                     }
@@ -71,22 +78,22 @@ const wantMove = {
         }
     },
 
-    Knight: (Piece, toRow, toColumn, opponentPiece) => {
-        if (canPieceMove["Knight"](Piece.row, Piece.column, toRow, toColumn) && !checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
+    knight: (Piece, toRow, toColumn, opponentPiece) => {
+        if (canPieceMove.knight(Piece.row, Piece.column, toRow, toColumn) && !checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
             doMove(Piece, toRow, toColumn, opponentPiece);
             return true;
         }
     },
 
-    Bishop: (Piece, toRow, toColumn, opponentPiece) => {
-        if (canPieceMove["Bishop"](Piece.row, Piece.column, toRow, toColumn) && !checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
+    bishop: (Piece, toRow, toColumn, opponentPiece) => {
+        if (canPieceMove.bishop(Piece.row, Piece.column, toRow, toColumn) && !checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
             doMove(Piece, toRow, toColumn, opponentPiece);
             return true;
         }
     },
 
-    Rook: (Piece, toRow, toColumn, opponentPiece) => {
-        if (canPieceMove.Rook(Piece.row, Piece.column, toRow, toColumn) && !checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
+    rook: (Piece, toRow, toColumn, opponentPiece) => {
+        if (canPieceMove.rook(Piece.row, Piece.column, toRow, toColumn) && !checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
             if (Piece.column === 0) pieceForCastlingMoved("leftRook");
             if (Piece.column === 7) pieceForCastlingMoved("rightRook");
             doMove(Piece, toRow, toColumn, opponentPiece);
@@ -94,18 +101,18 @@ const wantMove = {
         }
     },
 
-    Queen: (Piece, toRow, toColumn, opponentPiece) => {
-        if (canPieceMove.Rook(Piece.row, Piece.column, toRow, toColumn)) {
+    queen: (Piece, toRow, toColumn, opponentPiece) => {
+        if (canPieceMove.rook(Piece.row, Piece.column, toRow, toColumn)) {
             if (!checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
                 doMove(Piece, toRow, toColumn, opponentPiece);
             }
-        } else if (canPieceMove.Bishop(Piece.row, Piece.column, toRow, toColumn) && !checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
+        } else if (canPieceMove.bishop(Piece.row, Piece.column, toRow, toColumn) && !checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
             doMove(Piece, toRow, toColumn, opponentPiece);
         }
     },
 
-    King: (Piece, toRow, toColumn, opponentPiece) => {
-        if (canPieceMove.King(Piece.row, Piece.column, toRow, toColumn, "withCastling",) && !checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
+    king: (Piece, toRow, toColumn, opponentPiece) => {
+        if (canPieceMove.king(Piece.row, Piece.column, toRow, toColumn, "withCastling",) && !checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
             changeVar("kingRow", toRow);
             changeVar("kingColumn", toColumn);
             doMove(Piece, toRow, toColumn, opponentPiece);

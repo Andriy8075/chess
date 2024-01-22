@@ -2,24 +2,29 @@ import {changeCell, changePiecesArray, pieces,} from "../arrangePieces/arrangePi
 import {changeVar, socket, gameState} from "../data.mjs";
 import {clear, writeDownPosition} from "../endOfGame/repeatingMoves.mjs";
 
-const kill = (id, dontSendPocket) => {
-    if (pieces[id]) {
-        pieces[id].HTMLImage.remove();
-        changePiecesArray(id, null);
-        if (!dontSendPocket) {
-            const pocket = {
-                method: "kill", pieceId: id, userId: gameState.userId,
-            };
-            socket.send(JSON.stringify(pocket));
-        }
-    }
-};
+// const kill = (id, dontSendPocket) => {
+//     if (pieces[id]) {
+//         pieces[id].HTMLImage.remove();
+//         changePiecesArray(id, null);
+//         if (!dontSendPocket) {
+//             const pocket = {
+//                 method: "kill", pieceId: id, userId: gameState.userId,
+//             };
+//             socket.send(JSON.stringify(pocket));
+//         }
+//     }
+// };
 const doMove = (Piece, toRow, toColumn, opponentPiece, clearPosition, passant, dontSendPocket,) => {
     changeCell(toRow, toColumn, Piece.id);
     changeCell(Piece.row, Piece.column, null);
+    let kill;
     if (opponentPiece) {
-        kill(opponentPiece.id, dontSendPocket);
+        const id = opponentPiece.id;
+        pieces[id].HTMLImage.remove();
+        changePiecesArray(id, null);
+        //kill(opponentPiece.id, dontSendPocket);
         clearPosition = true;
+        kill = id;
     }
 
     Piece.row = toRow;
@@ -46,9 +51,10 @@ const doMove = (Piece, toRow, toColumn, opponentPiece, clearPosition, passant, d
             cellColumn: 7 - toColumn,
             clear: clearPosition,
             passant: passant,
+            kill: kill,
         };
         socket.send(JSON.stringify(pocket));
     }
 };
 
-export {doMove, kill};
+export {doMove};

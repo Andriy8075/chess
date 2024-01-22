@@ -1,19 +1,33 @@
 import {changeCell, pieces} from "../arrangePieces/arrangePieces.mjs";
 import {changeVar, gameState} from "../data.mjs";
 
-const attack = (color, attackForRow, attackForColumn, ignorePieces, moveType, i = 1,) => {
-    if (!moveType) moveType = "makeCheck";
-    const countOfPieces = 32;
-    for (i; i <= countOfPieces; i++) {
-        const currentPiece = pieces[i];
-        if (!currentPiece) continue;
-        if (currentPiece.color === color) {
-            const startOfWhitePieces = 17;
-            if (i < startOfWhitePieces) {
-                i = startOfWhitePieces - 1;
-                continue;
-            } else break;
+const attack = (color, attackForRow, attackForColumn, ignorePieces, moveType, firstPieceId) => {
+    let lastPieceId;
+    if(!firstPieceId) {
+        if (color === 'white') {
+            firstPieceId = 1;
+            lastPieceId = 16;
         }
+        else {
+            firstPieceId = 17;
+            lastPieceId = 32;
+        }
+    }
+    else {
+        if (firstPieceId < 17) lastPieceId = 16;
+        else lastPieceId = 32;
+    }
+    if (!moveType) moveType = "makeCheck";
+    for (firstPieceId; firstPieceId <= lastPieceId; firstPieceId++) {
+        const currentPiece = pieces[firstPieceId];
+        if (!currentPiece) continue;
+        // if (currentPiece.color === color) {
+        //     const startOfWhitePieces = 17;
+        //     if (firstPieceId < startOfWhitePieces) {
+        //         firstPieceId = startOfWhitePieces - 1;
+        //         continue;
+        //     } else break;
+        // }
         if (ignorePieces) {
             let isIgnorePiece;
             for (const ignorePiece of ignorePieces) {
@@ -37,7 +51,7 @@ const checkAfterMove = (Piece, toRow, toColumn, killingPiece) => {
     Piece.column = toColumn;
     changeCell(toRow, toColumn, Piece.id);
     changeCell(previousRow, previousColumn, null);
-    const isItKing = Piece.type === "King";
+    const isItKing = Piece.type === "king";
     if (isItKing) {
         changeVar("kingRow", toRow);
         changeVar("kingColumn", toColumn);

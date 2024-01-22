@@ -5,7 +5,7 @@ const notEnoughPieces = () => {
     for (const Piece of pieces) {
         if (Piece) {
             const type = Piece.type;
-            if (type === "Rook" || type === "Queen" || type === "Pawn") return;
+            if (type === "rook" || type === "queen" || type === "pawn") return;
             allPieces++;
         }
     }
