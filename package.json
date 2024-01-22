@@ -1,6 +1,9 @@
 {
   "dependencies": {
-    "ws": "^8.14.2"
+    "-": "^0.0.1",
+    "eslint-config-metarhia": "^8.2.2",
+    "metasync": "^0.3.32",
+    "ws": "^8.16.0"
   },
   "devDependencies": {
     "eslint": "^8.56.0",
@@ -9,5 +12,26 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-n": "^16.6.2",
     "eslint-plugin-promise": "^6.1.1"
-  }
+  },
+  "name": "chess",
+  "description": "1. Launch server.js\r 2. Launch index.htmnl 2 times (for 2 clients (white and black))\r 3. In tab of one client copy its userId and input in another player`s tab\r 4. Choose color in tab of any client\r 5. Play :)\r 6. video with project overview: https://youtu.be/mh2262tCKLA",
+  "version": "1.0.0",
+  "main": "server/server.js",
+  "scripts": {
+    "test": "eslit ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Andriy8075/chess.git"
+  },
+  "keywords": [
+    "chess",
+    "js"
+  ],
+  "author": "Andriy8075",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Andriy8075/chess/issues"
+  },
+  "homepage": "https://github.com/Andriy8075/chess#readme"
 }

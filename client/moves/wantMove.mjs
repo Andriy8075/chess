@@ -1,8 +1,8 @@
-import {cells, changeCell, pieces} from "../arrangePieces/arrangePieces.js";
-import {changeVar, passant, pieceForCastlingMoved, socket, gameState,} from "../data.js";
-import {checkAfterMove} from "./check.js";
-import {doMove, kill} from "./doMoveAndKill.js";
-import {canPieceMove} from "./canPieceMove.js";
+import {cells, changeCell, pieces} from "../arrangePieces/arrangePieces.mjs";
+import {changeVar, passant, pieceForCastlingMoved, socket, gameState,} from "../data.mjs";
+import {checkAfterMove} from "./check.mjs";
+import {doMove, kill} from "./doMoveAndKill.mjs";
+import {canPieceMove} from "./canPieceMove.mjs";
 
 const wantMove = {
     Pawn: (Piece, toRow, toColumn, opponentPiece) => {
@@ -60,7 +60,8 @@ const wantMove = {
             }
             if ((toColumn - Piece.column === 1 || toColumn - Piece.column === -1) && opponentPiece) {
                 if (!checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
-                    pieces[cells[0][toColumn]].HTMLImage.style.backgroundColor = "#d5cd7f";
+                    const pieceThatKills = pieces[cells[0][toColumn]];
+                    pieceThatKills.HTMLImage.style.backgroundColor = "#d5cd7f";
                     const finishImages = document.getElementsByClassName(`${gameState.color}FinishImages`,);
                     for (let image of finishImages) {
                         image.style.display = "flex";

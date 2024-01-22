@@ -1,7 +1,7 @@
-import {changeVar, gameState} from "../data.js";
-import {attack, checkAfterMove} from "../moves/check.js";
-import {cells, pieces} from "../arrangePieces/arrangePieces.js";
-import {stalemate} from "./stalemate.js";
+import {changeVar, gameState} from "../data.mjs";
+import {attack, checkAfterMove} from "../moves/check.mjs";
+import {cells, pieces} from "../arrangePieces/arrangePieces.mjs";
+import {stalemate} from "./stalemate.mjs";
 
 const checkmateOrStalemate = () => {
     const king = pieces[gameState.kingID];

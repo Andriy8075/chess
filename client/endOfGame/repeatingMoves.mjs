@@ -1,4 +1,4 @@
-import {pieces} from "../arrangePieces/arrangePieces.js";
+import {pieces} from "../arrangePieces/arrangePieces.mjs";
 
 let previousMoves = [];
 

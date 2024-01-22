@@ -1,6 +1,6 @@
-import {gameState} from "../data.js";
-import {pieces} from "../arrangePieces/arrangePieces.js";
-import {Piece} from "../arrangePieces/piece.js";
+import {gameState} from "../data.mjs";
+import {pieces} from "../arrangePieces/arrangePieces.mjs";
+import {Piece} from "../arrangePieces/piece.mjs";
 
 const cellOrOpponent = (cellOrOpponent) => {
     if (cellOrOpponent instanceof Piece) {

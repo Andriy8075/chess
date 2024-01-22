@@ -1,5 +1,5 @@
-import {cellOrOpponent} from "../onClick/cellOrOpponent.js";
-import {gameState} from "../data.js";
+import {cellOrOpponent} from "../onClick/cellOrOpponent.mjs";
+import {gameState} from "../data.mjs";
 
 const nameCells = () => {
     for (let row = 0; row < 8; row++) {

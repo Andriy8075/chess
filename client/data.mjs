@@ -17,14 +17,14 @@ const gameState = {
     finishImageRow: undefined,
 };
 
-const getID = () => {
-    const userId = Math.random().toString().slice(2); // use another method
-    gameState.userId = userId;
-    return userId;
-};
-
 const changeVar = (variable, value) => {
     gameState[variable] = value;
+};
+
+const getID = () => {
+    const userId = parseInt(Math.random().toString().slice(2));
+    gameState.userId = userId;
+    return userId;
 };
 
 const piecesForCastlingNeverMoved = {

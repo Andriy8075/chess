@@ -1,5 +1,5 @@
-import {changeVar, gameState} from "../data.js";
-import {pieces} from "../arrangePieces/arrangePieces.js";
+import {changeVar, gameState} from "../data.mjs";
+import {pieces} from "../arrangePieces/arrangePieces.mjs";
 
 const ownPieces = (pieceImage, id) => {
     pieceImage.addEventListener("click", () => {

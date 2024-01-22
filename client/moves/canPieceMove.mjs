@@ -1,18 +1,15 @@
-import {cells, changeCell, changePiecesArray, pieces,} from "../arrangePieces/arrangePieces.js";
-import {changeVar, passant, piecesForCastlingNeverMoved, gameState,} from "../data.js";
-import {attack, checkAfterMove} from "./check.js";
-import {doMove} from "./doMoveAndKill.js";
+import {cells, changeCell, changePiecesArray, pieces,} from "../arrangePieces/arrangePieces.mjs";
+import {changeVar, passant, piecesForCastlingNeverMoved, gameState,} from "../data.mjs";
+import {attack, checkAfterMove} from "./check.mjs";
+import {doMove} from "./doMoveAndKill.mjs";
 
 const canPieceMove = {
     Pawn: (fromRow, fromColumn, toRow, toColumn, moveType) => {
         const columnDifference = toColumn - fromColumn;
         const moveTypes = {
             makeCheck: () => {
-                if (fromRow - toRow === -1) {
-                    if (columnDifference === 1 || columnDifference === -1) {
-                        return true;
-                    }
-                }
+                if (fromRow - toRow === -1 && (columnDifference === 1 || columnDifference === -1))
+                        return true
             }, killPiece: () => {
                 if (fromRow - toRow === 1 && (columnDifference === 1 || columnDifference === -1) && cells[toRow][toColumn]) {
                     const killingPiece = pieces[cells[toRow][toColumn]];
@@ -22,7 +19,8 @@ const canPieceMove = {
                 }
             }, passant: () => {
                 if (toRow === 3) toRow = 2;
-                if (passant.id && passant.column === toColumn && fromRow === 3 && toRow === 2 && (columnDifference === 1 || columnDifference === -1)) {
+                if (passant.id && passant.column === toColumn && fromRow === 3 && toRow === 2 &&
+                    (columnDifference === 1 || columnDifference === -1)) {
                     const ourPiece = pieces[cells[fromRow][fromColumn]];
                     const PieceToKill = pieces[cells[fromRow][passant.column]];
                     changePiecesArray(PieceToKill.id, null);

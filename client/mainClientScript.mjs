@@ -1,10 +1,10 @@
-import {arrangePieces, changeCell, pieces,} from "./arrangePieces/arrangePieces.js";
-import {changeVar, getID, setPassant, socket, gameState} from "./data.js";
-import {checkmateOrStalemate} from "./endOfGame/checkmateOrStalemate.js";
-import {notEnoughPieces} from "./endOfGame/notEnoughPieces.js";
-import {images} from "./onClick/images.js";
-import {clear, repeatingTheSameMoves, writeDownPosition} from "./endOfGame/repeatingMoves.js";
-import {doMove} from "./moves/doMoveAndKill.js";
+import {arrangePieces, changeCell, pieces,} from "./arrangePieces/arrangePieces.mjs";
+import {changeVar, getID, setPassant, socket, gameState} from "./data.mjs";
+import {checkmateOrStalemate} from "./endOfGame/checkmateOrStalemate.mjs";
+import {notEnoughPieces} from "./endOfGame/notEnoughPieces.mjs";
+import {images} from "./onClick/images.mjs";
+import {clear, repeatingTheSameMoves, writeDownPosition} from "./endOfGame/repeatingMoves.mjs";
+import {doMove} from "./moves/doMoveAndKill.mjs";
 
 const CHAR_RETURN = 13;
 const inputAnotherPlayersIDHere = document.getElementById("inputAnotherPlayersIDHere",);

@@ -1,5 +1,5 @@
-import {wantMove} from "../moves/wantMove.js";
-import {canPieceMove} from "../moves/canPieceMove.js";
+import {wantMove} from "../moves/wantMove.mjs";
+import {canPieceMove} from "../moves/canPieceMove.mjs";
 
 class Piece {
     constructor(HTMLImage, id, color, type, row, column) {

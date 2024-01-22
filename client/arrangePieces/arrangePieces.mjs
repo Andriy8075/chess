@@ -1,8 +1,8 @@
-import {ownPieces} from "../onClick/ownPieces.js";
-import {nameCells} from "./cells.js";
-import {changeVar, gameState} from "../data.js";
-import {cellOrOpponent} from "../onClick/cellOrOpponent.js";
-import {Piece} from "./piece.js";
+import {ownPieces} from "../onClick/ownPieces.mjs";
+import {nameCells} from "./cells.mjs";
+import {changeVar, gameState} from "../data.mjs";
+import {cellOrOpponent} from "../onClick/cellOrOpponent.mjs";
+import {Piece} from "./piece.mjs";
 
 let cells;
 

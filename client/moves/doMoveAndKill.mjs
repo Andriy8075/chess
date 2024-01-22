@@ -1,6 +1,6 @@
-import {changeCell, changePiecesArray, pieces,} from "../arrangePieces/arrangePieces.js";
-import {changeVar, socket, gameState} from "../data.js";
-import {clear, writeDownPosition} from "../endOfGame/repeatingMoves.js";
+import {changeCell, changePiecesArray, pieces,} from "../arrangePieces/arrangePieces.mjs";
+import {changeVar, socket, gameState} from "../data.mjs";
+import {clear, writeDownPosition} from "../endOfGame/repeatingMoves.mjs";
 
 const kill = (id, dontSendPocket) => {
     if (pieces[id]) {

@@ -1,6 +1,6 @@
-import {changeVar, passant, gameState} from "../data.js";
-import {cells, pieces} from "../arrangePieces/arrangePieces.js";
-import {checkAfterMove} from "../moves/check.js";
+import {changeVar, passant, gameState} from "../data.mjs";
+import {cells, pieces} from "../arrangePieces/arrangePieces.mjs";
+import {checkAfterMove} from "../moves/check.mjs";
 
 const canMoveTo = (Piece, rowMoveTo, columnMoveTo) => {
     if (!cells[rowMoveTo][columnMoveTo]) {

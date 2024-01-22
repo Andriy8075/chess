@@ -1,8 +1,8 @@
-import {socket, gameState} from "../data.js";
-import {wantMove} from "../moves/wantMove.js";
-import {doMove} from "../moves/doMoveAndKill.js";
-import {canPieceMove} from "../moves/canPieceMove.js";
-import {cells, pieces} from "../arrangePieces/arrangePieces.js";
+import {socket, gameState} from "../data.mjs";
+import {wantMove} from "../moves/wantMove.mjs";
+import {doMove} from "../moves/doMoveAndKill.mjs";
+import {canPieceMove} from "../moves/canPieceMove.mjs";
+import {cells, pieces} from "../arrangePieces/arrangePieces.mjs";
 
 const images = () => {
     const chooseColorImages = document.getElementsByClassName("chooseColorImages");

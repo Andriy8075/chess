@@ -1,5 +1,5 @@
-import {changeCell, pieces} from "../arrangePieces/arrangePieces.js";
-import {changeVar, gameState} from "../data.js";
+import {changeCell, pieces} from "../arrangePieces/arrangePieces.mjs";
+import {changeVar, gameState} from "../data.mjs";
 
 const attack = (color, attackForRow, attackForColumn, ignorePieces, moveType, i = 1,) => {
     if (!moveType) moveType = "makeCheck";
