@@ -31,7 +31,7 @@ const checkmate = (attackingPiece) => {
         const savingPiece = attack(gameState.oppositeColor, attackingPiece.row, attackingPiece.column, ignoringPieces, "killPiece", i,);
         if (savingPiece) {
             if (gameState.moveOnPassantExist) {
-                changeVar("moveOnPassantExist", false);
+                changeVar(false, "moveOnPassantExist");
                 return true;
             }
             if (checkAfterMove(savingPiece, attackingPiece.row, attackingPiece.column, attackingPiece,)) {

@@ -13,40 +13,41 @@ const gameState = {
     connectedToID: undefined,
     cellSize: undefined,
     moveOnPassantExist: false,
-    finishImageColumn: undefined,
-    finishImageRow: undefined,
-};
-
-const changeVar = (variable, value) => {
-    gameState[variable] = value;
-};
-
-const getID = () => {
-    const userId = parseInt(Math.random().toString().slice(2));
-    gameState.userId = userId;
-    return userId;
-};
-
-const piecesForCastlingNeverMoved = {
-    king: true, leftRook: true, rightRook: true,
-};
-
-const pieceForCastlingMoved = (pieceName) => {
-    piecesForCastlingNeverMoved[pieceName] = false;
-};
-
-let passant = {};
-
-const setPassant = (objectWithData) => {
-    if (objectWithData) {
-        passant.column = objectWithData.column;
-        passant.id = objectWithData.id;
-    } else {
-        passant.column = null;
-        passant.id = null;
+    promotionImageColumn: undefined,
+    promotionImageRow: undefined,
+    passant: {},
+    canCastling: {
+        king: true,
+        leftRook: true,
+        rightRook: true,
     }
 };
 
+const changeVar = (value, ...variables) => {
+    if(variables.length === 1) gameState[variables] = value;
+    else gameState[variables[0]][variables[1]] = value;
+};
+
+// const canCastling = {
+//     king: true, leftRook: true, rightRook: true,
+// };
+//
+// const pieceForCastlingMoved = (pieceName) => {
+//     gameState.canCastling[pieceName] = false;
+// };
+//
+// let passant = {};
+//
+// const setPassant = (objectWithData) => {
+//     if (objectWithData) {
+//         gameState.passant.column = objectWithData.column;
+//         gameState.passant.id = objectWithData.id;
+//     } else {
+//         gameState.passant.column = null;
+//         gameState.passant.id = null;
+//     }
+// };
+
 export {
-    socket, gameState, passant, piecesForCastlingNeverMoved, setPassant, pieceForCastlingMoved, changeVar, getID,
+    socket, gameState, changeVar,
 };

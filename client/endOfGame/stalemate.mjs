@@ -1,4 +1,4 @@
-import {changeVar, passant, gameState} from "../data.mjs";
+import {changeVar, gameState} from "../data.mjs";
 import {cells, pieces} from "../arrangePieces/arrangePieces.mjs";
 import {checkAfterMove} from "../moves/check.mjs";
 
@@ -79,9 +79,9 @@ const moveExist = {
                 if (enemyPiece.color === gameState.oppositeColor && !checkAfterMove(piece, row - 1, column + 1, enemyPiece)) return true;
             }
         }
-        if (passant.id) {
-            if (piece.canMove(2, passant.column, "passant")) {
-                changeVar("moveOnPassantExist", false);
+        if (gameState.passant.id) {
+            if (piece.canMove(2, gameState.passant.column, "passant")) {
+                changeVar(false, "moveOnPassantExist");
                 return true;
             }
         }

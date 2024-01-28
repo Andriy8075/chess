@@ -1,5 +1,5 @@
 import {cells, changeCell, changePiecesArray, pieces,} from "../arrangePieces/arrangePieces.mjs";
-import {changeVar, passant, piecesForCastlingNeverMoved, gameState,} from "../data.mjs";
+import {changeVar, gameState,} from "../data.mjs";
 import {attack, checkAfterMove} from "./check.mjs";
 import {doMove} from "./doMoveAndKill.mjs";
 
@@ -19,17 +19,17 @@ const canPieceMove = {
                 }
             }, passant: () => {
                 if (toRow === 3) toRow = 2;
-                if (passant.id && passant.column === toColumn && fromRow === 3 && toRow === 2 &&
+                if (gameState.passant.id && gameState.passant.column === toColumn && fromRow === 3 && toRow === 2 &&
                     (columnDifference === 1 || columnDifference === -1)) {
                     const ourPiece = pieces[cells[fromRow][fromColumn]];
-                    const PieceToKill = pieces[cells[fromRow][passant.column]];
+                    const PieceToKill = pieces[cells[fromRow][gameState.passant.column]];
                     changePiecesArray(PieceToKill.id, null);
                     changeCell(PieceToKill.row, PieceToKill.column, null);
                     const result = checkAfterMove(ourPiece, toRow, toColumn, null);
                     changePiecesArray(PieceToKill.id, PieceToKill);
                     changeCell(PieceToKill.row, PieceToKill.column, PieceToKill.id);
                     if (!result) {
-                        changeVar("moveOnPassantExist", true);
+                        changeVar(true, "moveOnPassantExist");
                         return true;
                     }
                 }
@@ -149,7 +149,7 @@ const canPieceMove = {
                     if (toRow === 7 && piece.row === 7) {
                         let rookID;
                         if (columnDifference === -2) {
-                            if (piecesForCastlingNeverMoved.leftRook && piecesForCastlingNeverMoved.king) {
+                            if (gameState.canCastling.leftRook && gameState.canCastling.king) {
                                 for (let i = 0; i <= gameState.kingColumn; i++) {
                                     if (attack(gameState.color, 7, i)) return;
                                 }
@@ -167,7 +167,7 @@ const canPieceMove = {
                             }
                         }
                         if (columnDifference === 2) {
-                            if (piecesForCastlingNeverMoved.rightRook && piecesForCastlingNeverMoved.king) {
+                            if (gameState.canCastling.rightRook && gameState.canCastling.king) {
                                 for (let i = gameState.kingColumn; i <= 7; i++) {
                                     if (attack(gameState.color, 7, i)) return;
                                 }

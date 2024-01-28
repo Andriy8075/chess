@@ -16,28 +16,28 @@ const changePiecesArray = (id, input) => {
 };
 
 const arrangePieces = (color) => {
-    changeVar("color", color);
+    changeVar(color, "color");
     let order;
     let pieceID;
     let changePieceID;
     if (gameState.color === "white") {
         order = ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook",];
-        changeVar("oppositeColor", "black");
-        changeVar("movePossibility", true);
+        changeVar("black", "oppositeColor");
+        changeVar(true, "movePossibility");
         pieceID = 1;
         changePieceID = () => pieceID++;
-        changeVar("kingRow", 7);
-        changeVar("kingColumn", 4);
-        changeVar("kingID", 29);
+        changeVar(7, "kingRow");
+        changeVar(4, "kingColumn");
+        changeVar(29, "kingID");
     } else {
         order = ["rook", "knight", "bishop", "king", "queen", "bishop", "knight", "rook",];
-        changeVar("oppositeColor", "white");
+        changeVar("white", "oppositeColor");
         const countOfPieces = 32;
         pieceID = countOfPieces;
         changePieceID = () => pieceID--;
-        changeVar("kingRow", 7);
-        changeVar("kingColumn", 3);
-        changeVar("kingID", 5);
+        changeVar(7, "kingRow");
+        changeVar(3, "kingColumn");
+        changeVar(5, "kingID");
     }
 
     cells = [];

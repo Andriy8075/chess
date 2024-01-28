@@ -1,5 +1,5 @@
 import {cells, changeCell, pieces, changePiecesArray} from "../arrangePieces/arrangePieces.mjs";
-import {changeVar, passant, pieceForCastlingMoved, socket, gameState,} from "../data.mjs";
+import {changeVar, socket, gameState,} from "../data.mjs";
 import {checkAfterMove} from "./check.mjs";
 import {doMove} from "./doMoveAndKill.mjs";
 import {canPieceMove} from "./canPieceMove.mjs";
@@ -23,8 +23,8 @@ const wantMove = {
             } else {
                 if (canPieceMove.pawn(Piece.row, Piece.column, toRow, toColumn, "killPiece",)) {
                     if (gameState.moveOnPassantExist) {
-                        changeVar("moveOnPassantExist", false);
-                        const PieceThatKillsOnPassant = pieces[cells[3][passant.column]];
+                        changeVar(false, "moveOnPassantExist");
+                        const PieceThatKillsOnPassant = pieces[cells[3][gameState.passant.column]];
                         const killId = PieceThatKillsOnPassant.id
                         pieces[killId].HTMLImage.remove();
                         changePiecesArray(killId, null);
@@ -56,11 +56,11 @@ const wantMove = {
                     backgroundImage.style.top = `${gameState.cellSize * toRow}em`;
                     backgroundImage.style.left = `${gameState.cellSize * toColumn}em`;
                     divBoard.appendChild(backgroundImage);
-                    changeVar("finishImageColumn", toColumn);
-                    changeVar("finishImageRow", toRow);
-                    const finishImages =
-                        document.getElementsByClassName(`${gameState.color}FinishImages`,);
-                    for (let image of finishImages) {
+                    changeVar(toColumn, "promotionImageColumn");
+                    changeVar(toRow, "promotionImageRow");
+                    const promotionImages =
+                        document.getElementsByClassName(`${gameState.color}PromotionImages`,);
+                    for (let image of promotionImages) {
                         image.style.display = "flex";
                     }
                 }
@@ -69,8 +69,8 @@ const wantMove = {
                 if (!checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
                     const pieceThatKills = pieces[cells[0][toColumn]];
                     pieceThatKills.HTMLImage.style.backgroundColor = "#d5cd7f";
-                    const finishImages = document.getElementsByClassName(`${gameState.color}FinishImages`,);
-                    for (let image of finishImages) {
+                    const promotionImages = document.getElementsByClassName(`${gameState.color}PromotionImages`,);
+                    for (let image of promotionImages) {
                         image.style.display = "flex";
                     }
                 }
@@ -94,8 +94,8 @@ const wantMove = {
 
     rook: (Piece, toRow, toColumn, opponentPiece) => {
         if (canPieceMove.rook(Piece.row, Piece.column, toRow, toColumn) && !checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
-            if (Piece.column === 0) pieceForCastlingMoved("leftRook");
-            if (Piece.column === 7) pieceForCastlingMoved("rightRook");
+            if (Piece.column === 0) changeVar(undefined, 'canCastling', 'leftRook');
+            else if (Piece.column === 7) changeVar(undefined, 'canCastling', 'rightRook');
             doMove(Piece, toRow, toColumn, opponentPiece);
             return true;
         }
@@ -113,10 +113,10 @@ const wantMove = {
 
     king: (Piece, toRow, toColumn, opponentPiece) => {
         if (canPieceMove.king(Piece.row, Piece.column, toRow, toColumn, "withCastling",) && !checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
-            changeVar("kingRow", toRow);
-            changeVar("kingColumn", toColumn);
+            changeVar(toRow, "kingRow");
+            changeVar(toColumn, "kingColumn");
             doMove(Piece, toRow, toColumn, opponentPiece);
-            pieceForCastlingMoved("king");
+            changeVar(undefined, 'canCastling', 'king');
         }
     },
 };

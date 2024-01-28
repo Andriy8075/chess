@@ -6,7 +6,7 @@ import {cells, pieces} from "../arrangePieces/arrangePieces.mjs";
 
 const images = () => {
     const chooseColorImages = document.getElementsByClassName("chooseColorImages");
-    const finishImages = document.getElementsByClassName("finishImage");
+    const promotionImages = document.getElementsByClassName("promotionImage");
 
     function onColorChoose(color) {
         if (color === "random") {
@@ -19,8 +19,8 @@ const images = () => {
         socket.send(JSON.stringify(pocket));
     }
 
-    for (const finishImage of finishImages) {
-        finishImage.addEventListener("click", () => {
+    for (const promotionImage of promotionImages) {
+        promotionImage.addEventListener("click", () => {
             const backgroundImage = document.getElementById("backgroundImage");
             let pawn;
             for (const piece of pieces) {
@@ -33,10 +33,10 @@ const images = () => {
                 }
             }
             const changePawnToAnotherPiece = (row, column, pieceToKill) => {
-                pawn.HTMLImage.src = finishImage.src;
-                const type = finishImage.id.slice(5).toLowerCase();
+                pawn.HTMLImage.src = promotionImage.src;
+                const type = promotionImage.id.slice(5).toLowerCase();
                 pawn.type = type;
-                for (let image of finishImages) {
+                for (let image of promotionImages) {
                     image.style.display = "none";
                 }
                 pawn.wantMove = wantMove[type].bind(null, pawn);
@@ -45,7 +45,7 @@ const images = () => {
                 };
                 doMove(pawn, row, column, pieceToKill, true, null, true);
                 const pocket = {
-                    method: "changePawnToPiece",
+                    method: "promotion",
                     userId: gameState.userId,
                     pawn: pawn.id,
                     type: type,
@@ -56,7 +56,7 @@ const images = () => {
                 socket.send(JSON.stringify(pocket));
             };
             if (backgroundImage) {
-                changePawnToAnotherPiece(gameState.finishImageRow, gameState.finishImageColumn);
+                changePawnToAnotherPiece(gameState.promotionImageRow, gameState.promotionImageColumn);
                 backgroundImage.remove();
             } else {
                 let cellsElement;

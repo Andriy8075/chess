@@ -33,9 +33,9 @@ const doMove = (Piece, toRow, toColumn, opponentPiece, clearPosition, passant, d
     Piece.HTMLImage.style.left = `${gameState.cellSize * toColumn}em`;
     Piece.HTMLImage.style.removeProperty("background-color");
 
-    changeVar("movePossibility", false);
-    changeVar("chosenPiece", null);
-    changeVar("moveOnPassantExist", false);
+    changeVar(false, "movePossibility");
+    changeVar(null, "chosenPiece");
+    changeVar(false, "moveOnPassantExist");
 
     if (clearPosition) {
         clear();

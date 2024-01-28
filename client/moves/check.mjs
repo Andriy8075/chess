@@ -53,8 +53,8 @@ const checkAfterMove = (Piece, toRow, toColumn, killingPiece) => {
     changeCell(previousRow, previousColumn, null);
     const isItKing = Piece.type === "king";
     if (isItKing) {
-        changeVar("kingRow", toRow);
-        changeVar("kingColumn", toColumn);
+        changeVar(toRow, "kingRow");
+        changeVar(toColumn, "kingColumn");
     }
 
     let result;
@@ -68,8 +68,8 @@ const checkAfterMove = (Piece, toRow, toColumn, killingPiece) => {
         }
     }
     if (isItKing) {
-        changeVar("kingRow", previousRow);
-        changeVar("kingColumn", previousColumn);
+        changeVar(previousRow, "kingRow");
+        changeVar(previousColumn, "kingColumn");
     }
     Piece.row = previousRow;
     Piece.column = previousColumn;

@@ -6,12 +6,12 @@ const ownPieces = (pieceImage, id) => {
         if (gameState.movePossibility) {
             if (pieceImage.style.backgroundColor) {
                 pieceImage.style.removeProperty("background-color");
-                changeVar("chosenPiece", null);
+                changeVar(null, "chosenPiece");
             } else {
                 if (gameState.chosenPiece) {
                     pieces[gameState.chosenPiece].HTMLImage.style.removeProperty("background-color",);
                 }
-                changeVar("chosenPiece", id);
+                changeVar(id, "chosenPiece");
                 pieceImage.style.backgroundColor = "#d5cd7f";
             }
         }
