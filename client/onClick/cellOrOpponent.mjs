@@ -3,7 +3,7 @@ import {pieces} from "../arrangePieces/arrangePieces.mjs";
 import {Piece} from "../arrangePieces/piece.mjs";
 
 const event = (cellOrOpponent, opponentPiece) => {
-    if (gameState.movePossibility && gameState.chosenPiece) {
+    if (gameState.moveOrder && gameState.chosenPiece) {
         const pieceThatMoves = pieces[gameState.chosenPiece];
         pieceThatMoves.wantMove(cellOrOpponent.row, cellOrOpponent.column, opponentPiece);
     }

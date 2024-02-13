@@ -5,15 +5,14 @@ import {changeVar, socket, gameState} from "./data.mjs";
 import {images} from "./onClick/images.mjs";
 import {onOpen} from "./socketEvents/open.mjs";
 import {onMessage} from "./socketEvents/message.js";
-import{onInput, onExit} from "./onClick/interface.js";
+import {onInput, onExit, onQuickPlay} from "./onClick/interface.mjs";
 // import {clear, repeatingTheSameMoves, writeDownPosition} from "./endOfGame/repeatingMoves.mjs";
-// import {doMove} from "./moves/doMoveAndKill.mjs";
+// import {move} from "./moves/doMoveAndKill.mjs";
 // import {attack} from "./moves/check.mjs";
 // import {stalemate} from "./endOfGame/stalemate.mjs";
 
 //const CHAR_RETURN = 13;
 //const inputAnotherPlayersIDHere = document.getElementById("inputAnotherPlayersIDHere",);
-
 const board = document.getElementById("boardImage");
 changeVar(6, "cellSize");
 board.style.width = `${8 * gameState.cellSize}em`;
@@ -23,22 +22,25 @@ socket.addEventListener("open", onOpen);
 socket.addEventListener("message", onMessage);
 
 const input = document.getElementById("input");
-const exit = document.getElementById("exit");
 input.addEventListener("keydown", onInput);
+const exit = document.getElementById("exit");
 exit.addEventListener("click", onExit);
+const quickPlay = document.getElementById('quickPlay');
+quickPlay.addEventListener('click', onQuickPlay);
 
+images();
 // const writeGameResultText = (text) => {
 //     const textField = document.getElementById("gameResult");
 //     textField.innerHTML = text;
-//     changeVar(false, "movePossibility");
+//     changeVar(false, "moveOrder");
 // };
 //
 // const endGame = (method, text) => {
 //     writeGameResultText(text);
-//     const pocket = {
+//     const packet = {
 //         method: method, userId: gameState.userId, text: text,
 //     };
-//     socket.send(JSON.stringify(pocket));
+//     socket.send(JSON.stringify(packet));
 // };
 
 //let connectedToID;
@@ -55,10 +57,10 @@ exit.addEventListener("click", onExit);
 //     //deleteConnectedToID();
 //     const yourIDLabel = document.getElementById(`id`);
 //     yourIDLabel.innerHTML = `Your ID: ${gameState.userId}`;
-//     const pocket = {
+//     const packet = {
 //         method: "assignID", userId: gameState.userId,
 //     };
-//     socket.send(JSON.stringify(pocket));
+//     socket.send(JSON.stringify(packet));
 //     localStorage.removeItem("userId");
 // });
 // const move = (parsed) => {
@@ -82,7 +84,7 @@ exit.addEventListener("click", onExit);
 //         changeVar(parsed.passant.column, 'passant', 'column');
 //     }
 //     //setPassant(parsed.passant);
-//     changeVar(true, "movePossibility");
+//     changeVar(true, "moveOrder");
 //     if (notEnoughPieces()) {
 //         endGame("notEnoughPieces", "You have a draw. Reason: not enough pieces to continue game",);
 //         return;
@@ -123,7 +125,7 @@ exit.addEventListener("click", onExit);
 // socket.addEventListener("message", ({data}) => {
 //     const parsed = JSON.parse(data);
 //     const methods = {
-//         doMove: () => {
+//         move: () => {
 //             move(parsed);
 //         },
 //         // kill: () => {
@@ -161,13 +163,13 @@ exit.addEventListener("click", onExit);
 //         changePawnToPiece: () => {
 //             const pawn = pieces[parsed.pawn];
 //             pawn.type = parsed.type;
-//             pawn.HTMLImage.src = `pictures/${gameState.oppositeColor}${parsed.type}.png`;
+//             pawn.HTMLImage.src = `images/${gameState.oppositeColor}${parsed.type}.png`;
 //             if (parsed.opponentId) {
 //                 pieces[parsed.opponentId].HTMLImage.remove();
 //                 pieces[parsed.opponentId] = null;
 //             }
 //             move({
-//                 method: "doMove",
+//                 method: "move",
 //                 userId: gameState.userId,
 //                 pieceId: pawn.id,
 //                 cellRow: parsed.cellRow,
@@ -192,10 +194,10 @@ exit.addEventListener("click", onExit);
 //     if (event.key === 'Enter') {
 //         let value = input.value.trim();
 //         if (!gameState.inGame) {
-//             const pocket = {
+//             const packet = {
 //                 method: "connectToID", from: gameState.userId, to: value,
 //             };
-//             socket.send(JSON.stringify(pocket));
+//             socket.send(JSON.stringify(packet));
 //         }
 //     }
 // });
@@ -205,5 +207,3 @@ exit.addEventListener("click", onExit);
 //     localStorage.setItem("userId", gameState.userId);
 //     location.reload();
 // });
-
-images();

@@ -2,7 +2,7 @@
 
 const fs = require('node:fs');
 const http = require('node:http');
-const WebSocket = require('ws');
+const {OPEN, Server} = require('ws');
 
 const index = fs.readFileSync('../client/index.html', 'utf8');
 
@@ -14,13 +14,15 @@ const server = http.createServer((req, res) => {
 server.listen(7992, () => {
 });
 
-const ws = new WebSocket.Server({ server });
+const ws = new Server({ server });
 
 const sockets = {};
 
+let waitingGame = null;
+
 const sendPacket = (user, data) => {
   const connection = sockets[user];
-  const sent = connection && connection.readyState === WebSocket.OPEN;
+  const sent = connection && connection.readyState === OPEN;
   if (sent) connection.send(JSON.stringify(data));
   return sent;
 };
@@ -29,39 +31,51 @@ const methods = {
   assignID: (connection, data) => {
     connection.id = data.userId;
     sockets[data.userId] = connection;
-    // const pocket = {
+    // const packet = {
     //   method: 'assignID', userId: data.userId,
     // };
-    // sendPacket(data.userId, pocket);
+    // sendPacket(data.userId, packet);
   },
   chooseColor: (connection, data) => {
     const oppositeColor = data.color === 'white' ? 'black' : 'white';
     // if (data.color === "white") oppositeColor = "black";
     // else oppositeColor = "white";
     const method = 'receiveColor';
-    const ourPocket = { method, color: data.color };
-    const opponentPocket = { method, color: oppositeColor };
+    const ourPacket = { method, color: data.color };
+    const opponentPacket = { method, color: oppositeColor };
 
-    sendPacket(data.userId, ourPocket);
     const { connectedTo } = sockets[data.userId];
-    sendPacket(connectedTo, opponentPocket);
+    const sent = sendPacket(connectedTo, opponentPacket);
+    if(sent) sendPacket(data.userId, ourPacket);
   },
   connectToID: (connection, data) => {
     const { from, to } = data;
     if (to === from) return;
-    const pocket = {
+    const packet = {
       method: 'connectToID', userId: data.from,
     };
-    const findRequiredID = sendPacket(data.to, pocket);
-    if (findRequiredID) {
+    const findID = sendPacket(data.to, packet);
+    if (findID) {
       sockets[from].connectedTo = to;
       sockets[to].connectedTo = from;
-      const pocket = {
+      const packet = {
         method: 'connectToID', userId: data.to,
       };
-      sendPacket(data.from, pocket);
+      sendPacket(data.from, packet);
     }
   },
+  quickPlay: (connection, data) => {
+    if(waitingGame) {
+      methods.connectToID(connection, {
+        from: data.userId,
+        to: waitingGame.id,
+      })
+      waitingGame = null;
+    }
+    else {
+      waitingGame = connection;
+    }
+  }
 };
 
 ws.on('connection', (connection) => {
@@ -77,9 +91,9 @@ ws.on('connection', (connection) => {
     const opponent = sockets[opponentId];
     if (opponent) opponent.connectedTo = null;
     delete sockets[connection.id];
-    const pocket = {
+    const packet = {
       method: 'disconnect',
     };
-    sendPacket(opponentId, pocket);
+    sendPacket(opponentId, packet);
   });
 });

@@ -1,7 +1,7 @@
 import {cells, changeCell, pieces, changePiecesArray} from "../arrangePieces/arrangePieces.mjs";
 import {changeVar, socket, gameState,} from "../data.mjs";
 import {checkAfterMove} from "./check.mjs";
-import {doMove} from "./doMoveAndKill.mjs";
+import {move} from "./doMoveAndKill.mjs";
 import {canPieceMove} from "./canPieceMove.mjs";
 
 const wantMove = {
@@ -11,12 +11,12 @@ const wantMove = {
             if (toColumn === Piece.column && !opponentPiece) {
                 if (rowDifference === 1) {
                     if (!checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
-                        doMove(Piece, toRow, toColumn, opponentPiece, true);
+                        move(Piece, toRow, toColumn, opponentPiece, true);
                         return;
                     }
                 }
                 if (Piece.row === 6 && toRow === 4 && !checkAfterMove(Piece, toRow, toColumn, opponentPiece) && !cells[5][toColumn]) {
-                    doMove(Piece, toRow, toColumn, opponentPiece, true, {
+                    move(Piece, toRow, toColumn, opponentPiece, true, {
                         id: Piece.id, column: 7 - toColumn,
                     });
                 }
@@ -29,16 +29,16 @@ const wantMove = {
                         pieces[killId].HTMLImage.remove();
                         changePiecesArray(killId, null);
                         //kill(PieceThatKillsOnPassant.id);
-                        doMove(Piece, 2, toColumn, null, true);
+                        move(Piece, 2, toColumn, null, true);
                         changeCell(3, toColumn, null);
-                        const pocket = {
+                        const packet = {
                             method: "killOnPassant",
                             userId: gameState.userId,
                             cellColumn: 7 - toColumn,
                             pieceId: killId,
                         };
-                        socket.send(JSON.stringify(pocket));
-                    } else if (!checkAfterMove(Piece, toRow, toColumn, opponentPiece)) doMove(Piece, toRow, toColumn, opponentPiece, true);
+                        socket.send(JSON.stringify(packet));
+                    } else if (!checkAfterMove(Piece, toRow, toColumn, opponentPiece)) move(Piece, toRow, toColumn, opponentPiece, true);
                 }
             }
         } else {
@@ -57,7 +57,6 @@ const wantMove = {
                     backgroundImage.style.left = `${gameState.cellSize * toColumn}em`;
                     divBoard.appendChild(backgroundImage);
                     changeVar(toColumn, "promotionImageColumn");
-                    changeVar(toRow, "promotionImageRow");
                     const promotionImages =
                         document.getElementsByClassName(`${gameState.color}PromotionImages`,);
                     for (let image of promotionImages) {
@@ -68,6 +67,7 @@ const wantMove = {
             if ((toColumn - Piece.column === 1 || toColumn - Piece.column === -1) && opponentPiece) {
                 if (!checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
                     const pieceThatKills = pieces[cells[0][toColumn]];
+                    changeVar(pieceThatKills.id, 'promotionKillingPieceId');
                     pieceThatKills.HTMLImage.style.backgroundColor = "#d5cd7f";
                     const promotionImages = document.getElementsByClassName(`${gameState.color}PromotionImages`,);
                     for (let image of promotionImages) {
@@ -80,14 +80,14 @@ const wantMove = {
 
     knight: (Piece, toRow, toColumn, opponentPiece) => {
         if (canPieceMove.knight(Piece.row, Piece.column, toRow, toColumn) && !checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
-            doMove(Piece, toRow, toColumn, opponentPiece);
+            move(Piece, toRow, toColumn, opponentPiece);
             return true;
         }
     },
 
     bishop: (Piece, toRow, toColumn, opponentPiece) => {
         if (canPieceMove.bishop(Piece.row, Piece.column, toRow, toColumn) && !checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
-            doMove(Piece, toRow, toColumn, opponentPiece);
+            move(Piece, toRow, toColumn, opponentPiece);
             return true;
         }
     },
@@ -96,7 +96,7 @@ const wantMove = {
         if (canPieceMove.rook(Piece.row, Piece.column, toRow, toColumn) && !checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
             if (Piece.column === 0) changeVar(undefined, 'canCastling', 'leftRook');
             else if (Piece.column === 7) changeVar(undefined, 'canCastling', 'rightRook');
-            doMove(Piece, toRow, toColumn, opponentPiece);
+            move(Piece, toRow, toColumn, opponentPiece);
             return true;
         }
     },
@@ -104,10 +104,10 @@ const wantMove = {
     queen: (Piece, toRow, toColumn, opponentPiece) => {
         if (canPieceMove.rook(Piece.row, Piece.column, toRow, toColumn)) {
             if (!checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
-                doMove(Piece, toRow, toColumn, opponentPiece);
+                move(Piece, toRow, toColumn, opponentPiece);
             }
         } else if (canPieceMove.bishop(Piece.row, Piece.column, toRow, toColumn) && !checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
-            doMove(Piece, toRow, toColumn, opponentPiece);
+            move(Piece, toRow, toColumn, opponentPiece);
         }
     },
 
@@ -115,7 +115,7 @@ const wantMove = {
         if (canPieceMove.king(Piece.row, Piece.column, toRow, toColumn, "withCastling",) && !checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
             changeVar(toRow, "kingRow");
             changeVar(toColumn, "kingColumn");
-            doMove(Piece, toRow, toColumn, opponentPiece);
+            move(Piece, toRow, toColumn, opponentPiece);
             changeVar(undefined, 'canCastling', 'king');
         }
     },

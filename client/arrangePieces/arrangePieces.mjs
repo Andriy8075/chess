@@ -1,5 +1,5 @@
 import {ownPieces} from "../onClick/ownPieces.mjs";
-import {nameCells} from "./cells.mjs";
+import {clickableCells} from "./cells.mjs";
 import {changeVar, gameState} from "../data.mjs";
 import {cellOrOpponent} from "../onClick/cellOrOpponent.mjs";
 import {Piece} from "./piece.mjs";
@@ -16,6 +16,7 @@ const changePiecesArray = (id, input) => {
 };
 
 const arrangePieces = (color) => {
+
     changeVar(color, "color");
     let order;
     let pieceID;
@@ -23,7 +24,7 @@ const arrangePieces = (color) => {
     if (gameState.color === "white") {
         order = ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook",];
         changeVar("black", "oppositeColor");
-        changeVar(true, "movePossibility");
+        changeVar(true, "moveOrder");
         pieceID = 1;
         changePieceID = () => pieceID++;
         changeVar(7, "kingRow");
@@ -56,7 +57,7 @@ const arrangePieces = (color) => {
         pieceImage.style.width = `${gameState.cellSize}em`;
         pieceImage.style.heigh = `${gameState.cellSize}em`;
         board.appendChild(pieceImage);
-        pieceImage.src = `pictures/${color}${type.charAt(0).toUpperCase() + type.slice(1)}.png`;
+        pieceImage.src = `images/${color}${type.charAt(0).toUpperCase() + type.slice(1)}.png`;
         const piece = new Piece(pieceImage, pieceID, color, type, row, column);
         cells[row][column] = pieceID;
         changePiecesArray(pieceID, piece);
@@ -84,7 +85,7 @@ const arrangePieces = (color) => {
     for (const image of images) {
         image.style.display = "none";
     }
-    nameCells();
+    clickableCells();
 };
 
 export {cells, arrangePieces, pieces, changeCell, changePiecesArray};

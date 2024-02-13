@@ -2,19 +2,19 @@ import {changeCell, changePiecesArray, pieces,} from "../arrangePieces/arrangePi
 import {changeVar, socket, gameState} from "../data.mjs";
 import {clear, writeDownPosition} from "../endOfGame/repeatingMoves.mjs";
 
-// const kill = (id, dontSendPocket) => {
+// const kill = (id, dontSendpacket) => {
 //     if (pieces[id]) {
 //         pieces[id].HTMLImage.remove();
 //         changePiecesArray(id, null);
-//         if (!dontSendPocket) {
-//             const pocket = {
+//         if (!dontSendpacket) {
+//             const packet = {
 //                 method: "kill", pieceId: id, userId: gameState.userId,
 //             };
-//             socket.send(JSON.stringify(pocket));
+//             socket.send(JSON.stringify(packet));
 //         }
 //     }
 // };
-const doMove = (Piece, toRow, toColumn, opponentPiece, clearPosition, passant, dontSendPocket,) => {
+const move = (Piece, toRow, toColumn, opponentPiece, clearPosition, passant, dontSendpacket,) => {
     changeCell(toRow, toColumn, Piece.id);
     changeCell(Piece.row, Piece.column, null);
     let kill;
@@ -22,7 +22,7 @@ const doMove = (Piece, toRow, toColumn, opponentPiece, clearPosition, passant, d
         const id = opponentPiece.id;
         pieces[id].HTMLImage.remove();
         changePiecesArray(id, null);
-        //kill(opponentPiece.id, dontSendPocket);
+        //kill(opponentPiece.id, dontSendpacket);
         clearPosition = true;
         kill = id;
     }
@@ -33,7 +33,7 @@ const doMove = (Piece, toRow, toColumn, opponentPiece, clearPosition, passant, d
     Piece.HTMLImage.style.left = `${gameState.cellSize * toColumn}em`;
     Piece.HTMLImage.style.removeProperty("background-color");
 
-    changeVar(false, "movePossibility");
+    changeVar(false, "moveOrder");
     changeVar(null, "chosenPiece");
     changeVar(false, "moveOnPassantExist");
 
@@ -42,9 +42,9 @@ const doMove = (Piece, toRow, toColumn, opponentPiece, clearPosition, passant, d
     } else {
         writeDownPosition();
     }
-    if (!dontSendPocket) {
-        const pocket = {
-            method: "doMove",
+    if (!dontSendpacket) {
+        const packet = {
+            method: "move",
             userId: gameState.userId,
             pieceId: Piece.id,
             cellRow: 7 - toRow,
@@ -53,8 +53,8 @@ const doMove = (Piece, toRow, toColumn, opponentPiece, clearPosition, passant, d
             passant: passant,
             kill: kill,
         };
-        socket.send(JSON.stringify(pocket));
+        socket.send(JSON.stringify(packet));
     }
 };
 
-export {doMove};
+export {move};

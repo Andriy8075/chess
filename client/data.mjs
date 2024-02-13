@@ -1,8 +1,30 @@
 const socket = new WebSocket("ws://127.0.0.2:7992/play");
 
+// const startGameState = {
+//     inGame: false,
+//     moveOrder: false,
+//     kingRow: undefined,
+//     kingColumn: undefined,
+//     kingID: undefined,
+//     color: undefined,
+//     oppositeColor: undefined,
+//     chosenPiece: undefined,
+//     userId: undefined,
+//     connectedToID: undefined,
+//     cellSize: undefined,
+//     moveOnPassantExist: false,
+//     promotionImageColumn: undefined,
+//     promotionKillingPieceId: undefined,
+//     passant: {},
+//     canCastling: {
+//         king: true,
+//         leftRook: true,
+//         rightRook: true,
+//     }
+// };
 const gameState = {
     inGame: false,
-    movePossibility: false,
+    moveOrder: false,
     kingRow: undefined,
     kingColumn: undefined,
     kingID: undefined,
@@ -14,7 +36,7 @@ const gameState = {
     cellSize: undefined,
     moveOnPassantExist: false,
     promotionImageColumn: undefined,
-    promotionImageRow: undefined,
+    promotionKillingPieceId: undefined,
     passant: {},
     canCastling: {
         king: true,

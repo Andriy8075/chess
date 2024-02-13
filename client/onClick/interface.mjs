@@ -6,10 +6,10 @@ const onInput = (event) => {
     if (event.key === 'Enter') {
         let value = input.value.trim();
         if (!gameState.inGame) {
-            const pocket = {
+            const packet = {
                 method: "connectToID", from: gameState.userId, to: value,
             };
-            socket.send(JSON.stringify(pocket));
+            socket.send(JSON.stringify(packet));
         }
     }
 }
@@ -18,4 +18,14 @@ const onExit = () => {
     location.reload();
 }
 
-export {onInput, onExit}
+const onQuickPlay = () => {
+    const packet = {
+        method: 'quickPlay',
+        userId: gameState.userId,
+    }
+    socket.send(JSON.stringify(packet));
+    const searchingOpponent = document.getElementById('searchingOpponent');
+    searchingOpponent.style.display='flex';
+}
+
+export {onInput, onExit, onQuickPlay}

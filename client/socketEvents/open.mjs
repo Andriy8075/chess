@@ -15,11 +15,11 @@ const onOpen = () => {
     input.style.display = "flex";
     //deleteConnectedToID();
     const yourIDLabel = document.getElementById(`id`);
-    yourIDLabel.innerHTML = `Your ID: ${gameState.userId}`;
-    const pocket = {
+    yourIDLabel.innerHTML = `Your id: ${gameState.userId}`;
+    const packet = {
         method: "assignID", userId: gameState.userId,
     };
-    socket.send(JSON.stringify(pocket));
+    socket.send(JSON.stringify(packet));
     localStorage.removeItem("userId");
 }
 

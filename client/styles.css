@@ -1,3 +1,8 @@
+:root {
+    --green: #f0fff0;
+    --red: #fff0f0;
+}
+
 .globalDiv {
     display: flex;
     grid-row: 1;
@@ -55,9 +60,22 @@
     color: red;
 }
 
-.exit {
+.gameManage {
+    margin: 0.5em;
     font-size: 1.5em;
-    background-color: #ffeaea;
     width: 6em;
     height: 3em;
+}
+
+.exit {
+    display: none;
+    background-color: var(--red);
+}
+
+.quickPlay {
+    background-color: var(--green);
+}
+
+.searchingOpponent {
+    display: none;
 }
