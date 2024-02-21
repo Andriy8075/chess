@@ -1,7 +1,7 @@
 import {cells, changeCell, pieces, changePiecesArray} from "../arrangePieces/arrangePieces.mjs";
-import {changeVar, socket, gameState,} from "../data.mjs";
+import {changeVar, socket, gameState, appearance,} from "../data.mjs";
 import {checkAfterMove} from "./check.mjs";
-import {move} from "./doMoveAndKill.mjs";
+import {move} from "./move.mjs";
 import {canPieceMove} from "./canPieceMove.mjs";
 
 const wantMove = {
@@ -44,17 +44,17 @@ const wantMove = {
         } else {
             if (toColumn === Piece.column && !opponentPiece) {
                 if (!checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
-                    const backgroundImage = new Image(gameState.cellSize, gameState.cellSize);
+                    const backgroundImage = new Image(appearance.cellSize, appearance.cellSize);
                     const divBoard = document.getElementById("divBoard");
                     backgroundImage.style.backgroundColor = "#d5cd7f";
                     backgroundImage.style.zIndex = "5";
                     backgroundImage.style.display = "flex";
                     backgroundImage.style.position = "absolute";
                     backgroundImage.setAttribute("id", "backgroundImage");
-                    backgroundImage.style.width = `${gameState.cellSize}em`;
-                    backgroundImage.style.height = `${gameState.cellSize}em`;
-                    backgroundImage.style.top = `${gameState.cellSize * toRow}em`;
-                    backgroundImage.style.left = `${gameState.cellSize * toColumn}em`;
+                    backgroundImage.style.width = `${appearance.cellSize}`;
+                    backgroundImage.style.height = `${appearance.cellSize}`;
+                    backgroundImage.style.top = `${appearance.cellSize * toRow}em`;
+                    backgroundImage.style.left = `${appearance.cellSize * toColumn}em`;
                     divBoard.appendChild(backgroundImage);
                     changeVar(toColumn, "promotionImageColumn");
                     const promotionImages =

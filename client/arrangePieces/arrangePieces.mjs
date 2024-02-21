@@ -1,6 +1,6 @@
 import {ownPieces} from "../onClick/ownPieces.mjs";
 import {clickableCells} from "./cells.mjs";
-import {changeVar, gameState} from "../data.mjs";
+import {appearance, changeVar, gameState} from "../data.mjs";
 import {cellOrOpponent} from "../onClick/cellOrOpponent.mjs";
 import {Piece} from "./piece.mjs";
 
@@ -52,10 +52,10 @@ const arrangePieces = (color) => {
         const pieceImage = document.createElement("img");
         pieceImage.classList.add("piece");
         pieceImage.style.position = "absolute";
-        pieceImage.style.top = `${gameState.cellSize * row}em`;
-        pieceImage.style.left = `${gameState.cellSize * column}em`;
-        pieceImage.style.width = `${gameState.cellSize}em`;
-        pieceImage.style.heigh = `${gameState.cellSize}em`;
+        pieceImage.style.top = `${appearance.cellSize*row}em`;
+        pieceImage.style.left = `${appearance.cellSize*column}em`;
+        pieceImage.style.width = `${appearance.cellSize}em`;
+        pieceImage.style.heigh = `${appearance.cellSize}em`;
         board.appendChild(pieceImage);
         pieceImage.src = `images/${color}${type.charAt(0).toUpperCase() + type.slice(1)}.png`;
         const piece = new Piece(pieceImage, pieceID, color, type, row, column);

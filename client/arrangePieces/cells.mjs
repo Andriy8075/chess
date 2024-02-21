@@ -1,5 +1,5 @@
 import {cellOrOpponent} from "../onClick/cellOrOpponent.mjs";
-import {gameState} from "../data.mjs";
+import {appearance} from "../data.mjs";
 
 const emSize = 16;
 const clickableCells = () => {
@@ -8,8 +8,8 @@ const clickableCells = () => {
             const board = document.getElementById("boardMap");
             const area = document.createElement("area");
             area.shape = "rectangle";
-            area.coords = `${column * gameState.cellSize * emSize},${row * gameState.cellSize * emSize},
-            ${(column * gameState.cellSize + gameState.cellSize) * emSize},${(row * gameState.cellSize + gameState.cellSize) * emSize}`;
+            area.coords = `${column * appearance.cellSize * emSize},${row * appearance.cellSize * emSize},
+            ${(column * appearance.cellSize + appearance.cellSize) * emSize},${(row * appearance.cellSize + appearance.cellSize) * emSize}`;
             board.appendChild(area);
             area.row = row;
             area.column = column;

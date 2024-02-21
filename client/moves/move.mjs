@@ -1,5 +1,5 @@
 import {changeCell, changePiecesArray, pieces,} from "../arrangePieces/arrangePieces.mjs";
-import {changeVar, socket, gameState} from "../data.mjs";
+import {changeVar, socket, gameState, appearance} from "../data.mjs";
 import {clear, writeDownPosition} from "../endOfGame/repeatingMoves.mjs";
 
 // const kill = (id, dontSendpacket) => {
@@ -14,7 +14,7 @@ import {clear, writeDownPosition} from "../endOfGame/repeatingMoves.mjs";
 //         }
 //     }
 // };
-const move = (Piece, toRow, toColumn, opponentPiece, clearPosition, passant, dontSendpacket,) => {
+const move = (Piece, toRow, toColumn, opponentPiece, clearPosition, passant, dontSendPacket,) => {
     changeCell(toRow, toColumn, Piece.id);
     changeCell(Piece.row, Piece.column, null);
     let kill;
@@ -22,15 +22,15 @@ const move = (Piece, toRow, toColumn, opponentPiece, clearPosition, passant, don
         const id = opponentPiece.id;
         pieces[id].HTMLImage.remove();
         changePiecesArray(id, null);
-        //kill(opponentPiece.id, dontSendpacket);
+        //kill(opponentPiece.id, dontSendPacket);
         clearPosition = true;
         kill = id;
     }
 
     Piece.row = toRow;
     Piece.column = toColumn;
-    Piece.HTMLImage.style.top = `${gameState.cellSize * toRow}em`;
-    Piece.HTMLImage.style.left = `${gameState.cellSize * toColumn}em`;
+    Piece.HTMLImage.style.top = `${appearance.cellSize * toRow}em`;
+    Piece.HTMLImage.style.left = `${appearance.cellSize * toColumn}em`;
     Piece.HTMLImage.style.removeProperty("background-color");
 
     changeVar(false, "moveOrder");
@@ -42,7 +42,7 @@ const move = (Piece, toRow, toColumn, opponentPiece, clearPosition, passant, don
     } else {
         writeDownPosition();
     }
-    if (!dontSendpacket) {
+    if (!dontSendPacket) {
         const packet = {
             method: "move",
             userId: gameState.userId,

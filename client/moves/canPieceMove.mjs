@@ -1,7 +1,7 @@
 import {cells, changeCell, changePiecesArray, pieces,} from "../arrangePieces/arrangePieces.mjs";
 import {changeVar, gameState,} from "../data.mjs";
 import {attack, checkAfterMove} from "./check.mjs";
-import {move} from "./doMoveAndKill.mjs";
+import {move} from "./move.mjs";
 
 const canPieceMove = {
     pawn: (fromRow, fromColumn, toRow, toColumn, moveType) => {

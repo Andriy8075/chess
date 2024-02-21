@@ -52,28 +52,44 @@ const methods = {
     const { from, to } = data;
     if (to === from) return;
     const packet = {
-      method: 'connectToID', userId: data.from,
+      method: 'connectToID',
+      userId: data.from,
+      color: data.quickPlay ? 'white' : undefined,
     };
-    const findID = sendPacket(data.to, packet);
-    if (findID) {
+    const findId = sendPacket(data.to, packet);
+    if (findId) {
       sockets[from].connectedTo = to;
       sockets[to].connectedTo = from;
       const packet = {
-        method: 'connectToID', userId: data.to,
+        method: 'connectToID',
+        userId: data.to,
+        color: data.quickPlay ? 'black' : undefined,
       };
       sendPacket(data.from, packet);
     }
   },
   quickPlay: (connection, data) => {
-    if(waitingGame) {
-      methods.connectToID(connection, {
-        from: data.userId,
-        to: waitingGame.id,
-      })
-      waitingGame = null;
-    }
-    else {
-      waitingGame = connection;
+    if(!sockets[data.userId].connectedTo) {
+      if(!data.quickPlay) {
+        if(waitingGame) {
+          methods.connectToID(connection, {
+            from: data.userId,
+            to: waitingGame.id,
+            quickPlay: true,
+          })
+          waitingGame = null;
+        }
+        else {
+          waitingGame = connection;
+        }
+      }
+      else {
+        waitingGame = null;
+        const packet = {
+          method: 'cancelNextGame',
+        }
+        sendPacket(data.userId, packet);
+      }
     }
   }
 };

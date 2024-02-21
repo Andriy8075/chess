@@ -1,6 +1,6 @@
 import {socket, gameState} from "../data.mjs";
 import {wantMove} from "../moves/wantMove.mjs";
-import {move} from "../moves/doMoveAndKill.mjs";
+import {move} from "../moves/move.mjs";
 import {canPieceMove} from "../moves/canPieceMove.mjs";
 import {pieces} from "../arrangePieces/arrangePieces.mjs";
 

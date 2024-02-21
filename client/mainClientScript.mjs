@@ -1,32 +1,41 @@
 //import {arrangePieces, changeCell, changePiecesArray, pieces,} from "./arrangePieces/arrangePieces.mjs";
-import {changeVar, socket, gameState} from "./data.mjs";
+import {changeVar, socket, appearance, gameState, sendPacket} from "./data.mjs";
 // import {checkmate} from "./endOfGame/checkmate.mjs";
 // import {notEnoughPieces} from "./endOfGame/notEnoughPieces.mjs";
 import {images} from "./onClick/images.mjs";
 import {onOpen} from "./socketEvents/open.mjs";
 import {onMessage} from "./socketEvents/message.js";
-import {onInput, onExit, onQuickPlay} from "./onClick/interface.mjs";
+import {onInputId, onInputMessage, onExit, onQuickPlay, onRematch} from "./interface.mjs";
+import {arrangePieces, pieces} from "./arrangePieces/arrangePieces.mjs";
 // import {clear, repeatingTheSameMoves, writeDownPosition} from "./endOfGame/repeatingMoves.mjs";
-// import {move} from "./moves/doMoveAndKill.mjs";
-// import {attack} from "./moves/check.mjs";
-// import {stalemate} from "./endOfGame/stalemate.mjs";
+// import {move} from "./moves/move.mjs"; Y5HU6A1J7S6X1
+// const sendPacket = (method, data = {}) => {
+//     data['userId'] = gameState.userId;
+//     data['method'] = method;
+//     socket.send(JSON.stringify(data));
+// }
 
-//const CHAR_RETURN = 13;
-//const inputAnotherPlayersIDHere = document.getElementById("inputAnotherPlayersIDHere",);
-const board = document.getElementById("boardImage");
-changeVar(6, "cellSize");
-board.style.width = `${8 * gameState.cellSize}em`;
-board.style.height = `${8 * gameState.cellSize}em`;
+//const changeCssVar = (cssVar, callback) => `${callback(cssVar.charAt(0))}${cssVar.slice(1)}`
+//const CHAR_RETURN = 135homputedStyle(document.documentElement).getPropertyValue('--cellSize');
+changeVar(appearance.cellSize, "cellSize");
+// board.style.width = `${8 * appearance.cellSize}em`;
+// board.style.height = `${8 * appearance.cellSize}em`;
 
 socket.addEventListener("open", onOpen);
 socket.addEventListener("message", onMessage);
 
-const input = document.getElementById("input");
-input.addEventListener("keydown", onInput);
-const exit = document.getElementById("exit");
+const input = document.getElementById("inputId");
+input.addEventListener("keydown", onInputId);
+const exit = document.getElementById("newGame");
 exit.addEventListener("click", onExit);
 const quickPlay = document.getElementById('quickPlay');
 quickPlay.addEventListener('click', onQuickPlay);
+const inputMessage = document.getElementById('inputMessage');
+inputMessage.addEventListener('keydown', onInputMessage);
+const rematch = document.getElementById('rematch')
+rematch.addEventListener('click', onRematch)
+const newGame = document.getElementById('nextGame');
+newGame.addEventListener('click', location.reload);
 
 images();
 // const writeGameResultText = (text) => {
@@ -65,8 +74,8 @@ images();
 // });
 // const move = (parsed) => {
 //     const piece = pieces[parsed.pieceId];
-//     piece.HTMLImage.style.top = `${gameState.cellSize * parsed.cellRow}em`;
-//     piece.HTMLImage.style.left = `${gameState.cellSize * parsed.cellColumn}em`;
+//     piece.HTMLImage.style.top = `${appearance.cellSize * parsed.cellRow}em`;
+//     piece.HTMLImage.style.left = `${appearance.cellSize * parsed.cellColumn}em`;
 //     changeCell(parsed.cellRow, parsed.cellColumn, pieces[parsed.pieceId].id);
 //     changeCell(pieces[parsed.pieceId].row, pieces[parsed.pieceId].column, null);
 //     piece.row = parsed.cellRow;
@@ -202,8 +211,8 @@ images();
 //     }
 // });
 //
-// const exit = document.getElementById("exit");
-// exit.addEventListener("click", () => {
+// const newGame = document.getElementById("newGame");
+// newGame.addEventListener("click", () => {
 //     localStorage.setItem("userId", gameState.userId);
 //     location.reload();
 // });

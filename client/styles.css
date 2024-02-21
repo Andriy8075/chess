@@ -1,36 +1,42 @@
 :root {
+    --cellSize: 6em;
     --green: #f0fff0;
     --red: #fff0f0;
 }
 
 .globalDiv {
     display: flex;
-    grid-row: 1;
     flex-direction: row;
 }
 
-.divBoard {
+.boardDiv {
     display: flex;
     position: relative;
 }
 
-.board {
+.boardImage {
     position: relative;
+    width: calc(8*var(--cellSize));
+    height: calc(8*var(--cellSize));
 }
 
 .pieces {
     position: absolute;
 }
 
-.messages {
-    padding: 2em;
+.systemMessages {
+    padding-left: 2em;
     position: relative;
     display: flex;
     flex-direction: column;
     width: 60em;
 }
 
-.input {
+.systemMessage {
+    line-height: 0;
+}
+
+.inputId {
     display: none;
     width: 20em;
 }
@@ -41,14 +47,14 @@
 
 .chooseColorImages {
     display: none;
-    width: 10em;
-    height: 10em;
+    width: 5em;
+    height: 5em;
 }
 
 .promotionImage {
     display: none;
-    width: 10em;
-    height: 10em;
+    width: 5em;
+    height: 5em;
 }
 
 .imagesDiv {
@@ -60,22 +66,62 @@
     color: red;
 }
 
-.gameManage {
+.buttons {
+    display: flex;
+    flex-direction: row;
+}
+
+.gameManageButtons {
     margin: 0.5em;
     font-size: 1.5em;
     width: 6em;
     height: 3em;
-}
-
-.exit {
-    display: none;
-    background-color: var(--red);
-}
-
-.quickPlay {
     background-color: var(--green);
 }
 
-.searchingOpponent {
+.rematch {
     display: none;
+}
+
+.newGame {
+    display: none;
+}
+
+.quickPlay {
+    display: none;
+}
+
+.playWithFriend {
+    display: none;
+}
+
+.nextGame {
+    display: none;
+}
+
+.chat {
+    display: none;
+    flex-direction: column;
+}
+
+.chatDiv {
+    width: 26em;
+}
+
+.chatLabel {
+    text-align: center;
+}
+
+.chatMessages {
+    height: 24em;
+    line-height: 3em;
+    overflow: scroll;
+    border: thin #000 solid;
+    display: flex;
+    flex-direction: column;
+}
+
+.inputMessage {
+    margin-top: 1em;
+    width: 30.8em;
 }
