@@ -29,7 +29,8 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    width: 60em;
+    width: 70em;
+    white-space: normal;
 }
 
 .systemMessage {

@@ -1,11 +1,11 @@
-import {gameState} from "../data.mjs";
+import {gameState} from "../dataAndFunctions.mjs";
 import {pieces} from "../arrangePieces/arrangePieces.mjs";
 import {Piece} from "../arrangePieces/piece.mjs";
 
-const event = (cellOrOpponent, opponentPiece) => {
+const event = (cellOrOpponent, killingPiece) => {
     if (gameState.moveOrder && gameState.chosenPiece) {
         const pieceThatMoves = pieces[gameState.chosenPiece];
-        pieceThatMoves.wantMove(cellOrOpponent.row, cellOrOpponent.column, opponentPiece);
+        pieceThatMoves.wantMove({toRow: cellOrOpponent.row, toColumn: cellOrOpponent.column, killingPiece});
     }
 }
 const cellOrOpponent = (cellOrOpponent) => {

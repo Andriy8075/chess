@@ -1,37 +1,21 @@
-import {changeCell, changePiecesArray, pieces,} from "../arrangePieces/arrangePieces.mjs";
-import {changeVar, socket, gameState, appearance} from "../data.mjs";
+import {changeCell, changePiecesArray} from "../arrangePieces/arrangePieces.mjs";
+import {changeVar, sendPacket, appearance} from "../dataAndFunctions.mjs";
 import {clear, writeDownPosition} from "../endOfGame/repeatingMoves.mjs";
-
-// const kill = (id, dontSendpacket) => {
-//     if (pieces[id]) {
-//         pieces[id].HTMLImage.remove();
-//         changePiecesArray(id, null);
-//         if (!dontSendpacket) {
-//             const packet = {
-//                 method: "kill", pieceId: id, userId: gameState.userId,
-//             };
-//             socket.send(JSON.stringify(packet));
-//         }
-//     }
-// };
-const move = (Piece, toRow, toColumn, opponentPiece, clearPosition, passant, dontSendPacket,) => {
-    changeCell(toRow, toColumn, Piece.id);
-    changeCell(Piece.row, Piece.column, null);
+const move = ({piece, toRow, toColumn, killingPiece, clearPosition, passant}) => {
+    changeCell(toRow, toColumn, piece.id);
+    changeCell(piece.row, piece.column, null);
     let kill;
-    if (opponentPiece) {
-        const id = opponentPiece.id;
-        pieces[id].HTMLImage.remove();
-        changePiecesArray(id, null);
-        //kill(opponentPiece.id, dontSendPacket);
+    if (killingPiece) {
+        killingPiece.HTMLImage.remove();
+        changePiecesArray(killingPiece.id, null);
         clearPosition = true;
-        kill = id;
+        kill = killingPiece.id;
     }
-
-    Piece.row = toRow;
-    Piece.column = toColumn;
-    Piece.HTMLImage.style.top = `${appearance.cellSize * toRow}em`;
-    Piece.HTMLImage.style.left = `${appearance.cellSize * toColumn}em`;
-    Piece.HTMLImage.style.removeProperty("background-color");
+    piece.row = toRow;
+    piece.column = toColumn;
+    piece.HTMLImage.style.top = `${appearance.cellSize * toRow}em`;
+    piece.HTMLImage.style.left = `${appearance.cellSize * toColumn}em`;
+    piece.HTMLImage.style.removeProperty("background-color");
 
     changeVar(false, "moveOrder");
     changeVar(null, "chosenPiece");
@@ -42,19 +26,14 @@ const move = (Piece, toRow, toColumn, opponentPiece, clearPosition, passant, don
     } else {
         writeDownPosition();
     }
-    if (!dontSendPacket) {
-        const packet = {
-            method: "move",
-            userId: gameState.userId,
-            pieceId: Piece.id,
-            cellRow: 7 - toRow,
-            cellColumn: 7 - toColumn,
-            clear: clearPosition,
-            passant: passant,
-            kill: kill,
-        };
-        socket.send(JSON.stringify(packet));
-    }
+    sendPacket('move', {
+        pieceId: piece.id,
+        toRow: 7 - toRow,
+        toColumn: 7 - toColumn,
+        clearPosition: clearPosition,
+        passant: passant,
+        kill: kill,
+    });
 };
 
 export {move};

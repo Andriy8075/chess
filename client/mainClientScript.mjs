@@ -1,218 +1,117 @@
-//import {arrangePieces, changeCell, changePiecesArray, pieces,} from "./arrangePieces/arrangePieces.mjs";
-import {changeVar, socket, appearance, gameState, sendPacket} from "./data.mjs";
-// import {checkmate} from "./endOfGame/checkmate.mjs";
-// import {notEnoughPieces} from "./endOfGame/notEnoughPieces.mjs";
-import {images} from "./onClick/images.mjs";
+import {changeVar, socket, appearance, gameState, sendPacket, unDisplay, display, startGameState} from "./dataAndFunctions.mjs";
 import {onOpen} from "./socketEvents/open.mjs";
 import {onMessage} from "./socketEvents/message.js";
-import {onInputId, onInputMessage, onExit, onQuickPlay, onRematch} from "./interface.mjs";
 import {arrangePieces, pieces} from "./arrangePieces/arrangePieces.mjs";
-// import {clear, repeatingTheSameMoves, writeDownPosition} from "./endOfGame/repeatingMoves.mjs";
-// import {move} from "./moves/move.mjs"; Y5HU6A1J7S6X1
-// const sendPacket = (method, data = {}) => {
-//     data['userId'] = gameState.userId;
-//     data['method'] = method;
-//     socket.send(JSON.stringify(data));
-// }
+import {onPromotion} from "./arrangePieces/promotion.mjs";
 
-//const changeCssVar = (cssVar, callback) => `${callback(cssVar.charAt(0))}${cssVar.slice(1)}`
-//const CHAR_RETURN = 135homputedStyle(document.documentElement).getPropertyValue('--cellSize');
 changeVar(appearance.cellSize, "cellSize");
-// board.style.width = `${8 * appearance.cellSize}em`;
-// board.style.height = `${8 * appearance.cellSize}em`;
+
+const getHTMLElements = (elementsId) => {
+    const elements = {};
+    for(const elementId of elementsId) {
+        const element = document.getElementById(elementId);
+        elements[elementId] = element;
+    }
+    return elements;
+}
+
+const htmlElementsId = ['nextGame', 'inputId', 'playWithFriend', 'newGame',
+    'quickPlay', 'inputMessage', 'rematch'];
+const htmlElements = getHTMLElements(htmlElementsId);
+htmlElements['playWithFriend'].addEventListener('click', () => {
+    unDisplay('quickPlay', 'playWithFriend');
+    display('inputAnotherPlayersIDHere', 'inputId');
+    const yourId = document.getElementById('yourId');
+    yourId.innerHTML = `Your id: ${gameState.userId}`;
+})
+
+const rematchArrangePieces = (color) => {
+    for(const piece of pieces) {
+        if(piece) piece.HTMLImage.remove();
+    }
+    for(const key of Object.keys(gameState)) {
+        changeVar(startGameState[key], gameState[key]);
+    }
+    arrangePieces(color);
+    for(const button of document.getElementsByClassName('gameManageButtons')) {
+        button.style.display = 'none';
+    }
+    unDisplay('nextGame', 'gameResult');
+    changeVar(undefined, 'rematch');
+}
 
 socket.addEventListener("open", onOpen);
 socket.addEventListener("message", onMessage);
 
-const input = document.getElementById("inputId");
-input.addEventListener("keydown", onInputId);
-const exit = document.getElementById("newGame");
-exit.addEventListener("click", onExit);
-const quickPlay = document.getElementById('quickPlay');
-quickPlay.addEventListener('click', onQuickPlay);
-const inputMessage = document.getElementById('inputMessage');
-inputMessage.addEventListener('keydown', onInputMessage);
-const rematch = document.getElementById('rematch')
-rematch.addEventListener('click', onRematch)
-const newGame = document.getElementById('nextGame');
-newGame.addEventListener('click', location.reload);
+htmlElements['inputId'].addEventListener("keydown", (event) => {
+    if (event.key === 'Enter') {
+        let value = htmlElements['inputId'].value.trim();
+        if (!gameState.inGame) {
+            const packet = {
+                method: "connectToID", from: gameState.userId, to: value,
+            };
+            socket.send(JSON.stringify(packet));
+        }
+    }
+});
+htmlElements['quickPlay'].addEventListener('click', () => {
+    sendPacket('quickPlay', {quickPlay: gameState.quickPlay});
+    if(!gameState.quickPlay) {
+        htmlElements['nextGame'].innerHTML = 'searching opponent';
+        unDisplay('playWithFriend');
+        const quickPlay = document.getElementById('quickPlay');
+        quickPlay.textContent = 'cancel';
+        quickPlay.style.backgroundColor = appearance.red;
+        changeVar(true, 'quickPlay');
+    }
+});
+htmlElements['inputMessage'].addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        let text = htmlElements['inputMessage'].value.trim();
+        const message = document.createElement('p');
+        message.innerHTML = `You: ${text}`;
+        message.style.display = 'flex';
+        message.style.lineHeight = '0em';
+        const messagesField = document.getElementById('chatMessages');
+        messagesField.appendChild(message);
+        sendPacket('message', {text});
+    }
+});
+htmlElements['rematch'].addEventListener('click', () => {
+    sendPacket('rematch');
+    if(gameState.rematch === 'opponent') {
+        rematchArrangePieces(gameState.color === 'white' ? 'black' : 'white');
+    }
+    else {
+        gameState.rematch = 'user';
+        display('nextGame');
+        htmlElements['nextGame'].innerHTML = 'waiting opponent';
+    }
+});
 
-images();
-// const writeGameResultText = (text) => {
-//     const textField = document.getElementById("gameResult");
-//     textField.innerHTML = text;
-//     changeVar(false, "moveOrder");
-// };
-//
-// const endGame = (method, text) => {
-//     writeGameResultText(text);
-//     const packet = {
-//         method: method, userId: gameState.userId, text: text,
-//     };
-//     socket.send(JSON.stringify(packet));
-// };
+htmlElements['newGame'].addEventListener('click', () => location.reload());
 
-//let connectedToID;
-// const getID = () => {
-//     const userId = parseInt(Math.random().toString().slice(2));
-//     gameState.userId = userId;
-//     return userId;
-// };
-// socket.addEventListener("open", () => {
-//     const userId = localStorage.getItem("userId");
-//     if (userId) changeVar(userId, "userId"); else changeVar(getID(), "userId");
-//     inputAnotherPlayersIDHere.style.display = "flex";
-//     input.style.display = "flex";
-//     //deleteConnectedToID();
-//     const yourIDLabel = document.getElementById(`id`);
-//     yourIDLabel.innerHTML = `Your ID: ${gameState.userId}`;
-//     const packet = {
-//         method: "assignID", userId: gameState.userId,
-//     };
-//     socket.send(JSON.stringify(packet));
-//     localStorage.removeItem("userId");
-// });
-// const move = (parsed) => {
-//     const piece = pieces[parsed.pieceId];
-//     piece.HTMLImage.style.top = `${appearance.cellSize * parsed.cellRow}em`;
-//     piece.HTMLImage.style.left = `${appearance.cellSize * parsed.cellColumn}em`;
-//     changeCell(parsed.cellRow, parsed.cellColumn, pieces[parsed.pieceId].id);
-//     changeCell(pieces[parsed.pieceId].row, pieces[parsed.pieceId].column, null);
-//     piece.row = parsed.cellRow;
-//     piece.column = parsed.cellColumn;
-//     if(parsed.kill) {
-//         pieces[parsed.kill].HTMLImage.remove();
-//         pieces[parsed.kill] = null;
-//     }
-//     if(!parsed.passant) {
-//         changeVar(undefined, 'passant', 'column');
-//         changeVar(undefined, 'passant', 'id');
-//     }
-//     else {
-//         changeVar(parsed.passant.id, 'passant', 'id');
-//         changeVar(parsed.passant.column, 'passant', 'column');
-//     }
-//     //setPassant(parsed.passant);
-//     changeVar(true, "moveOrder");
-//     if (notEnoughPieces()) {
-//         endGame("notEnoughPieces", "You have a draw. Reason: not enough pieces to continue game",);
-//         return;
-//     }
-//     const attackingPiece = attack(gameState.color, gameState.kingRow, gameState.kingColumn, null);
-//     if(attackingPiece) {
-//         if (checkmate(attackingPiece)) {
-//             endGame("win", "You have checkmate and lost");
-//             return;
-//         }
-//     }
-//     else {
-//         if (stalemate()) {
-//             endGame("stalemate", "You have a draw. Reason: stalemate");
-//             return;
-//         }
-//     }
-//     if (parsed.clear) {
-//         clear();
-//     }
-//     else {
-//         writeDownPosition();
-//         const end = repeatingTheSameMoves();
-//         if (end) {
-//             endGame("repeatingTheSameMoves", "You have a draw. Reason: repeating the same moves",);
-//         }
-//     }
-//     // if (end) {
-//     //     if (end === "checkmate") {
-//     //         endGame("win", "You have checkmate and lost");
-//     //     }
-//     //     if (end === "stalemate") {
-//     //         endGame("stalemate", "You have a draw. Reason: stalemate");
-//     //     }
-//     // }
-// };
-//
-// socket.addEventListener("message", ({data}) => {
-//     const parsed = JSON.parse(data);
-//     const methods = {
-//         move: () => {
-//             move(parsed);
-//         },
-//         // kill: () => {
-//         //     pieces[parsed.pieceId].HTMLImage.remove();
-//         //     pieces[parsed.pieceId] = null;
-//         // },
-//         // assignID: () => {
-//         //     const yourIDLabel = document.getElementById(`id`);
-//         //     yourIDLabel.innerHTML = `Your ID: ${parsed.userId}`;
-//         // },
-//         connectToID: () => {
-//             if (!gameState.inGame) {
-//                 const labelConnectTo = document.getElementById(`connected`);
-//                 labelConnectTo.innerHTML = `You are connected to player with ID ${parsed.userId}`;
-//                 //connectedToID = parsed.userId;
-//                 const images = document.getElementsByClassName("chooseColorImages");
-//                 for (const image of images) {
-//                     image.style.display = "flex";
-//                 }
-//                 changeVar(true, "inGame");
-//             }
-//         },
-//         receiveColor: () => {
-//             arrangePieces(parsed.color);
-//         },
-//         disconnect: () => {
-//             writeGameResultText("Your opponent disconnected, so you win");
-//         },
-//         killOnPassant: () => {
-//             const passantRow = 4;
-//             changeCell(passantRow, parsed.cellColumn, null);
-//             pieces[parsed.pieceId].HTMLImage.remove();
-//             changePiecesArray(parsed.pieceId, null);
-//         },
-//         changePawnToPiece: () => {
-//             const pawn = pieces[parsed.pawn];
-//             pawn.type = parsed.type;
-//             pawn.HTMLImage.src = `images/${gameState.oppositeColor}${parsed.type}.png`;
-//             if (parsed.opponentId) {
-//                 pieces[parsed.opponentId].HTMLImage.remove();
-//                 pieces[parsed.opponentId] = null;
-//             }
-//             move({
-//                 method: "move",
-//                 userId: gameState.userId,
-//                 pieceId: pawn.id,
-//                 cellRow: parsed.cellRow,
-//                 cellColumn: parsed.cellColumn,
-//                 clear: true,
-//             });
-//         },
-//         win: () => {
-//             writeGameResultText("You win by making checkmate");
-//         },
-//     };
-//     const method = methods[parsed.method];
-//     if (method) method(); else {
-//         if (parsed.text) {
-//             writeGameResultText(parsed.text);
-//         }
-//     }
-// });
+const chooseColorImages = document.getElementsByClassName("chooseColorImages");
+const promotionImages = document.getElementsByClassName("promotionImage");
 
-//const input = document.getElementById("input");
-// input.addEventListener("keydown", (event) => {
-//     if (event.key === 'Enter') {
-//         let value = input.value.trim();
-//         if (!gameState.inGame) {
-//             const packet = {
-//                 method: "connectToID", from: gameState.userId, to: value,
-//             };
-//             socket.send(JSON.stringify(packet));
-//         }
-//     }
-// });
-//
-// const newGame = document.getElementById("newGame");
-// newGame.addEventListener("click", () => {
-//     localStorage.setItem("userId", gameState.userId);
-//     location.reload();
-// });
+const onColorChoose = (color) => {
+    if (color === "random") {
+        const colorNumber = Math.random();
+        if (colorNumber < 0.5) color = "white"; else color = "black";
+    }
+    sendPacket('chooseColor', {color});
+}
+
+for (const image of chooseColorImages) {
+    image.addEventListener("click", () => {
+        onColorChoose(image.id);
+    });
+}
+
+for (const promotionImage of promotionImages) {
+    promotionImage.addEventListener("click", () => {
+        onPromotion(promotionImage);
+    });
+}
+
+export {rematchArrangePieces}

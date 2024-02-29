@@ -1,5 +1,5 @@
 import {cellOrOpponent} from "../onClick/cellOrOpponent.mjs";
-import {appearance} from "../data.mjs";
+import {appearance} from "../dataAndFunctions.mjs";
 
 const emSize = 16;
 const clickableCells = () => {

@@ -28,52 +28,51 @@ const sendPacket = (user, data) => {
 };
 
 const methods = {
-  assignID: (connection, data) => {
-    connection.id = data.userId;
-    sockets[data.userId] = connection;
+  assignID: (connection, {userId}) => {
+    connection.id = userId;
+    sockets[userId] = connection;
     // const packet = {
     //   method: 'assignID', userId: data.userId,
     // };
     // sendPacket(data.userId, packet);
   },
-  chooseColor: (connection, data) => {
-    const oppositeColor = data.color === 'white' ? 'black' : 'white';
+  chooseColor: (connection, {color, userId}) => {
+    const oppositeColor = color === 'white' ? 'black' : 'white';
     // if (data.color === "white") oppositeColor = "black";
     // else oppositeColor = "white";
     const method = 'receiveColor';
-    const ourPacket = { method, color: data.color };
+    const ourPacket = { method, color: color };
     const opponentPacket = { method, color: oppositeColor };
 
-    const { connectedTo } = sockets[data.userId];
+    const { connectedTo } = sockets[userId];
     const sent = sendPacket(connectedTo, opponentPacket);
-    if(sent) sendPacket(data.userId, ourPacket);
+    if(sent) sendPacket(userId, ourPacket);
   },
-  connectToID: (connection, data) => {
-    const { from, to } = data;
+  connectToID: (connection, {from, to, quickPlay}) => {
     if (to === from) return;
     const packet = {
       method: 'connectToID',
-      userId: data.from,
-      color: data.quickPlay ? 'white' : undefined,
+      userId: from,
+      color: quickPlay ? 'white' : undefined,
     };
-    const findId = sendPacket(data.to, packet);
+    const findId = sendPacket(to, packet);
     if (findId) {
       sockets[from].connectedTo = to;
       sockets[to].connectedTo = from;
       const packet = {
         method: 'connectToID',
-        userId: data.to,
-        color: data.quickPlay ? 'black' : undefined,
+        userId: to,
+        color: quickPlay ? 'black' : undefined,
       };
-      sendPacket(data.from, packet);
+      sendPacket(from, packet);
     }
   },
-  quickPlay: (connection, data) => {
-    if(!sockets[data.userId].connectedTo) {
-      if(!data.quickPlay) {
+  quickPlay: (connection, {userId, quickPlay}) => {
+    if(!sockets[userId].connectedTo) {
+      if(!quickPlay) {
         if(waitingGame) {
           methods.connectToID(connection, {
-            from: data.userId,
+            from: userId,
             to: waitingGame.id,
             quickPlay: true,
           })
@@ -88,7 +87,7 @@ const methods = {
         const packet = {
           method: 'cancelNextGame',
         }
-        sendPacket(data.userId, packet);
+        sendPacket(userId, packet);
       }
     }
   }

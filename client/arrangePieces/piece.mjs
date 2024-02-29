@@ -13,7 +13,8 @@ class Piece {
     }
 
     canMove(toRow, toColumn, moveType) {
-        if (canPieceMove[this.type](this.row, this.column, toRow, toColumn, moveType)) return true;
+        if (canPieceMove[this.type]({fromRow: this.row, fromColumn: this.column, toRow, toColumn, moveType}))
+            return true;
     }
 }
 

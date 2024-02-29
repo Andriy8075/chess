@@ -1,4 +1,4 @@
-import {changeVar, gameState, socket, display, unDisplay, appearance} from "../data.mjs";
+import {changeVar, gameState, socket, display, unDisplay} from "../dataAndFunctions.mjs";
 import {arrangePieces} from "../arrangePieces/arrangePieces.mjs";
 
 const getID = () => {
@@ -18,11 +18,6 @@ const onOpen = () => {
     }
     else {
         changeVar(getID(), "userId");
-        // inputAnotherPlayersIDHere.style.display = "flex";
-        // input.style.display = "flex";
-        // //deleteConnectedToID();
-        // const yourIDLabel = document.getElementById(`id`);
-        // yourIDLabel.innerHTML = `Your id: ${gameState.userId}`;
         const packet = {
             method: "assignID", userId: gameState.userId,
         };

@@ -1,82 +1,89 @@
-import {changeVar, gameState} from "../data.mjs";
+import {changeVar, gameState} from "../dataAndFunctions.mjs";
 import {cells, pieces} from "../arrangePieces/arrangePieces.mjs";
-import {checkAfterMove} from "../moves/check.mjs";
+import {checkAfterMove} from "../moves/attack.mjs";
 
-const canMoveTo = (Piece, rowMoveTo, columnMoveTo) => {
-    if (!cells[rowMoveTo][columnMoveTo]) {
-        if (!checkAfterMove(Piece, rowMoveTo, columnMoveTo, null)) {
-            return true;
-        }
+const canMoveTo = (piece, toRow, toColumn) => {
+    if (!cells[toRow][toColumn]) {
+        if (!checkAfterMove({piece, toRow, toColumn})) return true;
     } else {
-        let enemyPiece = pieces[cells[rowMoveTo][columnMoveTo]];
-        if (enemyPiece.color === gameState.oppositeColor) {
-            if (!checkAfterMove(Piece, rowMoveTo, columnMoveTo, enemyPiece)) return true;
+        let killingPiece = pieces[cells[toRow][toColumn]];
+        if (killingPiece.color === gameState.oppositeColor) {
+            if (!checkAfterMove({piece, toRow, toColumn, killingPiece}))
+                return true;
         }
     }
 };
 
 const moveExist = {
-    rook: (piece, column, row) => {
-        if (column > 0) {
-            if (canMoveTo(piece, row, column - 1)) {
+    rook: (piece) => {
+        if (piece.column > 0) {
+            if (canMoveTo(piece, piece.row, piece.column - 1)) {
                 return true;
             }
         }
-        if (column < 7) {
-            if (canMoveTo(piece, row, column + 1)) {
+        if (piece.column < 7) {
+            if (canMoveTo(piece, piece.row, piece.column + 1)) {
                 return true;
             }
         }
-        if (row > 0) {
-            if (canMoveTo(piece, row - 1, column)) {
+        if (piece.row > 0) {
+            if (canMoveTo(piece, piece.row - 1, piece.column)) {
                 return true;
             }
         }
-        if (row < 7) {
-            if (canMoveTo(piece, row + 1, column)) {
+        if (piece.row < 7) {
+            if (canMoveTo(piece, piece.row + 1, piece.column)) {
                 return true;
             }
         }
     },
-    bishop: (piece, column, row) => {
-        if (column > 0 && row > 0) {
-            if (canMoveTo(piece, row - 1, column - 1)) {
+    bishop: (piece) => {
+        if (piece.column > 0 && piece.row > 0) {
+            if (canMoveTo(piece, piece.row - 1, piece.column - 1)) {
                 return true;
             }
         }
-        if (column < 7 && row > 0) {
-            if (canMoveTo(piece, row - 1, column + 1)) {
+        if (piece.column < 7 && piece.row > 0) {
+            if (canMoveTo(piece, piece.row - 1, piece.column + 1)) {
                 return true;
             }
         }
-        if (column > 0 && row < 7) {
-            if (canMoveTo(piece, row + 1, column - 1)) {
+        if (piece.column > 0 && piece.row < 7) {
+            if (canMoveTo(piece, piece.row + 1, piece.column - 1)) {
                 return true;
             }
         }
 
-        if (column < 7 && row < 7) {
-            if (canMoveTo(piece, row + 1, column + 1)) {
+        if (piece.column < 7 && piece.row < 7) {
+            if (canMoveTo(piece, piece.row + 1, piece.column + 1)) {
                 return true;
             }
         }
     },
-    pawn: (piece, column, row) => {
-        if (!cells[row - 1][column] && !checkAfterMove(piece, row - 1, column, null)) return true;
-        let enemyPiece;
-        if (column > 0) {
-            const CellsMinus1Element = cells[row - 1][column - 1];
+    pawn: (piece) => {
+        if (!cells[piece.row - 1][piece.column] && !checkAfterMove(
+            {piece, toRow: piece.row -1, toColumn: piece.column}))
+            return true;
+        let killingPiece;
+        if (piece.column > 0) {
+            const CellsMinus1Element = cells[piece.row - 1][piece.column - 1];
             if (CellsMinus1Element) {
-                enemyPiece = pieces[CellsMinus1Element];
-                if (enemyPiece.color === gameState.oppositeColor && !checkAfterMove(piece, row - 1, column - 1, enemyPiece)) return true;
+                killingPiece = pieces[CellsMinus1Element];
+                if (killingPiece.color === gameState.oppositeColor && !checkAfterMove(
+                    {piece, toRow: piece.row -1, 
+                        toColumn: piece.column -1, killingPiece})) return true;
             }
         }
 
-        if (column < 7) {
-            const CellsPlus1Element = cells[row - 1][column + 1];
+        if (piece.column < 7) {
+            const CellsPlus1Element = cells[piece.row - 1][piece.column + 1];
             if (CellsPlus1Element) {
-                enemyPiece = pieces[CellsPlus1Element];
-                if (enemyPiece.color === gameState.oppositeColor && !checkAfterMove(piece, row - 1, column + 1, enemyPiece)) return true;
+                killingPiece = pieces[CellsPlus1Element];
+                if (killingPiece.color === gameState.oppositeColor && !checkAfterMove({
+                    piece, killingPiece,
+                    toRow: piece.row -1,
+                    toColumn: piece.column +1,
+                    })) return true;
             }
         }
         if (gameState.passant.id) {
@@ -86,38 +93,38 @@ const moveExist = {
             }
         }
     },
-    knight: (piece, column, row) => {
-        if (column > 0) {
-            if (row > 1) if (canMoveTo(piece, row - 2, column - 1)) return true;
-            if (row < 6) if (canMoveTo(piece, row + 2, column - 1)) return true;
-            if (column > 1) {
-                if (row > 0) if (canMoveTo(piece, row - 1, column - 2)) return true;
-                if (row < 7) if (canMoveTo(piece, row + 1, column - 2)) return true;
+    knight: (piece) => {
+        if (piece.column > 0) {
+            if (piece.row > 1) if (canMoveTo(piece, piece.row - 2, piece.column - 1)) return true;
+            if (piece.row < 6) if (canMoveTo(piece, piece.row + 2, piece.column - 1)) return true;
+            if (piece.column > 1) {
+                if (piece.row > 0) if (canMoveTo(piece, piece.row - 1, piece.column - 2)) return true;
+                if (piece.row < 7) if (canMoveTo(piece, piece.row + 1, piece.column - 2)) return true;
             }
         }
-        if (column < 7) {
-            if (row > 1) if (canMoveTo(piece, row - 2, column + 1)) return true;
-            if (row < 6) if (canMoveTo(piece, row + 2, column + 1)) return true;
-            if (column < 6) {
-                if (row > 0) if (canMoveTo(piece, row - 1, column + 2)) return true;
-                if (row < 7) if (canMoveTo(piece, row + 1, column + 2)) return true;
+        if (piece.column < 7) {
+            if (piece.row > 1) if (canMoveTo(piece, piece.row - 2, piece.column + 1)) return true;
+            if (piece.row < 6) if (canMoveTo(piece, piece.row + 2, piece.column + 1)) return true;
+            if (piece.column < 6) {
+                if (piece.row > 0) if (canMoveTo(piece, piece.row - 1, piece.column + 2)) return true;
+                if (piece.row < 7) if (canMoveTo(piece, piece.row + 1, piece.column + 2)) return true;
             }
         }
     },
-    queen: (piece, column, row) => {
-        if (moveExist.rook(piece, column, row)) return true;
-        if (moveExist.bishop(piece, column, row)) return true;
+    queen: (piece) => {
+        if (moveExist.rook(piece, piece.column, piece.row)) return true;
+        if (moveExist.bishop(piece, piece.column, piece.row)) return true;
     },
 
-    king: (piece, column, row) => {
-        if (moveExist.rook(piece, column, row)) return true;
-        if (moveExist.bishop(piece, column, row)) return true;
+    king: (piece) => {
+        if (moveExist.rook(piece, piece.column, piece.row)) return true;
+        if (moveExist.bishop(piece, piece.column, piece.row)) return true;
     },
 };
 
 const stalemate = () => {
-    for (const Piece of pieces) {
-        if (Piece && Piece.color === gameState.color && moveExist[Piece.type](Piece, Piece.column, Piece.row)) return;
+    for (const piece of pieces) {
+        if (piece && piece.color === gameState.color && moveExist[piece.type](piece)) return;
     }
     return "stalemate";
 };

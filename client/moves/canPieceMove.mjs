@@ -1,21 +1,25 @@
 import {cells, changeCell, changePiecesArray, pieces,} from "../arrangePieces/arrangePieces.mjs";
-import {changeVar, gameState,} from "../data.mjs";
-import {attack, checkAfterMove} from "./check.mjs";
+import {changeVar, gameState,} from "../dataAndFunctions.mjs";
+import {attack, checkAfterMove} from "./attack.mjs";
 import {move} from "./move.mjs";
 
 const canPieceMove = {
-    pawn: (fromRow, fromColumn, toRow, toColumn, moveType) => {
+    pawn: ({fromRow, fromColumn, toRow, toColumn, moveType}) => {
         const columnDifference = toColumn - fromColumn;
         const moveTypes = {
             makeCheck: () => {
                 if (fromRow - toRow === -1 && (columnDifference === 1 || columnDifference === -1))
                         return true
             }, killPiece: () => {
-                if (fromRow - toRow === 1 && (columnDifference === 1 || columnDifference === -1) && cells[toRow][toColumn]) {
+                if (fromRow - toRow === 1 && (columnDifference === 1 || columnDifference === -1) &&
+                    cells[toRow][toColumn]) {
                     const killingPiece = pieces[cells[toRow][toColumn]];
-                    if (!checkAfterMove(killingPiece, toRow, toColumn, killingPiece, "makeCheck",)) return true;
+                    const ourPiece = pieces[cells[toRow][toColumn]];
+                    if (!checkAfterMove({piece: ourPiece, toRow, toColumn,
+                        killingPiece})) return true;
                 } else {
-                    return canPieceMove.pawn(fromRow, fromColumn, toRow, toColumn, "passant",);
+                    return canPieceMove.pawn({fromRow, fromColumn,
+                        toRow, toColumn, moveType: "passant"});
                 }
             }, passant: () => {
                 if (toRow === 3) toRow = 2;
@@ -25,7 +29,7 @@ const canPieceMove = {
                     const PieceToKill = pieces[cells[fromRow][gameState.passant.column]];
                     changePiecesArray(PieceToKill.id, null);
                     changeCell(PieceToKill.row, PieceToKill.column, null);
-                    const result = checkAfterMove(ourPiece, toRow, toColumn, null);
+                    const result = checkAfterMove({piece: ourPiece, toRow, toColumn});
                     changePiecesArray(PieceToKill.id, PieceToKill);
                     changeCell(PieceToKill.row, PieceToKill.column, PieceToKill.id);
                     if (!result) {
@@ -39,14 +43,15 @@ const canPieceMove = {
                     if (rowDifference === 1) return true;
                     if (toRow === 4 && fromRow === 6 && !cells[5][fromColumn]) return true;
                 } else {
-                    return canPieceMove.pawn(fromRow, fromColumn, toRow, toColumn, "passant",);
+                    return canPieceMove.pawn({fromRow, fromColumn, toRow, toColumn,
+                        moveType: "passant"});
                 }
             },
         };
         return moveTypes[moveType]();
     },
 
-    knight: (fromRow, fromColumn, toRow, toColumn) => {
+    knight: ({fromRow, fromColumn, toRow, toColumn}) => {
         const rowDifference = toRow - fromRow;
         const columnDifference = toColumn - fromColumn;
         if (rowDifference === 1 || rowDifference === -1) {
@@ -61,7 +66,7 @@ const canPieceMove = {
         }
     },
 
-    bishop: (fromRow, fromColumn, toRow, toColumn) => {
+    bishop: ({fromRow, fromColumn, toRow, toColumn}) => {
         const rowDifference = toRow - fromRow;
         const columnDifference = toColumn - fromColumn;
         if (rowDifference === columnDifference) {
@@ -96,7 +101,7 @@ const canPieceMove = {
         }
     },
 
-    rook: (fromRow, fromColumn, toRow, toColumn) => {
+    rook: ({fromRow, fromColumn, toRow, toColumn}) => {
         if (fromColumn === toColumn) {
             if (toRow > fromRow) {
                 for (let row = fromRow + 1; row < toRow; row++) {
@@ -125,14 +130,14 @@ const canPieceMove = {
         }
     },
 
-    queen: function (fromRow, fromColumn, toRow, toColumn) {
-        const rook = this.rook(toRow, toColumn, fromRow, fromColumn);
+    queen: function ({fromRow, fromColumn, toRow, toColumn}) {
+        const rook = this.rook({toRow, toColumn, fromRow, fromColumn});
         if (rook) return true;
-        const bishop = this.bishop(toRow, toColumn, fromRow, fromColumn);
+        const bishop = this.bishop({toRow, toColumn, fromRow, fromColumn});
         if (bishop) return true;
     },
 
-    king: (fromRow, fromColumn, toRow, toColumn, moveType) => {
+    king: ({fromRow, fromColumn, toRow, toColumn, moveType}) => {
         const rowDifference = toRow - fromRow;
         const columnDifference = toColumn - fromColumn;
         if (moveType === "killPiece" || moveType === "hideKing") moveType = "makeCheck";
@@ -151,7 +156,8 @@ const canPieceMove = {
                         if (columnDifference === -2) {
                             if (gameState.canCastling.leftRook && gameState.canCastling.king) {
                                 for (let i = 0; i <= gameState.kingColumn; i++) {
-                                    if (attack(gameState.color, 7, i)) return;
+                                    if (attack({
+                                        color: gameState.color, toRow: 7, toColumn: i})) return;
                                 }
                                 for (let i = 1; i <= gameState.kingColumn - 1; i++) {
                                     if (cells[7][i]) return;
@@ -162,14 +168,20 @@ const canPieceMove = {
                                     rookID = 8;
                                 }
                                 const rook = pieces[rookID];
-                                move(rook, 7, gameState.kingColumn - 1, null, true);
+                                move({
+                                    piece: rook,
+                                    toRow: 7,
+                                    toColumn: gameState.kingColumn - 1,
+                                    clearPosition: true
+                                });
                                 return true;
                             }
                         }
                         if (columnDifference === 2) {
                             if (gameState.canCastling.rightRook && gameState.canCastling.king) {
                                 for (let i = gameState.kingColumn; i <= 7; i++) {
-                                    if (attack(gameState.color, 7, i)) return;
+                                    if (attack({
+                                        color: gameState.color, toRow: 7, toColumn: i})) return;
                                 }
                                 for (let i = gameState.kingColumn + 1; i <= 6; i++) {
                                     if (cells[7][i]) return;
@@ -180,7 +192,12 @@ const canPieceMove = {
                                     rookID = 1;
                                 }
                                 const rook = pieces[rookID];
-                                move(rook, 7, gameState.kingColumn + 1, null, true);
+                                move({
+                                    piece: rook,
+                                    toRow: 7,
+                                    toColumn: gameState.kingColumn + 1,
+                                    clearPosition: true
+                                });
                                 return true;
                             }
                         }

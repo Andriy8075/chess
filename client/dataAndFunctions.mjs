@@ -1,4 +1,4 @@
-const socket = new WebSocket("ws://127.0.0.2:7992/play");
+const socket = new WebSocket("ws://127.0.0.1:7992/play");
 const appearance = {
     cellSize: 6,
     red: '#fff0f0',
@@ -74,25 +74,6 @@ const unDisplay = (...elementsId) => {
         element.style.display = 'none';
     }
 }
-// const canCastling = {
-//     king: true, leftRook: true, rightRook: true,
-// };
-//
-// const pieceForCastlingMoved = (pieceName) => {
-//     gameState.canCastling[pieceName] = false;
-// };
-//
-// let passant = {};
-//
-// const setPassant = (objectWithData) => {
-//     if (objectWithData) {
-//         gameState.passant.column = objectWithData.column;
-//         gameState.passant.id = objectWithData.id;
-//     } else {
-//         gameState.passant.column = null;
-//         gameState.passant.id = null;
-//     }
-// };
 
 export {
     socket, appearance, gameState, changeVar, sendPacket, display, unDisplay, startGameState

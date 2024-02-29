@@ -1,4 +1,4 @@
-import {changeVar, gameState} from "../data.mjs";
+import {changeVar, gameState} from "../dataAndFunctions.mjs";
 import {pieces} from "../arrangePieces/arrangePieces.mjs";
 
 const ownPieces = (pieceImage, id) => {

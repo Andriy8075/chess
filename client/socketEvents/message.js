@@ -1,12 +1,12 @@
 import {arrangePieces, changeCell, changePiecesArray, pieces} from "../arrangePieces/arrangePieces.mjs";
-import {appearance, changeVar, gameState, socket} from "../data.mjs";
+import {appearance, changeVar, gameState, sendPacket} from "../dataAndFunctions.mjs";
 import {notEnoughPieces} from "../endOfGame/notEnoughPieces.mjs";
-import {attack} from "../moves/check.mjs";
+import {attack} from "../moves/attack.mjs";
 import {checkmate} from "../endOfGame/checkmate.mjs";
 import {stalemate} from "../endOfGame/stalemate.mjs";
 import {clear, repeatingTheSameMoves, writeDownPosition} from "../endOfGame/repeatingMoves.mjs";
-import {display, unDisplay} from "../data.mjs";
-import {rematchArrangePieces} from "../interface.mjs";
+import {display, unDisplay} from "../dataAndFunctions.mjs";
+import {rematchArrangePieces} from "../mainClientScript.mjs";
 
 const writeGameResultText = (text) => {
     const textField = document.getElementById("gameResult");
@@ -18,20 +18,13 @@ const writeGameResultText = (text) => {
 
 const endGame = (method, text) => {
     writeGameResultText(text);
-    const packet = {
-        method: method, userId: gameState.userId, text: text,
-    };
-    socket.send(JSON.stringify(packet));
+    sendPacket(method, {text: text});
 };
 
 const methods = {
     rematch: () => {
         if(gameState.rematch === 'user') {
             rematchArrangePieces(gameState.color === 'white' ? 'black' : 'white');
-            // localStorage.id = gameState.userId;
-            // localStorage.nextGame = 'rematch';
-            // localStorage.color = gameState.color === 'white' ? 'black' : 'white';
-            // location.reload();
         }
         else {
             gameState.rematch = 'opponent';
@@ -40,34 +33,33 @@ const methods = {
             nextGame.innerHTML = 'opponent wants rematch';
         }
     },
-    move: (parsedData) => {
-        const piece = pieces[parsedData.pieceId];
-
-        piece.HTMLImage.style.top = `${appearance.cellSize * parsedData.cellRow}em`;
-        piece.HTMLImage.style.left = `${appearance.cellSize * parsedData.cellColumn}em`;
-        changeCell(parsedData.cellRow, parsedData.cellColumn, pieces[parsedData.pieceId].id);
-        changeCell(pieces[parsedData.pieceId].row, pieces[parsedData.pieceId].column, null);
-        piece.row = parsedData.cellRow;
-        piece.column = parsedData.cellColumn;
-        if(parsedData.kill) {
-            pieces[parsedData.kill].HTMLImage.remove();
-            pieces[parsedData.kill] = null;
+    move: ({pieceId, toRow, toColumn, kill, passant, clearPosition}) => {
+        const piece = pieces[pieceId];
+        piece.HTMLImage.style.top = `${appearance.cellSize * toRow}em`;
+        piece.HTMLImage.style.left = `${appearance.cellSize * toColumn}em`;
+        changeCell(toRow, toColumn, pieces[pieceId].id);
+        changeCell(pieces[pieceId].row, pieces[pieceId].column, undefined);
+        piece.row = toRow;
+        piece.column = toColumn;
+        if(kill) {
+            pieces[kill].HTMLImage.remove();
+            pieces[kill] = null;
         }
-        if(!parsedData.passant) {
+        if(!passant) {
             changeVar(undefined, 'passant', 'column');
             changeVar(undefined, 'passant', 'id');
         }
         else {
-            changeVar(parsedData.passant.id, 'passant', 'id');
-            changeVar(parsedData.passant.column, 'passant', 'column');
+            changeVar(passant.id, 'passant', 'id');
+            changeVar(passant.column, 'passant', 'column');
         }
-        //setPassant(parsed.passant);
         changeVar(true, "moveOrder");
         if (notEnoughPieces()) {
             endGame("notEnoughPieces", "You have a draw. Reason: not enough pieces to continue game",);
             return;
         }
-        const attackingPiece = attack(gameState.color, gameState.kingRow, gameState.kingColumn, null);
+        const attackingPiece = attack({
+            color: gameState.color, toRow: gameState.kingRow, toColumn: gameState.kingColumn});
         if(attackingPiece) {
             if (checkmate(attackingPiece)) {
                 endGame("win", "You have checkmate and lost");
@@ -80,7 +72,7 @@ const methods = {
                 return;
             }
         }
-        if (parsedData.clear) {
+        if (clearPosition) {
             clear();
         }
         else {
@@ -90,30 +82,20 @@ const methods = {
                 endGame("repeatingTheSameMoves", "You have a draw. Reason: repeating the same moves",);
             }
         }
-        //move(parsed);
     },
-    // kill: () => {
-    //     pieces[parsed.pieceId].HTMLImage.remove();
-    //     pieces[parsed.pieceId] = null;
-    // },
-    // assignID: () => {
-    //     const yourIDLabel = document.getElementById(`id`);
-    //     yourIDLabel.innerHTML = `Your ID: ${parsed.userId}`;
-    // },
-    connectToID: (parsedData) => {
+    connectToID: ({color, userId}) => {
         changeVar(true, "inGame");
         display('chat');
-        if(parsedData.color) {
+        if(color) {
             const quickGame = document.getElementById('quickPlay');
             quickGame.style.display = 'none';
             const nextGame = document.getElementById('nextGame');
             nextGame.style.display = 'none';
-            arrangePieces(parsedData.color);
+            arrangePieces(color);
         }
         else {
             const labelConnectTo = document.getElementById(`connected`);
-            labelConnectTo.innerHTML = `You are connected to player with id ${parsedData.userId}`;
-            //connectedToID = parsed.userId;
+            labelConnectTo.innerHTML = `You are connected to player with id ${userId}`;
             const images = document.getElementsByClassName("chooseColorImages");
             for (const image of images) {
                 image.style.display = "flex";
@@ -129,8 +111,8 @@ const methods = {
         quickPlay.style.backgroundColor = appearance.green;
         changeVar(false, 'quickPlay');
     },
-    receiveColor: (parsedData) => {
-        arrangePieces(parsedData.color);
+    receiveColor: ({color}) => {
+        arrangePieces(color);
     },
     disconnect: () => {
         writeGameResultText("Your opponent disconnected, so you win");
@@ -139,32 +121,20 @@ const methods = {
         nextGame.style.display = 'block';
         unDisplay('rematch');
     },
-    killOnPassant: (parsedData) => {
+    killOnPassant: ({toColumn, pieceId}) => {
         const passantRow = 4;
-        changeCell(passantRow, parsedData.cellColumn, null);
-        pieces[parsedData.pieceId].HTMLImage.remove();
-        changePiecesArray(parsedData.pieceId, null);
+        changeCell(passantRow, toColumn, null);
+        pieces[pieceId].HTMLImage.remove();
+        changePiecesArray(pieceId, null);
     },
-    promotion: (parsedData) => {
-        const pawn = pieces[parsedData.pawn];
-        pawn.type = parsedData.type;
-        pawn.HTMLImage.src = `images/${gameState.oppositeColor}${parsedData.type}.png`;
-        if (parsedData.opponentId) {
-            pieces[parsedData.opponentId].HTMLImage.remove();
-            pieces[parsedData.opponentId] = null;
-        }
-        methods.move({
-            method: "doMove",
-            userId: gameState.userId,
-            pieceId: pawn.id,
-            cellRow: parsedData.cellRow,
-            cellColumn: parsedData.cellColumn,
-            clear: true,
-        });
+    promotion: ({pawnId, type, src}) => {
+        const pawn = pieces[pawnId];
+        pawn.type = type;
+        pawn.HTMLImage.src = src;
     },
-    message: (parsedData) => {
+    message: ({text}) => {
         const message = document.createElement('p');
-        message.innerHTML = `Opponent: ${parsedData.text}`;
+        message.innerHTML = `Opponent: ${text}`;
         message.style.display = 'flex';
         message.style.lineHeight = '0em';
         const messagesField = document.getElementById('chatMessages');
@@ -182,4 +152,5 @@ const onMessage = ({data}) => {
         writeGameResultText(parsed.text);
     }
 }
+
 export {onMessage}

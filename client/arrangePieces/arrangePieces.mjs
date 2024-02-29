@@ -1,6 +1,6 @@
 import {ownPieces} from "../onClick/ownPieces.mjs";
 import {clickableCells} from "./cells.mjs";
-import {appearance, changeVar, gameState} from "../data.mjs";
+import {appearance, changeVar, gameState} from "../dataAndFunctions.mjs";
 import {cellOrOpponent} from "../onClick/cellOrOpponent.mjs";
 import {Piece} from "./piece.mjs";
 

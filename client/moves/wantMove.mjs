@@ -1,51 +1,56 @@
 import {cells, changeCell, pieces, changePiecesArray} from "../arrangePieces/arrangePieces.mjs";
-import {changeVar, socket, gameState, appearance,} from "../data.mjs";
-import {checkAfterMove} from "./check.mjs";
+import {changeVar, sendPacket, gameState, appearance,} from "../dataAndFunctions.mjs";
+import {checkAfterMove} from "./attack.mjs";
 import {move} from "./move.mjs";
 import {canPieceMove} from "./canPieceMove.mjs";
 
 const wantMove = {
-    pawn: (Piece, toRow, toColumn, opponentPiece) => {
-        if (Piece.row !== 1) {
-            const rowDifference = Piece.row - toRow;
-            if (toColumn === Piece.column && !opponentPiece) {
+    pawn: (piece, {toRow, toColumn, killingPiece}) => {
+        if (piece.row !== 1) {
+            const rowDifference = piece.row - toRow;
+            if (toColumn === piece.column && !killingPiece) {
                 if (rowDifference === 1) {
-                    if (!checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
-                        move(Piece, toRow, toColumn, opponentPiece, true);
+                    if (!checkAfterMove({piece,toRow,toColumn,killingPiece})) {
+                        move({piece, toRow, toColumn, killingPiece,
+                            clearPosition: true});
                         return;
                     }
                 }
-                if (Piece.row === 6 && toRow === 4 && !checkAfterMove(Piece, toRow, toColumn, opponentPiece) && !cells[5][toColumn]) {
-                    move(Piece, toRow, toColumn, opponentPiece, true, {
-                        id: Piece.id, column: 7 - toColumn,
-                    });
+                if (piece.row === 6 && toRow === 4 && !checkAfterMove({piece,
+                    toRow, toColumn, killingPiece}) && !cells[5][toColumn]) {
+                    move({piece, toRow, toColumn, killingPiece,
+                        clearPosition: true, passant: {id: piece.id, column: 7 - toColumn}
+                });
                 }
             } else {
-                if (canPieceMove.pawn(Piece.row, Piece.column, toRow, toColumn, "killPiece",)) {
+                if (canPieceMove.pawn({
+                    fromRow: piece.row,
+                    fromColumn: piece.column,
+                    toRow, toColumn,
+                    moveType: "killPiece",})) {
                     if (gameState.moveOnPassantExist) {
                         changeVar(false, "moveOnPassantExist");
                         const PieceThatKillsOnPassant = pieces[cells[3][gameState.passant.column]];
                         const killId = PieceThatKillsOnPassant.id
                         pieces[killId].HTMLImage.remove();
                         changePiecesArray(killId, null);
-                        //kill(PieceThatKillsOnPassant.id);
-                        move(Piece, 2, toColumn, null, true);
+                        move({piece, toRow: 2, toColumn,
+                            clearPosition: true});
                         changeCell(3, toColumn, null);
-                        const packet = {
-                            method: "killOnPassant",
-                            userId: gameState.userId,
-                            cellColumn: 7 - toColumn,
+                        sendPacket('killOnPassant', {
+                            toColumn: 7 - toColumn,
                             pieceId: killId,
-                        };
-                        socket.send(JSON.stringify(packet));
-                    } else if (!checkAfterMove(Piece, toRow, toColumn, opponentPiece)) move(Piece, toRow, toColumn, opponentPiece, true);
+                        })
+                    } else if (!checkAfterMove({piece, toRow, toColumn, killingPiece}))
+                        move({piece, toRow, toColumn, killingPiece,
+                            clearPosition: true});
                 }
             }
         } else {
-            if (toColumn === Piece.column && !opponentPiece) {
-                if (!checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
+            if (toColumn === piece.column && !killingPiece) {
+                if (!checkAfterMove({piece, toRow, toColumn, killingPiece})) {
                     const backgroundImage = new Image(appearance.cellSize, appearance.cellSize);
-                    const divBoard = document.getElementById("divBoard");
+                    const divBoard = document.getElementById("boardDiv");
                     backgroundImage.style.backgroundColor = "#d5cd7f";
                     backgroundImage.style.zIndex = "5";
                     backgroundImage.style.display = "flex";
@@ -64,12 +69,13 @@ const wantMove = {
                     }
                 }
             }
-            if ((toColumn - Piece.column === 1 || toColumn - Piece.column === -1) && opponentPiece) {
-                if (!checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
+            if ((toColumn - piece.column === 1 || toColumn - piece.column === -1) && killingPiece) {
+                if (!checkAfterMove({piece, toRow, toColumn, killingPiece})) {
                     const pieceThatKills = pieces[cells[0][toColumn]];
                     changeVar(pieceThatKills.id, 'promotionKillingPieceId');
                     pieceThatKills.HTMLImage.style.backgroundColor = "#d5cd7f";
-                    const promotionImages = document.getElementsByClassName(`${gameState.color}PromotionImages`,);
+                    const promotionImages = document.getElementsByClassName(
+                        `${gameState.color}PromotionImages`,);
                     for (let image of promotionImages) {
                         image.style.display = "flex";
                     }
@@ -78,44 +84,53 @@ const wantMove = {
         }
     },
 
-    knight: (Piece, toRow, toColumn, opponentPiece) => {
-        if (canPieceMove.knight(Piece.row, Piece.column, toRow, toColumn) && !checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
-            move(Piece, toRow, toColumn, opponentPiece);
+    knight: (piece, {toRow, toColumn, killingPiece}) => {
+        if (canPieceMove.knight({fromRow: piece.row, fromColumn: piece.column,
+            toRow, toColumn}) &&
+            !checkAfterMove({piece, toRow, toColumn, killingPiece})) {
+            move({piece, toRow, toColumn, killingPiece});
             return true;
         }
     },
 
-    bishop: (Piece, toRow, toColumn, opponentPiece) => {
-        if (canPieceMove.bishop(Piece.row, Piece.column, toRow, toColumn) && !checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
-            move(Piece, toRow, toColumn, opponentPiece);
+    bishop: (piece, {toRow, toColumn, killingPiece}) => {
+        if (canPieceMove.bishop({fromRow: piece.row, fromColumn: piece.column,
+            toRow, toColumn}) && !checkAfterMove({piece, toRow, toColumn, killingPiece})) {
+            move({piece, toRow, toColumn, killingPiece});
             return true;
         }
     },
 
-    rook: (Piece, toRow, toColumn, opponentPiece) => {
-        if (canPieceMove.rook(Piece.row, Piece.column, toRow, toColumn) && !checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
-            if (Piece.column === 0) changeVar(undefined, 'canCastling', 'leftRook');
-            else if (Piece.column === 7) changeVar(undefined, 'canCastling', 'rightRook');
-            move(Piece, toRow, toColumn, opponentPiece);
+    rook: (piece, {toRow, toColumn, killingPiece}) => {
+        if (canPieceMove.rook({fromRow: piece.row, fromColumn: piece.column,
+            toRow, toColumn}) && !checkAfterMove({piece, toRow, toColumn, killingPiece})) {
+            if (piece.column === 0) changeVar(undefined, 'canCastling', 'leftRook');
+            else if (piece.column === 7) changeVar(undefined, 'canCastling', 'rightRook');
+            move({piece, toRow, toColumn, killingPiece});
             return true;
         }
     },
 
-    queen: (Piece, toRow, toColumn, opponentPiece) => {
-        if (canPieceMove.rook(Piece.row, Piece.column, toRow, toColumn)) {
-            if (!checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
-                move(Piece, toRow, toColumn, opponentPiece);
+    queen: (piece, {toRow, toColumn, killingPiece}) => {
+        if (canPieceMove.rook({fromRow: piece.row, fromColumn: piece.column,
+            toRow, toColumn})) {
+            if (!checkAfterMove({piece, toRow, toColumn, killingPiece})) {
+                move({piece, toRow, toColumn, killingPiece});
             }
-        } else if (canPieceMove.bishop(Piece.row, Piece.column, toRow, toColumn) && !checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
-            move(Piece, toRow, toColumn, opponentPiece);
+        } else if (canPieceMove.bishop({fromRow: piece.row, fromColumn: piece.column,
+            toRow, toColumn}) && !checkAfterMove({piece, toRow, toColumn,
+            killingPiece})) {
+            move({piece, toRow, toColumn, killingPiece});
         }
     },
 
-    king: (Piece, toRow, toColumn, opponentPiece) => {
-        if (canPieceMove.king(Piece.row, Piece.column, toRow, toColumn, "withCastling",) && !checkAfterMove(Piece, toRow, toColumn, opponentPiece)) {
+    king: (piece, {toRow, toColumn, killingPiece}) => {
+        if (canPieceMove.king({fromRow: piece.row, fromColumn: piece.column,
+            toRow, toColumn, moveType: "withCastling"}) && !checkAfterMove({piece,
+            toRow, toColumn, killingPiece})) {
             changeVar(toRow, "kingRow");
             changeVar(toColumn, "kingColumn");
-            move(Piece, toRow, toColumn, opponentPiece);
+            move({piece, toRow, toColumn, killingPiece});
             changeVar(undefined, 'canCastling', 'king');
         }
     },
