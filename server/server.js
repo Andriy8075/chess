@@ -31,15 +31,9 @@ const methods = {
   assignID: (connection, {userId}) => {
     connection.id = userId;
     sockets[userId] = connection;
-    // const packet = {
-    //   method: 'assignID', userId: data.userId,
-    // };
-    // sendPacket(data.userId, packet);
   },
   chooseColor: (connection, {color, userId}) => {
     const oppositeColor = color === 'white' ? 'black' : 'white';
-    // if (data.color === "white") oppositeColor = "black";
-    // else oppositeColor = "white";
     const method = 'receiveColor';
     const ourPacket = { method, color: color };
     const opponentPacket = { method, color: oppositeColor };
