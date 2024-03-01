@@ -1,8 +1,8 @@
-import {pieces} from "./arrangePieces.mjs";
+import {pieces} from "../arrangePieces/arrangePieces.mjs";
 import {gameState, sendPacket} from "../dataAndFunctions.mjs";
-import {wantMove} from "../moves/wantMove.mjs";
-import {canPieceMove} from "../moves/canPieceMove.mjs";
-import {move} from "../moves/move.mjs";
+import {wantMove} from "./wantMove.mjs";
+import {canPieceMove} from "./canPieceMove.mjs";
+import {move} from "./move.mjs";
 
 const onPromotion = (promotionImage) => {
     const backgroundImage = document.getElementById("backgroundImage");
@@ -16,7 +16,7 @@ const onPromotion = (promotionImage) => {
             }
         }
     }
-    const changePawnToAnotherPiece = (row, column, killingPiece) => {
+    const changePawnToAnotherPiece = (row, column, killPiece) => {
         pawn.HTMLImage.src = promotionImage.src;
         const type = promotionImage.id.slice(5).toLowerCase();
         pawn.type = type;
@@ -29,13 +29,18 @@ const onPromotion = (promotionImage) => {
                 return true;
         };
         move({
-            piece:pawn,
+            piece: pawn,
             toRow: row,
             toColumn: column,
-            killingPiece,
-            clearPosition: true});
+            killPiece,
+            clearPosition: true,
+            dontSendPacket: true
+        });
         sendPacket('promotion', {
+            toColumn: 7 - column,
+            opponentId: killPiece ? killPiece.id : undefined,
             pawnId: pawn.id,
+            killId: killPiece ? killPiece.id : undefined,
             type: type,
             src: promotionImage.src,
         });
@@ -44,8 +49,8 @@ const onPromotion = (promotionImage) => {
         changePawnToAnotherPiece(0, gameState.promotionImageColumn);
         backgroundImage.remove();
     } else {
-        const killingPiece = pieces[gameState.promotionKillingPieceId];
-        changePawnToAnotherPiece(killingPiece.row, killingPiece.column, killingPiece);
+        const killPiece = pieces[gameState.promotionKillingPieceId];
+        changePawnToAnotherPiece(killPiece.row, killPiece.column, killPiece);
     }
 }
 

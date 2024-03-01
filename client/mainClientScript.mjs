@@ -2,7 +2,7 @@ import {changeVar, socket, appearance, gameState, sendPacket, unDisplay, display
 import {onOpen} from "./socketEvents/open.mjs";
 import {onMessage} from "./socketEvents/message.js";
 import {arrangePieces, pieces} from "./arrangePieces/arrangePieces.mjs";
-import {onPromotion} from "./arrangePieces/promotion.mjs";
+import {onPromotion} from "./moves/promotion.mjs";
 
 changeVar(appearance.cellSize, "cellSize");
 

@@ -6,7 +6,7 @@ const appearance = {
 }
 const startGameState = {
     inGame: false,
-    moveOrder: false,
+    turnToMove: false,
     kingRow: undefined,
     kingColumn: undefined,
     kingID: undefined,
@@ -30,10 +30,10 @@ const gameState = {
     rematch: undefined,
     quickPlay: false,
     inGame: false,
-    moveOrder: false,
+    turnToMove: false,
     kingRow: undefined,
     kingColumn: undefined,
-    kingID: undefined,
+    kingId: undefined,
     color: undefined,
     oppositeColor: undefined,
     chosenPiece: undefined,

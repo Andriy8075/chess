@@ -6,9 +6,9 @@ const canMoveTo = (piece, toRow, toColumn) => {
     if (!cells[toRow][toColumn]) {
         if (!checkAfterMove({piece, toRow, toColumn})) return true;
     } else {
-        let killingPiece = pieces[cells[toRow][toColumn]];
-        if (killingPiece.color === gameState.oppositeColor) {
-            if (!checkAfterMove({piece, toRow, toColumn, killingPiece}))
+        let killPiece = pieces[cells[toRow][toColumn]];
+        if (killPiece.color === gameState.oppositeColor) {
+            if (!checkAfterMove({piece, toRow, toColumn, killPiece}))
                 return true;
         }
     }
@@ -64,23 +64,23 @@ const moveExist = {
         if (!cells[piece.row - 1][piece.column] && !checkAfterMove(
             {piece, toRow: piece.row -1, toColumn: piece.column}))
             return true;
-        let killingPiece;
+        let killPiece;
         if (piece.column > 0) {
             const CellsMinus1Element = cells[piece.row - 1][piece.column - 1];
             if (CellsMinus1Element) {
-                killingPiece = pieces[CellsMinus1Element];
-                if (killingPiece.color === gameState.oppositeColor && !checkAfterMove(
+                killPiece = pieces[CellsMinus1Element];
+                if (killPiece.color === gameState.oppositeColor && !checkAfterMove(
                     {piece, toRow: piece.row -1, 
-                        toColumn: piece.column -1, killingPiece})) return true;
+                        toColumn: piece.column -1, killPiece})) return true;
             }
         }
 
         if (piece.column < 7) {
             const CellsPlus1Element = cells[piece.row - 1][piece.column + 1];
             if (CellsPlus1Element) {
-                killingPiece = pieces[CellsPlus1Element];
-                if (killingPiece.color === gameState.oppositeColor && !checkAfterMove({
-                    piece, killingPiece,
+                killPiece = pieces[CellsPlus1Element];
+                if (killPiece.color === gameState.oppositeColor && !checkAfterMove({
+                    piece, killPiece,
                     toRow: piece.row -1,
                     toColumn: piece.column +1,
                     })) return true;

@@ -22,7 +22,7 @@ const clear = () => {
     previousMoves = [];
 };
 
-function shallowEqual(object1, object2) {
+function compareObjects(object1, object2) {
     if (object1 && object2) {
         const keys1 = Object.keys(object1);
         const keys2 = Object.keys(object2);
@@ -44,13 +44,14 @@ function shallowEqual(object1, object2) {
 const compareArrays = (array1, array2) => {
     if (array1 && array2) {
         for (let j = 0; j < array1.length; j++) {
-            if (!shallowEqual(array1[j], array2[j])) return;
+            if (!compareObjects(array1[j], array2[j])) return;
         }
         return true;
     } else if (array1 === array2) return true;
 };
 
 const repeatingTheSameMoves = () => {
+    if (!previousMoves.length) return;
     const currentMove = previousMoves[previousMoves.length - 1];
     let theSameMoves = -1;
     for (let i = 1; i <= previousMoves.length; i++) {

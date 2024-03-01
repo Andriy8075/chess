@@ -24,12 +24,12 @@ const arrangePieces = (color) => {
     if (gameState.color === "white") {
         order = ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook",];
         changeVar("black", "oppositeColor");
-        changeVar(true, "moveOrder");
+        changeVar(true, "turnToMove");
         pieceID = 1;
         changePieceID = () => pieceID++;
         changeVar(7, "kingRow");
         changeVar(4, "kingColumn");
-        changeVar(29, "kingID");
+        changeVar(29, "kingId");
     } else {
         order = ["rook", "knight", "bishop", "king", "queen", "bishop", "knight", "rook",];
         changeVar("white", "oppositeColor");
@@ -38,7 +38,7 @@ const arrangePieces = (color) => {
         changePieceID = () => pieceID--;
         changeVar(7, "kingRow");
         changeVar(3, "kingColumn");
-        changeVar(5, "kingID");
+        changeVar(5, "kingId");
     }
 
     cells = [];

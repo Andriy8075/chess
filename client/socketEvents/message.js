@@ -12,7 +12,7 @@ const writeGameResultText = (text) => {
     const textField = document.getElementById("gameResult");
     textField.style.display = 'block';
     if(!textField.innerHTML) textField.innerHTML = text;
-    changeVar(false, "moveOrder");
+    changeVar(false, "turnToMove");
     display('rematch', 'newGame');
 };
 
@@ -21,6 +21,57 @@ const endGame = (method, text) => {
     sendPacket(method, {text: text});
 };
 
+const move = ({pieceId, toRow, toColumn, killId, passant: setPassant, clearPosition}) => {
+    const piece = pieces[pieceId];
+    piece.HTMLImage.style.top = `${appearance.cellSize * toRow}em`;
+    piece.HTMLImage.style.left = `${appearance.cellSize * toColumn}em`;
+    changeCell(toRow, toColumn, piece.id);
+    changeCell(piece.row, piece.column, undefined);
+    piece.row = toRow;
+    piece.column = toColumn;
+    if(killId) {
+        pieces[killId].HTMLImage.remove();
+        pieces[killId] = null;
+    }
+    if(!setPassant) {
+        changeVar(undefined, 'passant', 'column');
+        changeVar(undefined, 'passant', 'id');
+    }
+    else {
+        changeVar(setPassant.id, 'passant', 'id');
+        changeVar(setPassant.column, 'passant', 'column');
+    }
+    if (clearPosition) {
+        clear();
+    }
+    else {
+        writeDownPosition();
+    }
+}
+
+const checkForEndOfGame = () => {
+    if (notEnoughPieces()) {
+        endGame("notEnoughPieces", "You have a draw. Reason: not enough pieces to continue game");
+        return;
+    }
+    if (repeatingTheSameMoves()) {
+        endGame("repeatingTheSameMoves", "You have a draw. Reason: repeating the same moves");
+        return;
+    }
+    const attackingPiece = attack({
+        color: gameState.color, toRow: gameState.kingRow, toColumn: gameState.kingColumn});
+    if(attackingPiece) {
+        if (checkmate(attackingPiece)) {
+            endGame("win", "You have checkmate and lost");
+        }
+    }
+    else {
+        if (stalemate()) {
+            endGame("stalemate", "You have a draw. Reason: stalemate");
+        }
+    }
+    changeVar(true, "turnToMove");
+}
 const methods = {
     rematch: () => {
         if(gameState.rematch === 'user') {
@@ -33,55 +84,58 @@ const methods = {
             nextGame.innerHTML = 'opponent wants rematch';
         }
     },
-    move: ({pieceId, toRow, toColumn, kill, passant, clearPosition}) => {
-        const piece = pieces[pieceId];
-        piece.HTMLImage.style.top = `${appearance.cellSize * toRow}em`;
-        piece.HTMLImage.style.left = `${appearance.cellSize * toColumn}em`;
-        changeCell(toRow, toColumn, pieces[pieceId].id);
-        changeCell(pieces[pieceId].row, pieces[pieceId].column, undefined);
-        piece.row = toRow;
-        piece.column = toColumn;
-        if(kill) {
-            pieces[kill].HTMLImage.remove();
-            pieces[kill] = null;
-        }
-        if(!passant) {
-            changeVar(undefined, 'passant', 'column');
-            changeVar(undefined, 'passant', 'id');
-        }
-        else {
-            changeVar(passant.id, 'passant', 'id');
-            changeVar(passant.column, 'passant', 'column');
-        }
-        changeVar(true, "moveOrder");
-        if (notEnoughPieces()) {
-            endGame("notEnoughPieces", "You have a draw. Reason: not enough pieces to continue game",);
-            return;
-        }
-        const attackingPiece = attack({
-            color: gameState.color, toRow: gameState.kingRow, toColumn: gameState.kingColumn});
-        if(attackingPiece) {
-            if (checkmate(attackingPiece)) {
-                endGame("win", "You have checkmate and lost");
-                return;
-            }
-        }
-        else {
-            if (stalemate()) {
-                endGame("stalemate", "You have a draw. Reason: stalemate");
-                return;
-            }
-        }
-        if (clearPosition) {
-            clear();
-        }
-        else {
-            writeDownPosition();
-            const end = repeatingTheSameMoves();
-            if (end) {
-                endGame("repeatingTheSameMoves", "You have a draw. Reason: repeating the same moves",);
-            }
-        }
+    move: ({pieceId, toRow, toColumn, killId, passant, clearPosition}) => {
+        move({pieceId, toRow, toColumn, killId,
+            passant, clearPosition});
+        checkForEndOfGame();
+        // const piece = pieces[pieceId];
+        // piece.HTMLImage.style.top = `${appearance.cellSize * toRow}em`;
+        // piece.HTMLImage.style.left = `${appearance.cellSize * toColumn}em`;
+        // changeCell(toRow, toColumn, piece.id);
+        // changeCell(piece.row, piece.column, undefined);
+        // piece.row = toRow;
+        // piece.column = toColumn;
+        // if(kill) {
+        //     pieces[kill].HTMLImage.remove();
+        //     pieces[kill] = null;
+        // }
+        // if(!passant) {
+        //     changeVar(undefined, 'passant', 'column');
+        //     changeVar(undefined, 'passant', 'id');
+        // }
+        // else {
+        //     changeVar(passant.id, 'passant', 'id');
+        //     changeVar(passant.column, 'passant', 'column');
+        // }
+        // if (notEnoughPieces()) {
+        //     endGame("notEnoughPieces", "You have a draw. Reason: not enough pieces to continue game",);
+        //     return;
+        // }
+        // const attackingPiece = attack({
+        //     color: gameState.color, toRow: gameState.kingRow, toColumn: gameState.kingColumn});
+        // if(attackingPiece) {
+        //     if (checkmate(attackingPiece)) {
+        //         endGame("win", "You have checkmate and lost");
+        //         return;
+        //     }
+        // }
+        // else {
+        //     if (stalemate()) {
+        //         endGame("stalemate", "You have a draw. Reason: stalemate");
+        //         return;
+        //     }
+        // }
+        // if (clearPosition) {
+        //     clear();
+        // }
+        // else {
+        //     writeDownPosition();
+        //     const end = repeatingTheSameMoves();
+        //     if (end) {
+        //         endGame("repeatingTheSameMoves", "You have a draw. Reason: repeating the same moves",);
+        //     }
+        // }
+        // changeVar(true, "turnToMove");
     },
     connectToID: ({color, userId}) => {
         changeVar(true, "inGame");
@@ -121,16 +175,41 @@ const methods = {
         nextGame.style.display = 'block';
         unDisplay('rematch');
     },
-    killOnPassant: ({toColumn, pieceId}) => {
+    passant: ({pieceId, toColumn, killId}) => {
         const passantRow = 4;
-        changeCell(passantRow, toColumn, null);
-        pieces[pieceId].HTMLImage.remove();
-        changePiecesArray(pieceId, null);
+        changeCell(passantRow, toColumn, undefined);
+        pieces[killId].HTMLImage.remove();
+        changePiecesArray(killId, null);
+        move({pieceId, toRow: 5, toColumn, clearPosition: true});
+        checkForEndOfGame();
     },
-    promotion: ({pawnId, type, src}) => {
+    promotion: ({pawnId, type, src, toColumn, killId}) => {
         const pawn = pieces[pawnId];
         pawn.type = type;
         pawn.HTMLImage.src = src;
+        move({
+            pieceId: pawnId,
+            toRow: 7,
+            toColumn,
+            killId: killId,
+            clearPosition: true,
+        });
+        checkForEndOfGame();
+    },
+    castling: ({rookId, kingId, moveKingToColumn, moveRookToColumn}) => {
+        move({
+            pieceId: rookId,
+            toRow: 0,
+            toColumn: moveRookToColumn,
+            clearPosition: true
+        });
+        move({
+            pieceId: kingId,
+            toRow: 0,
+            toColumn: moveKingToColumn,
+            clearPosition: true
+        });
+        checkForEndOfGame();
     },
     message: ({text}) => {
         const message = document.createElement('p');

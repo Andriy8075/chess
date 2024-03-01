@@ -4,7 +4,7 @@ import {cells, pieces} from "../arrangePieces/arrangePieces.mjs";
 //import {stalemate} from "./stalemate.mjs";
 
 const checkmate = (attackingPiece) => {
-    const king = pieces[gameState.kingID];
+    const king = pieces[gameState.kingId];
     for (let row = gameState.kingRow - 1; row <= gameState.kingRow + 1; row++) {
         if (row >= 0 && row < 8) {
             for (let column = gameState.kingColumn - 1; column <= gameState.kingColumn + 1; column++) {
@@ -12,9 +12,9 @@ const checkmate = (attackingPiece) => {
                     if (row === gameState.kingRow && column === gameState.kingColumn) continue;
                     if (!cells[row][column] && !checkAfterMove({
                         piece: king, toRow: row, toColumn: column})) return;
-                    const killingPiece = pieces[cells[row][column]];
-                    if (killingPiece && killingPiece.color === gameState.oppositeColor && !checkAfterMove(
-                        {piece: king, toRow: row, toColumn: column, killingPiece})) {
+                    const killPiece = pieces[cells[row][column]];
+                    if (killPiece && killPiece.color === gameState.oppositeColor && !checkAfterMove(
+                        {piece: king, toRow: row, toColumn: column, killPiece})) {
                         return;
                     }
                 }
@@ -49,7 +49,7 @@ const checkmate = (attackingPiece) => {
                 piece: savingPiece,
                 toRow: attackingPiece.row,
                 toColumn: attackingPiece.column,
-                killingPiece: attackingPiece})) {
+                killPiece: attackingPiece})) {
                 return killAttackingPiece(savingPiece.id + 1);
             }
             ignorePieces = [king];

@@ -36,7 +36,7 @@ const attack = ({color, toRow, toColumn, ignorePieces, moveType = "makeCheck", f
     }
 };
 
-const checkAfterMove = ({piece, toRow, toColumn, killingPiece}) => {
+const checkAfterMove = ({piece, toRow, toColumn, killPiece}) => {
     const previousRow = piece.row;
     const previousColumn = piece.column;
     piece.row = toRow;
@@ -50,12 +50,12 @@ const checkAfterMove = ({piece, toRow, toColumn, killingPiece}) => {
     }
 
     let result;
-    if (killingPiece) {
+    if (killPiece) {
         if (attack({
             color: gameState.color,
             toRow: gameState.kingRow,
             toColumn: gameState.kingColumn,
-            ignorePieces: [killingPiece]})) {
+            ignorePieces: [killPiece]})) {
             result = true;
         }
     } else {
@@ -72,7 +72,7 @@ const checkAfterMove = ({piece, toRow, toColumn, killingPiece}) => {
     }
     piece.row = previousRow;
     piece.column = previousColumn;
-    changeCell(toRow, toColumn, killingPiece ? killingPiece.id : null);
+    changeCell(toRow, toColumn, killPiece ? killPiece.id : null);
     changeCell(previousRow, previousColumn, piece.id);
     return result;
 };
