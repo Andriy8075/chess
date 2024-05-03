@@ -1,5 +1,5 @@
 :root {
-    --cellSize: 6em;
+    --cellSize: 6;
     --green: #f0fff0;
     --red: #fff0f0;
 }
@@ -16,8 +16,8 @@
 
 .boardImage {
     position: relative;
-    width: calc(8*var(--cellSize));
-    height: calc(8*var(--cellSize));
+    width: calc(8*var(--cellSize)*1em);
+    height: calc(8*var(--cellSize)*1em);
 }
 
 .pieces {
@@ -116,10 +116,10 @@
 .chatMessages {
     height: 24em;
     line-height: 3em;
-    overflow: scroll;
+    overflow: auto;
     border: thin #000 solid;
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
 }
 
 .inputMessage {

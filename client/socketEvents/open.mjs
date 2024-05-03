@@ -1,4 +1,11 @@
-import {changeVar, gameState, socket, display, unDisplay} from "../dataAndFunctions.mjs";
+import {
+    changeVar,
+    gameState,
+    socket,
+    display,
+    unDisplay,
+    sendPacket
+} from "../dataAndFunctions.mjs";
 import {arrangePieces} from "../arrangePieces/arrangePieces.mjs";
 
 const getID = () => {
@@ -18,10 +25,11 @@ const onOpen = () => {
     }
     else {
         changeVar(getID(), "userId");
-        const packet = {
-            method: "assignID", userId: gameState.userId,
-        };
-        socket.send(JSON.stringify(packet));
+        sendPacket("assignID")
+        // const packet = {
+        //     method: "assignID", userId: gameState.userId,
+        // };
+        // socket.send(JSON.stringify(packet));
         display('quickPlay');
         display('playWithFriend');
     }

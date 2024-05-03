@@ -1,175 +1,242 @@
-import {changeVar, gameState} from "../dataAndFunctions.mjs";
-import {attack, checkAfterMove} from "../moves/attack.mjs";
+import {
+    changeVar,
+    gameState,
+    boardSize,
+    countOfPieces,
+    fistColorPieceMaxId,
+} from "../dataAndFunctions.mjs";
+import {attack, checkAfterMove} from "../moves/attackAndCheck.mjs";
 import {cells, pieces} from "../arrangePieces/arrangePieces.mjs";
-//import {stalemate} from "./stalemate.mjs";
 
-const checkmate = (attackingPiece) => {
-    const king = pieces[gameState.kingId];
-    for (let row = gameState.kingRow - 1; row <= gameState.kingRow + 1; row++) {
-        if (row >= 0 && row < 8) {
-            for (let column = gameState.kingColumn - 1; column <= gameState.kingColumn + 1; column++) {
-                if (column >= 0 && column < 8) {
-                    if (row === gameState.kingRow && column === gameState.kingColumn) continue;
-                    if (!cells[row][column] && !checkAfterMove({
-                        piece: king, toRow: row, toColumn: column})) return;
-                    const killPiece = pieces[cells[row][column]];
-                    if (killPiece && killPiece.color === gameState.oppositeColor && !checkAfterMove(
-                        {piece: king, toRow: row, toColumn: column, killPiece})) {
-                        return;
-                    }
-                }
-            }
-        }
-    }
-    const secondPieceThatMakeCheck = attack({
-        color: gameState.color,
-        toRow: gameState.kingRow,
-        toColumn: gameState.kingColumn,
-        ignorePieces: [attackingPiece]
-    });
-    if (secondPieceThatMakeCheck) {
-        return "checkmate";
-    }
-    let ignorePieces = [king];
-    const killAttackingPiece = (i) => {
-        const savingPiece = attack({
-            color: gameState.oppositeColor,
-            toRow: attackingPiece.row,
-            toColumn: attackingPiece.column,
-            ignoringPieces: ignorePieces,
-            moveType: "killPiece",
-            firstPieceId: i
-        });
-        if (savingPiece) {
-            if (gameState.moveOnPassantExist) {
-                changeVar(false, "moveOnPassantExist");
-                return true;
-            }
-            if (checkAfterMove({
-                piece: savingPiece,
-                toRow: attackingPiece.row,
-                toColumn: attackingPiece.column,
-                killPiece: attackingPiece})) {
-                return killAttackingPiece(savingPiece.id + 1);
-            }
-            ignorePieces = [king];
-            return true;
-        }
-        ignorePieces = [king];
-    };
-    const hideKing = (toRow, toColumn, i) => {
-        const savingPiece = attack({
-            color: gameState.oppositeColor,
-            toRow, toColumn,
-            ignoringPieces: ignorePieces,
-            moveType: "hideKing",
-            firstPieceId: i});
-        if (savingPiece) {
-            if (gameState.moveOnPassantExist) return true;
-            if (checkAfterMove({piece: savingPiece, toRow, toColumn})) {
-                return hideKing(toRow, toColumn, savingPiece.id + 1);
-            }
-            ignorePieces = [king];
-            return true;
-        }
-        ignorePieces = [king];
-    };
-    if (!killAttackingPiece()) {
-        ignorePieces = [king];
-        if (attackingPiece.type === "pawn" || attackingPiece.type === "knight") return "checkmate";
-        const checkFromRook = () => {
-            if (attackingPiece.column === gameState.kingColumn) {
-                if (attackingPiece.row < gameState.kingRow) {
-                    for (let currentCellRow = gameState.kingRow - 1; currentCellRow > attackingPiece.row; currentCellRow--) {
-                        if (hideKing(currentCellRow, gameState.kingColumn)) {
-                            return;
-                        }
-                    }
-                    return "checkmate";
-                } else {
-                    for (let currentCellRow = gameState.kingRow + 1; currentCellRow < attackingPiece.row; currentCellRow++) {
-                        if (hideKing(currentCellRow, gameState.kingColumn)) {
-                            return;
-                        }
-                    }
-                    return "checkmate";
-                }
-            } else {
-                if (attackingPiece.column < gameState.kingColumn) {
-                    for (let currentCellColumn = gameState.kingColumn - 1;
-                         currentCellColumn > attackingPiece.column; currentCellColumn--) {
-                        if (hideKing(gameState.kingRow, currentCellColumn)) {
-                            return;
-                        }
-                    }
-                    return "checkmate";
-                } else {
-                    for (let currentCellColumn = gameState.kingColumn + 1; currentCellColumn < attackingPiece.column;
-                         currentCellColumn++) {
-                        if (hideKing(gameState.kingRow, currentCellColumn)) {
-                            return;
-                        }
-                    }
-                    return "checkmate";
-                }
-            }
-        };
-        const checkFromBishop = () => {
-            if (attackingPiece.row < gameState.kingRow) {
-                if (attackingPiece.column < gameState.kingColumn) {
-                    let currentCellColumn = gameState.kingColumn - 1;
-                    for (let currentCellRow = gameState.kingRow - 1; currentCellRow > attackingPiece.row;
-                         currentCellRow--, currentCellColumn--) {
-                        if (hideKing(currentCellRow, currentCellColumn)) {
-                            return;
-                        }
-                    }
-                    return "checkmate";
-                } else {
-                    let currentCellColumn = gameState.kingColumn + 1;
-                    for (let currentCellRow = gameState.kingRow - 1; currentCellRow > attackingPiece.row;
-                         currentCellRow--, currentCellColumn++) {
-                        if (hideKing(currentCellRow, currentCellColumn)) {
-                            return;
-                        }
-                    }
-                    return "checkmate";
-                }
-            } else {
-                if (attackingPiece.column < gameState.kingColumn) {
-                    let currentCellColumn = gameState.kingColumn - 1;
-                    for (let currentCellRow = gameState.kingRow + 1; currentCellRow < attackingPiece.row;
-                         currentCellRow++, currentCellColumn--) {
-                        if (hideKing(currentCellRow, currentCellColumn)) {
-                            return;
-                        }
-                    }
-                    return "checkmate";
-                } else {
-                    let currentCellColumn = gameState.kingColumn + 1;
-                    for (let currentCellRow = gameState.kingRow + 1; currentCellRow < attackingPiece.row;
-                         currentCellRow++, currentCellColumn++) {
-                        if (hideKing(currentCellRow, currentCellColumn)) {
-                            return;
-                        }
-                    }
-                    return "checkmate";
-                }
-            }
-        };
-
-        if (attackingPiece.type === "rook") {
-            return checkFromRook();
-        }
-        if (attackingPiece.type === "bishop") {
-            return checkFromBishop();
-        }
-        if (attackingPiece.type === "queen") {
-            if (attackingPiece.column === gameState.kingColumn || attackingPiece.row === gameState.kingRow) {
-                return checkFromRook();
-            } else return checkFromBishop();
-        }
-    }
+let king;
+const defineKing = () => {
+    king = pieces[gameState.kingId];
 }
 
-export {checkmate};
+const canKillAttackingPiece = (firstPieceId) => {
+    const { oppositeColor, attackingPiece } = gameState;
+    const savingPiece = attack({
+        color: oppositeColor,
+        toRow: attackingPiece.row,
+        toCol: attackingPiece.col,
+        ignorePieces: [king],
+        moveType: "killOpponentPiece",
+        firstPieceId: firstPieceId,
+    });
+    if (savingPiece) {
+        if (gameState.moveOnPassantExist) {
+            changeVar(false, "moveOnPassantExist");
+            return true;
+        }
+        const checkAfterKillAttackingPiece = checkAfterMove({
+            piece: savingPiece,
+            toRow: attackingPiece.row,
+            toCol: attackingPiece.col,
+            killPiece: attackingPiece
+        });
+        if (checkAfterKillAttackingPiece) {
+            if(savingPiece.id === countOfPieces ||
+                savingPiece.id === fistColorPieceMaxId){
+                return false
+            }
+            return canKillAttackingPiece(savingPiece.id + 1);
+        }
+        return true;
+    }
+};
+
+const hideKing = (toRow, toCol, firstPieceId) => {
+    const { oppositeColor } = gameState;
+    const savingPiece = attack(
+        {
+            color: oppositeColor,
+            toRow, toCol,
+            ignorePieces: [king],
+            moveType: "withoutKill",
+            firstPieceId});
+    if(!savingPiece) return false;
+    if (gameState.moveOnPassantExist) {
+        changeVar(false, "moveOnPassantExist");
+        return true;
+    }
+    const isCheckAfterMove = checkAfterMove(
+        {
+            piece: savingPiece,
+            toRow, toCol
+        });
+    if (isCheckAfterMove) {
+        if(savingPiece.id === countOfPieces ||
+            savingPiece.id === fistColorPieceMaxId){
+            return false
+        }
+        return hideKing(
+            toRow, toCol, savingPiece.id + 1
+        );
+    }
+    return true;
+};
+
+const checkFromRook = () => {
+    const { attackingPiece, kingRow, kingCol } = gameState;
+    if (attackingPiece.col === kingCol) {
+        if (attackingPiece.row < kingRow) {
+            for (let currentCellRow = kingRow - 1;
+                 currentCellRow > attackingPiece.row;
+                 currentCellRow--) {
+                if (hideKing(currentCellRow, kingCol)) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            for (let currentCellRow = kingRow + 1;
+                 currentCellRow < attackingPiece.row;
+                 currentCellRow++) {
+                if (hideKing(currentCellRow, kingCol)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    } else {
+        if (attackingPiece.col < kingCol) {
+            for (let currentCellCol = kingCol - 1;
+                 currentCellCol > attackingPiece.col;
+                 currentCellCol--) {
+                if (hideKing(kingRow, currentCellCol)) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            for (let currentCellCol = kingCol + 1;
+                 currentCellCol < attackingPiece.col;
+                 currentCellCol++) {
+                if (hideKing(kingRow, currentCellCol)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+};
+
+const checkFromBishop = () => {
+    const { attackingPiece, kingRow, kingCol } = gameState;
+    if (attackingPiece.row < kingRow) {
+        if (attackingPiece.col < kingCol) {
+            let currentCellCol = kingCol - 1;
+            for (let currentCellRow = kingRow - 1;
+                 currentCellRow > attackingPiece.row;
+                 currentCellRow--, currentCellCol--) {
+                if (hideKing(currentCellRow, currentCellCol)) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            let currentCellCol = kingCol + 1;
+            for (let currentCellRow = kingRow - 1;
+                 currentCellRow > attackingPiece.row;
+                 currentCellRow--, currentCellCol++) {
+                if (hideKing(currentCellRow, currentCellCol)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    } else {
+        if (attackingPiece.col < kingCol) {
+            let currentCellCol = kingCol - 1;
+            for (let currentCellRow = kingRow + 1;
+                 currentCellRow < attackingPiece.row;
+                 currentCellRow++, currentCellCol--) {
+                if (hideKing(currentCellRow, currentCellCol)) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            let currentCellCol = kingCol + 1;
+            for (let currentCellRow = kingRow + 1;
+                 currentCellRow < attackingPiece.row;
+                 currentCellRow++, currentCellCol++) {
+                if (hideKing(currentCellRow, currentCellCol)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+};
+
+const checkmate = () => {
+
+    const { attackingPiece, kingRow, kingCol, color} = gameState;
+
+    {
+        for (let row = kingRow - 1; row <= kingRow + 1; row++) {
+            if (row < 0 || row >= boardSize) continue;
+            for (let col = kingCol - 1; col <= kingCol + 1;
+                 col++) {
+                if (col < 0 || col >= boardSize) continue;
+                if (row === kingRow && col === kingCol) continue;
+                const pieceId = cells[row][col];
+                if(pieceId) {
+                    const piece = pieces[pieceId];
+                    if(piece.color === color) continue;
+                    const isCheckAfterMove = checkAfterMove(
+                        {
+                        piece: king,
+                        toRow: row,
+                        toCol: col,
+                        killPiece: piece
+                    });
+                    if(!isCheckAfterMove) return false;
+                }
+                else {
+                    const isCheckAfterMove = checkAfterMove(
+                        {
+                        piece: king,
+                        toRow: row,
+                        toCol: col,
+                    });
+                    if(!isCheckAfterMove) return false;
+                }
+            }
+        }
+    }
+
+    {
+        const secondPieceThatMakeCheck = attack({
+            color,
+            toRow: kingRow,
+            toCol: kingCol,
+            ignorePieces: [attackingPiece],
+        });
+        if (secondPieceThatMakeCheck) return true;
+    }
+
+    {
+        if(canKillAttackingPiece()) return false;
+        if (attackingPiece.type === "pawn" || attackingPiece.type === "knight")
+            return true;
+    }
+
+    if (attackingPiece.type === "rook") {
+        return checkFromRook();
+    }
+    if (attackingPiece.type === "bishop") {
+        return checkFromBishop();
+    }
+    if (attackingPiece.type === "queen") {
+        if (attackingPiece.col === kingCol ||
+            attackingPiece.row === kingRow) {
+            return checkFromRook();
+        }
+        return checkFromBishop();
+    }
+
+}
+
+export {checkmate, defineKing};

@@ -6,7 +6,8 @@ const {OPEN, Server} = require('ws');
 
 const index = fs.readFileSync('../client/index.html', 'utf8');
 
-const server = http.createServer((req, res) => {
+const server = http.createServer
+((req, res) => {
   res.writeHead(200);
   res.end(index);
 });
@@ -22,9 +23,9 @@ let waitingGame = null;
 
 const sendPacket = (user, data) => {
   const connection = sockets[user];
-  const sent = connection && connection.readyState === OPEN;
-  if (sent) connection.send(JSON.stringify(data));
-  return sent;
+  const canSent = connection && connection.readyState === OPEN;
+  if (canSent) connection.send(JSON.stringify(data));
+  return canSent;
 };
 
 const methods = {
@@ -62,27 +63,26 @@ const methods = {
     }
   },
   quickPlay: (connection, {userId, quickPlay}) => {
-    if(!sockets[userId].connectedTo) {
-      if(!quickPlay) {
-        if(waitingGame) {
-          methods.connectToID(connection, {
-            from: userId,
-            to: waitingGame.id,
-            quickPlay: true,
-          })
-          waitingGame = null;
-        }
-        else {
-          waitingGame = connection;
-        }
+    if(sockets[userId].connectedTo) return;
+    if(!quickPlay) {
+      if(waitingGame) {
+        methods.connectToID(connection, {
+          from: userId,
+          to: waitingGame.id,
+          quickPlay: true,
+        })
+        waitingGame = null;
       }
       else {
-        waitingGame = null;
-        const packet = {
-          method: 'cancelNextGame',
-        }
-        sendPacket(userId, packet);
+        waitingGame = connection;
       }
+    }
+    else {
+      waitingGame = null;
+      const packet = {
+        method: 'cancelNextGame',
+      }
+      sendPacket(userId, packet);
     }
   }
 };

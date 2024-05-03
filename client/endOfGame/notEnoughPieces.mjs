@@ -2,12 +2,12 @@ import {pieces} from "../arrangePieces/arrangePieces.mjs";
 
 const notEnoughPieces = () => {
     let allPieces = 0;
-    for (const Piece of pieces) {
-        if (Piece) {
-            const type = Piece.type;
-            if (type === "rook" || type === "queen" || type === "pawn") return;
-            allPieces++;
-        }
+    for (const piece of pieces) {
+        if(!piece) continue;
+        const type = piece.type;
+        if (type === "rook" || type === "queen" || type === "pawn")
+            return false;
+        allPieces++;
     }
     if (allPieces < 4) return true;
 };

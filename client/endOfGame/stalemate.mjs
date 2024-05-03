@@ -1,132 +1,157 @@
-import {changeVar, gameState} from "../dataAndFunctions.mjs";
+import {changeVar, gameState, maxRowAndCol} from "../dataAndFunctions.mjs";
 import {cells, pieces} from "../arrangePieces/arrangePieces.mjs";
-import {checkAfterMove} from "../moves/attack.mjs";
+import {checkAfterMove} from "../moves/attackAndCheck.mjs";
 
-const canMoveTo = (piece, toRow, toColumn) => {
-    if (!cells[toRow][toColumn]) {
-        if (!checkAfterMove({piece, toRow, toColumn})) return true;
+const canMoveTo = (piece, toRow, toCol) => {
+    const pieceIdOnCellMoveTo = cells[toRow][toCol]
+    if (!pieceIdOnCellMoveTo) {
+        return !checkAfterMove({piece, toRow, toCol});
     } else {
-        let killPiece = pieces[cells[toRow][toColumn]];
-        if (killPiece.color === gameState.oppositeColor) {
-            if (!checkAfterMove({piece, toRow, toColumn, killPiece}))
-                return true;
+        let pieceOnCellMoveTo = pieces[pieceIdOnCellMoveTo];
+        if (pieceOnCellMoveTo.color === gameState.oppositeColor) {
+            return !checkAfterMove({
+                piece, toRow, toCol, pieceOnCellMoveTo
+            })
         }
     }
 };
 
 const moveExist = {
     rook: (piece) => {
-        if (piece.column > 0) {
-            if (canMoveTo(piece, piece.row, piece.column - 1)) {
+        if (piece.col > 0) {
+            if (canMoveTo(piece, piece.row, piece.col - 1)) {
                 return true;
             }
         }
-        if (piece.column < 7) {
-            if (canMoveTo(piece, piece.row, piece.column + 1)) {
+        if (piece.col < maxRowAndCol) {
+            if (canMoveTo(piece, piece.row, piece.col + 1)) {
                 return true;
             }
         }
         if (piece.row > 0) {
-            if (canMoveTo(piece, piece.row - 1, piece.column)) {
+            if (canMoveTo(piece, piece.row - 1, piece.col)) {
                 return true;
             }
         }
-        if (piece.row < 7) {
-            if (canMoveTo(piece, piece.row + 1, piece.column)) {
+        if (piece.row < maxRowAndCol) {
+            if (canMoveTo(piece, piece.row + 1, piece.col)) {
                 return true;
             }
         }
+        return false
     },
     bishop: (piece) => {
-        if (piece.column > 0 && piece.row > 0) {
-            if (canMoveTo(piece, piece.row - 1, piece.column - 1)) {
+        if (piece.col > 0 && piece.row > 0) {
+            if (canMoveTo(piece,
+                piece.row - 1, piece.col - 1)) {
                 return true;
             }
         }
-        if (piece.column < 7 && piece.row > 0) {
-            if (canMoveTo(piece, piece.row - 1, piece.column + 1)) {
+        if (piece.col < maxRowAndCol && piece.row > 0) {
+            if (canMoveTo(piece,
+                piece.row - 1, piece.col + 1)) {
                 return true;
             }
         }
-        if (piece.column > 0 && piece.row < 7) {
-            if (canMoveTo(piece, piece.row + 1, piece.column - 1)) {
+        if (piece.col > 0 && piece.row < maxRowAndCol) {
+            if (canMoveTo(piece,
+                piece.row + 1, piece.col - 1)) {
                 return true;
             }
         }
 
-        if (piece.column < 7 && piece.row < 7) {
-            if (canMoveTo(piece, piece.row + 1, piece.column + 1)) {
+        if (piece.col < maxRowAndCol && piece.row < maxRowAndCol) {
+            if (canMoveTo(piece,
+                piece.row + 1, piece.col + 1)) {
                 return true;
             }
         }
+        return  false
     },
     pawn: (piece) => {
-        if (!cells[piece.row - 1][piece.column] && !checkAfterMove(
-            {piece, toRow: piece.row -1, toColumn: piece.column}))
+        const pieceIdInFront = cells[piece.row - 1][piece.col];
+        if (!pieceIdInFront && !checkAfterMove({
+                piece,
+                toRow: piece.row -1,
+                toCol: piece.col
+            }))
             return true;
-        let killPiece;
-        if (piece.column > 0) {
-            const CellsMinus1Element = cells[piece.row - 1][piece.column - 1];
-            if (CellsMinus1Element) {
-                killPiece = pieces[CellsMinus1Element];
-                if (killPiece.color === gameState.oppositeColor && !checkAfterMove(
-                    {piece, toRow: piece.row -1, 
-                        toColumn: piece.column -1, killPiece})) return true;
+        let pieceToKill;
+        if (piece.col > 0) {
+            const pieceToKillId = cells[piece.row - 1][piece.col - 1];
+            if (pieceToKillId) {
+                pieceToKill = pieces[pieceToKillId];
+                if (pieceToKill.color === gameState.oppositeColor &&
+                    !checkAfterMove({
+                        piece,
+                        toRow: piece.row -1,
+                        toCol: piece.col -1,
+                        killPiece: pieceToKill
+                    }))
+                    return true;
             }
         }
 
-        if (piece.column < 7) {
-            const CellsPlus1Element = cells[piece.row - 1][piece.column + 1];
-            if (CellsPlus1Element) {
-                killPiece = pieces[CellsPlus1Element];
-                if (killPiece.color === gameState.oppositeColor && !checkAfterMove({
-                    piece, killPiece,
-                    toRow: piece.row -1,
-                    toColumn: piece.column +1,
-                    })) return true;
+        if (piece.col < maxRowAndCol) {
+            const pieceToKillId = cells[piece.row - 1][piece.col + 1];
+            if (pieceToKillId) {
+                pieceToKill = pieces[pieceToKillId];
+                if (pieceToKill.color === gameState.oppositeColor &&
+                    !checkAfterMove({
+                        piece,
+                        toRow: piece.row -1,
+                        toCol: piece.col +1,
+                        killPiece: pieceToKill,
+                    }))
+                    return true;
             }
         }
         if (gameState.passant.id) {
-            if (piece.canMove(2, gameState.passant.column, "passant")) {
+            if (piece.canMove({
+                toRow: 2,
+                toCol: gameState.passant.col,
+                moveType: "passant"})) {
                 changeVar(false, "moveOnPassantExist");
                 return true;
             }
         }
+        return false;
     },
     knight: (piece) => {
-        if (piece.column > 0) {
-            if (piece.row > 1) if (canMoveTo(piece, piece.row - 2, piece.column - 1)) return true;
-            if (piece.row < 6) if (canMoveTo(piece, piece.row + 2, piece.column - 1)) return true;
-            if (piece.column > 1) {
-                if (piece.row > 0) if (canMoveTo(piece, piece.row - 1, piece.column - 2)) return true;
-                if (piece.row < 7) if (canMoveTo(piece, piece.row + 1, piece.column - 2)) return true;
+        if (piece.col > 0) {
+            if (piece.row > 1) if (canMoveTo(piece, piece.row - 2, piece.col - 1)) return true;
+            if (piece.row < maxRowAndCol-1) if (canMoveTo(piece, piece.row + 2, piece.col - 1)) return true;
+            if (piece.col > 1) {
+                if (piece.row > 0) if (canMoveTo(piece, piece.row - 1, piece.col - 2)) return true;
+                if (piece.row < maxRowAndCol) if (canMoveTo(piece, piece.row + 1, piece.col - 2)) return true;
             }
         }
-        if (piece.column < 7) {
-            if (piece.row > 1) if (canMoveTo(piece, piece.row - 2, piece.column + 1)) return true;
-            if (piece.row < 6) if (canMoveTo(piece, piece.row + 2, piece.column + 1)) return true;
-            if (piece.column < 6) {
-                if (piece.row > 0) if (canMoveTo(piece, piece.row - 1, piece.column + 2)) return true;
-                if (piece.row < 7) if (canMoveTo(piece, piece.row + 1, piece.column + 2)) return true;
+        if (piece.col < maxRowAndCol) {
+            if (piece.row > 1) if (canMoveTo(piece, piece.row - 2, piece.col + 1)) return true;
+            if (piece.row < maxRowAndCol-1) if (canMoveTo(piece, piece.row + 2, piece.col + 1)) return true;
+            if (piece.col < maxRowAndCol-1) {
+                if (piece.row > 0) if (canMoveTo(piece, piece.row - 1, piece.col + 2)) return true;
+                if (piece.row < maxRowAndCol) if (canMoveTo(piece, piece.row + 1, piece.col + 2)) return true;
             }
         }
+        return false;
     },
     queen: (piece) => {
-        if (moveExist.rook(piece, piece.column, piece.row)) return true;
-        if (moveExist.bishop(piece, piece.column, piece.row)) return true;
+        if (moveExist.rook(piece, piece.col, piece.row)) return true;
+        return (moveExist.bishop(piece, piece.col, piece.row));
     },
 
     king: (piece) => {
-        if (moveExist.rook(piece, piece.column, piece.row)) return true;
-        if (moveExist.bishop(piece, piece.column, piece.row)) return true;
+        if (moveExist.rook(piece, piece.col, piece.row)) return true;
+        return (moveExist.bishop(piece, piece.col, piece.row));
     },
 };
 
 const stalemate = () => {
     for (const piece of pieces) {
-        if (piece && piece.color === gameState.color && moveExist[piece.type](piece)) return;
+        if (piece && piece.color === gameState.color && moveExist[piece.type](piece)) return false;
     }
-    return "stalemate";
+    return true;
 };
 
 export {stalemate};

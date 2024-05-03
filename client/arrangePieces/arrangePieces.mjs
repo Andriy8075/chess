@@ -1,13 +1,15 @@
-import {ownPieces} from "../onClick/ownPieces.mjs";
+import {ownPieceOnClick} from "../onClick/ownPieceOnClick.mjs";
 import {clickableCells} from "./cells.mjs";
-import {appearance, changeVar, gameState} from "../dataAndFunctions.mjs";
-import {cellOrOpponent} from "../onClick/cellOrOpponent.mjs";
+import {appearance, changeVar, gameState,
+    countOfPieces, boardSize} from "../dataAndFunctions.mjs";
+import {opponentOnClick} from "../onClick/cellOrOpponent.mjs";
 import {Piece} from "./piece.mjs";
+import { defineKing } from "../endOfGame/checkmate.mjs";
 
 let cells;
 
-const changeCell = (row, column, input) => {
-    cells[row][column] = input;
+const changeCell = (row, col, input) => {
+    cells[row][col] = input;
 };
 
 let pieces = [];
@@ -17,75 +19,140 @@ const changePiecesArray = (id, input) => {
 
 const arrangePieces = (color) => {
 
+    changeVar(true, "inGame");
+
     changeVar(color, "color");
     let order;
     let pieceID;
     let changePieceID;
-    if (gameState.color === "white") {
-        order = ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook",];
+
+    if (color === 'white') {
+        order = ["rook", "knight", "bishop", "queen",
+            "king", "bishop", "knight", "rook",];
         changeVar("black", "oppositeColor");
         changeVar(true, "turnToMove");
         pieceID = 1;
         changePieceID = () => pieceID++;
-        changeVar(7, "kingRow");
-        changeVar(4, "kingColumn");
+        changeVar(boardSize - 1,
+            "kingRow");
+        changeVar(4, "kingCol");
         changeVar(29, "kingId");
     } else {
-        order = ["rook", "knight", "bishop", "king", "queen", "bishop", "knight", "rook",];
+        order = ["rook", "knight", "bishop", "king",
+            "queen", "bishop", "knight", "rook",];
         changeVar("white", "oppositeColor");
-        const countOfPieces = 32;
         pieceID = countOfPieces;
         changePieceID = () => pieceID--;
-        changeVar(7, "kingRow");
-        changeVar(3, "kingColumn");
+        changeVar(boardSize - 1,
+            "kingRow");
+        changeVar(3, "kingCol");
         changeVar(5, "kingId");
+        defineKing();
     }
 
     cells = [];
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < boardSize; i++) {
         cells[i] = [];
-        cells[i].length = 8;
+        cells[i].length = boardSize;
     }
 
-    const createElement = (color, type, row, column, opponent) => {
+    const createElement = (record) => {
+
         const board = document.getElementById("pieces");
-        const pieceImage = document.createElement("img");
+        const pieceImage =
+            document.createElement("img");
         pieceImage.classList.add("piece");
         pieceImage.style.position = "absolute";
+        const { row, col } = record;
         pieceImage.style.top = `${appearance.cellSize*row}em`;
-        pieceImage.style.left = `${appearance.cellSize*column}em`;
+        pieceImage.style.left = `${appearance.cellSize*col}em`;
         pieceImage.style.width = `${appearance.cellSize}em`;
         pieceImage.style.heigh = `${appearance.cellSize}em`;
         board.appendChild(pieceImage);
-        pieceImage.src = `images/${color}${type.charAt(0).toUpperCase() + type.slice(1)}.png`;
-        const piece = new Piece(pieceImage, pieceID, color, type, row, column);
-        cells[row][column] = pieceID;
+
+        const { type, ownPiece } = record;
+        const pieceColor = ownPiece ? gameState.color : gameState.oppositeColor;
+        pieceImage.src = `images/${pieceColor}${type.charAt(0).toUpperCase() + 
+            type.slice(1)}.png`;
+
+        const piece = new Piece({
+            HTMLImage: pieceImage,
+            id: pieceID,
+            color: pieceColor,
+            type, row, col
+        });
+
+        cells[row][col] = pieceID;
         changePiecesArray(pieceID, piece);
-        if (opponent) {
-            cellOrOpponent(piece);
-        } else {
-            ownPieces(pieceImage, piece.id);
+        if (ownPiece) {
+            ownPieceOnClick(pieceImage, piece.id);
+        }
+        else {
+            opponentOnClick(piece);
         }
         changePieceID();
     };
 
-    for (let column = 0; column < 8; column++) {
-        createElement(gameState.oppositeColor, order[column], 0, column, true);
+    {
+        const rowOfOpponentPiecesInOrder = 0;
+        for (let col = 0; col < boardSize; col++) {
+            createElement({
+                color: gameState.oppositeColor,
+                type: order[col],
+                row: rowOfOpponentPiecesInOrder,
+                col,
+                ownPiece: false,
+            });
+        }
     }
-    for (let column = 0; column < 8; column++) {
-        createElement(gameState.oppositeColor, "pawn", 1, column, true);
+
+    {
+        const rowOfOpponentPawns = 1;
+        for (let col = 0; col < boardSize; col++) {
+            createElement({
+                color: gameState.oppositeColor,
+                type: "pawn",
+                row: rowOfOpponentPawns,
+                col,
+                ownPiece: false,
+            });
+        }
     }
-    for (let column = 0; column < 8; column++) {
-        createElement(gameState.color, "pawn", 6, column, false);
+
+    {
+        const rowOfOwnPawns = 6;
+        for (let col = 0; col < boardSize; col++) {
+            createElement({
+                color: gameState.color,
+                type: "pawn",
+                row: rowOfOwnPawns,
+                col,
+                ownPiece: true,
+            });
+        }
     }
-    for (let column = 0; column < 8; column++) {
-        createElement(gameState.color, order[column], 7, column, false);
+
+
+    {
+        const rowOfOwnPiecesInOrder = 7;
+        for (let col = 0; col < boardSize; col++) {
+            createElement({
+                color: gameState.color,
+                type: order[col],
+                row: rowOfOwnPiecesInOrder,
+                col,
+                ownPiece: true,
+            });
+        }
     }
-    const images = document.getElementsByClassName("chooseColorImages");
+
+    const images =
+        document.getElementsByClassName("chooseColorImages");
     for (const image of images) {
         image.style.display = "none";
     }
     clickableCells();
+    defineKing();
 };
 
-export {cells, arrangePieces, pieces, changeCell, changePiecesArray};
+export {cells, pieces, changeCell, changePiecesArray, arrangePieces};

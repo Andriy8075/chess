@@ -1,23 +1,38 @@
 const socket = new WebSocket("ws://127.0.0.1:7992/play");
+
 const appearance = {
-    cellSize: 6,
+    cellSize: getComputedStyle(document.body).getPropertyValue('--cellSize'),
     red: '#fff0f0',
-    green: '#f0fff0'
+    green: '#f0fff0',
 }
+
+const boardSize = 8;
+const countOfPieces = 32;
+const fistColorPieceMaxId = countOfPieces/2;
+const maxRowAndCol = boardSize-1;
+const startPawnRow = 6;
+const passantRow = 2;
+
+const rookIds = {
+    whiteLeft: 25,
+    whiteRight: 32,
+    blackLeft: 8,
+    blackRight: 1,
+}
+
 const startGameState = {
     inGame: false,
     turnToMove: false,
     kingRow: undefined,
-    kingColumn: undefined,
+    kingCol: undefined,
     kingID: undefined,
     color: undefined,
     oppositeColor: undefined,
     chosenPiece: undefined,
     userId: undefined,
     connectedToID: undefined,
-    cellSize: undefined,
     moveOnPassantExist: false,
-    promotionImageColumn: undefined,
+    promotionImageCol: undefined,
     promotionKillingPieceId: undefined,
     passant: {},
     canCastling: {
@@ -32,7 +47,7 @@ const gameState = {
     inGame: false,
     turnToMove: false,
     kingRow: undefined,
-    kingColumn: undefined,
+    kingCol: undefined,
     kingId: undefined,
     color: undefined,
     oppositeColor: undefined,
@@ -41,14 +56,16 @@ const gameState = {
     connectedToID: undefined,
     cellSize: undefined,
     moveOnPassantExist: false,
-    promotionImageColumn: undefined,
+    promotionImageCol: undefined,
     promotionKillingPieceId: undefined,
+    attackingPiece: null,
     passant: {},
     canCastling: {
         king: true,
         leftRook: true,
         rightRook: true,
-    }
+    },
+    lastMessage: null,
 };
 
 const changeVar = (value, ...variables) => {
@@ -75,6 +92,31 @@ const unDisplay = (...elementsId) => {
     }
 }
 
+const inputMessageInChat = (text, ourMessage) => {
+    if(!text) return;
+    const message = document.createElement('p');
+    const messagesField = document.getElementById('chatMessages');
+    const divWrapper = document.createElement('div');
+    message.innerHTML = text;
+    message.style.display = 'flex';
+    divWrapper.style.backgroundColor = '#a2fb90';
+    message.style.lineHeight = 'normal';
+    message.style.wordBreak = 'breakAll';
+    if(ourMessage) {
+        message.style.textAlign = 'right';
+        message.style.justifyContent = 'right'
+    }
+    divWrapper.style.backgroundColor = ourMessage ? '#edffed' : 'white';
+    message.style.margin = '0px';
+    divWrapper.style.margin = '0.2em';
+    messagesField.insertBefore(divWrapper, gameState.lastMessage ?
+        gameState.lastMessage : null);
+    divWrapper.appendChild(message);
+    changeVar(divWrapper, 'lastMessage');
+}
+
 export {
-    socket, appearance, gameState, changeVar, sendPacket, display, unDisplay, startGameState
+    socket, appearance, gameState,  startGameState, countOfPieces, boardSize,
+    changeVar, sendPacket, display, unDisplay, fistColorPieceMaxId,
+    maxRowAndCol, startPawnRow, passantRow, rookIds, inputMessageInChat
 };

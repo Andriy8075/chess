@@ -1,25 +1,21 @@
 import {changeCell, pieces} from "../arrangePieces/arrangePieces.mjs";
-import {changeVar, gameState} from "../dataAndFunctions.mjs";
-
-const attack = ({color, toRow, toColumn, ignorePieces, moveType = "makeCheck", firstPieceId}) => {
+import {changeVar, gameState, countOfPieces,
+    fistColorPieceMaxId} from "../dataAndFunctions.mjs";
+const attack = ({color, toRow, toCol, ignorePieces,
+    moveType = "makeCheckForOurKing", firstPieceId}) => {
     let lastPieceId;
-    if(!firstPieceId) {
-        if (color === 'white') {
-            firstPieceId = 1;
-            lastPieceId = 16;
-        }
-        else {
-            firstPieceId = 17;
-            lastPieceId = 32;
-        }
+    if(firstPieceId) {
+        lastPieceId = firstPieceId <= fistColorPieceMaxId ?
+            fistColorPieceMaxId : countOfPieces;
     }
     else {
-        if (firstPieceId < 17) lastPieceId = 16;
-        else lastPieceId = 32;
+        [firstPieceId, lastPieceId] = color === 'white' ?
+            [1, fistColorPieceMaxId] : [fistColorPieceMaxId+1, countOfPieces];
     }
     for (firstPieceId; firstPieceId <= lastPieceId; firstPieceId++) {
         const currentPiece = pieces[firstPieceId];
         if (!currentPiece) continue;
+
         if (ignorePieces) {
             let isIgnorePiece;
             for (const ignorePiece of ignorePieces) {
@@ -32,21 +28,24 @@ const attack = ({color, toRow, toColumn, ignorePieces, moveType = "makeCheck", f
                 continue;
             }
         }
-        if (currentPiece.canMove(toRow, toColumn, moveType)) return currentPiece;
+
+        if (currentPiece.canMove({
+            toRow, toCol, moveType
+        })) return currentPiece;
     }
 };
 
-const checkAfterMove = ({piece, toRow, toColumn, killPiece}) => {
+const checkAfterMove = ({piece, toRow, toCol, killPiece}) => {
     const previousRow = piece.row;
-    const previousColumn = piece.column;
+    const previousCol = piece.col;
     piece.row = toRow;
-    piece.column = toColumn;
-    changeCell(toRow, toColumn, piece.id);
-    changeCell(previousRow, previousColumn, null);
+    piece.col = toCol;
+    changeCell(toRow, toCol, piece.id);
+    changeCell(previousRow, previousCol, null);
     const isItKing = piece.type === "king";
     if (isItKing) {
         changeVar(toRow, "kingRow");
-        changeVar(toColumn, "kingColumn");
+        changeVar(toCol, "kingCol");
     }
 
     let result;
@@ -54,7 +53,7 @@ const checkAfterMove = ({piece, toRow, toColumn, killPiece}) => {
         if (attack({
             color: gameState.color,
             toRow: gameState.kingRow,
-            toColumn: gameState.kingColumn,
+            toCol: gameState.kingCol,
             ignorePieces: [killPiece]})) {
             result = true;
         }
@@ -62,18 +61,18 @@ const checkAfterMove = ({piece, toRow, toColumn, killPiece}) => {
         if (attack({
             color: gameState.color,
             toRow: gameState.kingRow,
-            toColumn: gameState.kingColumn})) {
+            toCol: gameState.kingCol})) {
             result = true;
         }
     }
     if (isItKing) {
         changeVar(previousRow, "kingRow");
-        changeVar(previousColumn, "kingColumn");
+        changeVar(previousCol, "kingCol");
     }
     piece.row = previousRow;
-    piece.column = previousColumn;
-    changeCell(toRow, toColumn, killPiece ? killPiece.id : null);
-    changeCell(previousRow, previousColumn, piece.id);
+    piece.col = previousCol;
+    changeCell(toRow, toCol, killPiece ? killPiece.id : null);
+    changeCell(previousRow, previousCol, piece.id);
     return result;
 };
 

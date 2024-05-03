@@ -2,19 +2,21 @@ import {wantMove} from "../moves/wantMove.mjs";
 import {canPieceMove} from "../moves/canPieceMove.mjs";
 
 class Piece {
-    constructor(HTMLImage, id, color, type, row, column) {
+    constructor({HTMLImage, id, color, type, row, col}) {
         this.id = id;
         this.HTMLImage = HTMLImage;
         this.type = type;
         this.color = color;
         this.row = row;
-        this.column = column;
-        this.wantMove = wantMove[type].bind(null, this);
+        this.col = col;
+        this.wantMove = wantMove[type](this);
     }
 
-    canMove(toRow, toColumn, moveType) {
-        if (canPieceMove[this.type]({fromRow: this.row, fromColumn: this.column, toRow, toColumn, moveType}))
-            return true;
+    canMove({ toRow, toCol, moveType }) {
+        const check = canPieceMove[this.type];
+        const fromRow = this.row;
+        const fromCol = this.col;
+        return check({ fromRow, fromCol, toRow, toCol, moveType });
     }
 }
 
