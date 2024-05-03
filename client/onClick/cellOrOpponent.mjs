@@ -6,10 +6,10 @@ const event = (cellOrOpponentPiece, isPiece) => {
     if (gameState.turnToMove && gameState.chosenPiece) {
         const pieceThatMoves = pieces[gameState.chosenPiece];
         pieceThatMoves.wantMove({
-            toRow: typeof cellOrOpponentPiece.row === 'number' ?
-                cellOrOpponentPiece.row : cellOrOpponentPiece.dataset.row,
-            toCol: typeof cellOrOpponentPiece.col === 'number' ?
-                cellOrOpponentPiece.col : cellOrOpponentPiece.dataset.col,
+            toRow: isPiece ? cellOrOpponentPiece.row :
+                parseInt(cellOrOpponentPiece.dataset.row),
+            toCol: isPiece ? cellOrOpponentPiece.col :
+                parseInt(cellOrOpponentPiece.dataset.col),
             killPiece: isPiece ? cellOrOpponentPiece : null});
     }
 }

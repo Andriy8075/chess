@@ -6,7 +6,6 @@ const cellSize = appearance.cellSize
 const clickableCells = () => {
     for (let row = 0; row < boardSize; row++) {
         for (let col = 0; col < boardSize; col++) {
-            console.log(cellSize);
             const board = document.getElementById("boardMap");
             const area = document.createElement("area");
             area.shape = "rectangle";
@@ -15,8 +14,8 @@ const clickableCells = () => {
             ${((col+1) * cellSize) * emSize},
             ${((row+1) * cellSize) * emSize}`;
             board.appendChild(area);
-            area.row = row;
-            area.col = col;
+            area.dataset.row = row.toString();
+            area.dataset.col = col.toString();
             cellOnClick(area);
         }
     }
