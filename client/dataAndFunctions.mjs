@@ -42,13 +42,43 @@ const startGameState = {
     }
 };
 const gameState = {
+    rowDifferences: {
+        our: -1,
+        opponent: 1,
+    },
+
+    startPawnRows: {
+        our: 6,
+        opponent: 1,
+    },
+
+    passantRows: {
+        our: 2,
+        opponent: 5,
+    },
+    endRows: {
+        our: 0,
+        opponent: 7,
+    },
+
     rematch: undefined,
     quickPlay: false,
     inGame: false,
     turnToMove: false,
-    kingRow: undefined,
-    kingCol: undefined,
-    kingId: undefined,
+
+    king: {
+        black: {
+            kingRow: undefined,
+            kingCol: undefined,
+            kingId: undefined,
+        },
+        white: {
+            kingRow: undefined,
+            kingCol: undefined,
+            kingId: undefined,
+        },
+    },
+
     color: undefined,
     oppositeColor: undefined,
     chosenPiece: undefined,
@@ -59,12 +89,29 @@ const gameState = {
     promotionImageCol: undefined,
     promotionKillingPieceId: undefined,
     attackingPiece: null,
-    passant: {},
-    canCastling: {
-        king: true,
-        leftRook: true,
-        rightRook: true,
+
+    passant: {
+         white: {
+
+         },
+        black: {
+
+        }
     },
+
+    canCastling: {
+        white: {
+            king: true,
+            leftRook: true,
+            rightRook: true,
+        },
+        black: {
+            king: true,
+            leftRook: true,
+            rightRook: true,
+        },
+    },
+
     lastMessage: null,
 };
 
@@ -118,5 +165,5 @@ const inputMessageInChat = (text, ourMessage) => {
 export {
     socket, appearance, gameState,  startGameState, countOfPieces, boardSize,
     changeVar, sendPacket, display, unDisplay, fistColorPieceMaxId,
-    maxRowAndCol, startPawnRow, passantRow, rookIds, inputMessageInChat
+    maxRowAndCol, startPawnRow, passantRow, rookIds, inputMessageInChat,
 };

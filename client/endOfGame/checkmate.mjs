@@ -19,8 +19,8 @@ const canKillAttackingPiece = (firstPieceId) => {
         color: oppositeColor,
         toRow: attackingPiece.row,
         toCol: attackingPiece.col,
-        ignorePieces: [king],
-        moveType: "killOpponentPiece",
+        ignorePiece: king,
+        moveType: "withKill",
         firstPieceId: firstPieceId,
     });
     if (savingPiece) {
@@ -47,13 +47,13 @@ const canKillAttackingPiece = (firstPieceId) => {
 
 const hideKing = (toRow, toCol, firstPieceId) => {
     const { oppositeColor } = gameState;
-    const savingPiece = attack(
-        {
-            color: oppositeColor,
-            toRow, toCol,
-            ignorePieces: [king],
-            moveType: "withoutKill",
-            firstPieceId});
+    const savingPiece = attack({
+        color: oppositeColor,
+        toRow, toCol,
+        ignorePiece: king,
+        moveType: "withoutKill",
+        firstPieceId
+    });
     if(!savingPiece) return false;
     if (gameState.moveOnPassantExist) {
         changeVar(false, "moveOnPassantExist");

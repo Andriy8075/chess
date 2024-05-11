@@ -1,5 +1,5 @@
 import {wantMove} from "../moves/wantMove.mjs";
-import {canPieceMove} from "../moves/canPieceMove.mjs";
+import {simpleCanMove} from "../moves/simpleCanMove.mjs";
 
 class Piece {
     constructor({HTMLImage, id, color, type, row, col}) {
@@ -9,14 +9,12 @@ class Piece {
         this.color = color;
         this.row = row;
         this.col = col;
-        this.wantMove = wantMove[type](this);
+        this.wantMove = wantMove(this);
     }
 
-    canMove({ toRow, toCol, moveType }) {
-        const check = canPieceMove[this.type];
-        const fromRow = this.row;
-        const fromCol = this.col;
-        return check({ fromRow, fromCol, toRow, toCol, moveType });
+    canMove({ toRow, toCol }) {
+        const correctFunction = simpleCanMove[this.type];
+        return correctFunction({Piece, toRow, toCol});
     }
 }
 
