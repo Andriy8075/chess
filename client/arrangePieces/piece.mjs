@@ -1,20 +1,20 @@
 import {wantMove} from "../moves/wantMove.mjs";
-import {canPieceMove} from "../moves/canPieceMove.mjs";
+import {simpleCanMove} from "../moves/simpleCanMove.mjs";
 
 class Piece {
-    constructor(HTMLImage, id, color, type, row, column) {
+    constructor({HTMLImage, id, color, type, row, col}) {
         this.id = id;
         this.HTMLImage = HTMLImage;
         this.type = type;
         this.color = color;
         this.row = row;
-        this.column = column;
-        this.wantMove = wantMove[type].bind(null, this);
+        this.col = col;
+        this.wantMove = wantMove(this);
     }
 
-    canMove(toRow, toColumn, moveType) {
-        if (canPieceMove[this.type]({fromRow: this.row, fromColumn: this.column, toRow, toColumn, moveType}))
-            return true;
+    canMove({ toRow, toCol }) {
+        const correctFunction = simpleCanMove[this.type];
+        return correctFunction({Piece, toRow, toCol});
     }
 }
 
