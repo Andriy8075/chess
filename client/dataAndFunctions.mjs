@@ -21,27 +21,6 @@ const rookIds = {
 }
 
 const startGameState = {
-    inGame: false,
-    turnToMove: false,
-    kingRow: undefined,
-    kingCol: undefined,
-    kingID: undefined,
-    color: undefined,
-    oppositeColor: undefined,
-    chosenPiece: undefined,
-    userId: undefined,
-    connectedToID: undefined,
-    moveOnPassantExist: false,
-    promotionImageCol: undefined,
-    promotionKillingPieceId: undefined,
-    passant: {},
-    canCastling: {
-        king: true,
-        leftRook: true,
-        rightRook: true,
-    }
-};
-const gameState = {
     rematch: undefined,
     quickPlay: false,
     inGame: false,
@@ -67,6 +46,36 @@ const gameState = {
     },
     lastMessage: null,
 };
+let gameState = {
+    rematch: undefined,
+    quickPlay: false,
+    inGame: false,
+    turnToMove: false,
+    kingRow: undefined,
+    kingCol: undefined,
+    kingId: undefined,
+    color: undefined,
+    oppositeColor: undefined,
+    chosenPiece: undefined,
+    userId: undefined,
+    connectedToID: undefined,
+    cellSize: undefined,
+    moveOnPassantExist: false,
+    promotionImageCol: undefined,
+    promotionKillingPieceId: undefined,
+    attackingPiece: null,
+    passant: {},
+    canCastling: {
+        king: true,
+        leftRook: true,
+        rightRook: true,
+    },
+    lastMessage: null,
+};
+
+const changeGameStateToStart = () => {
+    gameState =  JSON.parse(JSON.stringify(startGameState));
+}
 
 const changeVar = (value, ...variables) => {
     if(variables.length === 1) gameState[variables] = value;
@@ -118,5 +127,6 @@ const inputMessageInChat = (text, ourMessage) => {
 export {
     socket, appearance, gameState,  startGameState, countOfPieces, boardSize,
     changeVar, sendPacket, display, unDisplay, fistColorPieceMaxId,
-    maxRowAndCol, startPawnRow, passantRow, rookIds, inputMessageInChat
+    maxRowAndCol, startPawnRow, passantRow, rookIds, inputMessageInChat,
+    changeGameStateToStart
 };

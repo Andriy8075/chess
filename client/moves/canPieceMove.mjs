@@ -4,7 +4,8 @@ import {
     changeVar,
     gameState,
     maxRowAndCol, rookIds, sendPacket,
-    startPawnRow
+    startPawnRow,
+    passantRow
 } from "../dataAndFunctions.mjs";
 import {attack, checkAfterMove} from "./attackAndCheck.mjs";
 import {move} from "./move.mjs";
@@ -37,12 +38,12 @@ const pawnMoveTypes = {
     },
     passant: ({ fromRow, toRow, fromCol, toCol }) => {
         const colDifference = fromCol - toCol;
-        if (toRow === 3) toRow = 2;
+        if (toRow === passantRow+1) toRow = passantRow;
 
         if(!gameState.passant.id) return false;
         if(gameState.passant.col !== toCol) return false;
-        if(toRow !== 2) return false;
-        if(fromRow !== 3) return false;
+        if(toRow !== passantRow) return false;
+        if(fromRow !== passantRow+1) return false;
         if(colDifference !== 1 && colDifference !== -1) return false;
 
         const rowWithPawns = cells[fromRow];

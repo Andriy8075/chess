@@ -2,7 +2,7 @@
   "dependencies": {
     "-": "^0.0.1",
     "metasync": "^0.3.32",
-    "ws": "^8.16.0"
+    "ws": "^8.17.0"
   },
   "devDependencies": {
     "eslint": "^8.57.0",

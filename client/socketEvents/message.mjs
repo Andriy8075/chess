@@ -1,6 +1,6 @@
 import {arrangePieces, changeCell, changePiecesArray, pieces} from "../arrangePieces/arrangePieces.mjs";
 import {
-    appearance,
+    appearance, changeGameStateToStart,
     changeVar,
     gameState, inputMessageInChat,
     sendPacket,
@@ -17,9 +17,9 @@ const rematchArrangePieces = (color) => {
     for(const piece of pieces) {
         if(piece) piece.HTMLImage.remove();
     }
-    for(const key of Object.keys(gameState)) {
-        changeVar(startGameState[key], gameState[key]);
-    }
+    const {userId} = gameState;
+    changeGameStateToStart();
+    gameState.userId = userId;
     arrangePieces(color);
     for(const button of document.getElementsByClassName('gameManageButtons')) {
         button.style.display = 'none';

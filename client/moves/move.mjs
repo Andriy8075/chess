@@ -1,5 +1,10 @@
 import {changeCell, changePiecesArray} from "../arrangePieces/arrangePieces.mjs";
-import {changeVar, sendPacket, appearance} from "../dataAndFunctions.mjs";
+import {
+    changeVar,
+    sendPacket,
+    appearance,
+    maxRowAndCol
+} from "../dataAndFunctions.mjs";
 import {clear, writeDownPosition} from "../endOfGame/repeatingMoves.mjs";
 const move = (record) => {
 
@@ -36,8 +41,8 @@ const move = (record) => {
     if(!dontSendPacket) {
         sendPacket('move', {
             pieceId: piece.id,
-            toRow: 7 - toRow,
-            toCol: 7 - toCol,
+            toRow: maxRowAndCol - toRow,
+            toCol: maxRowAndCol - toCol,
             clearPosition,
             passant,
             killId,

@@ -53,10 +53,8 @@ const wantMove = {
                     moveType: 'withoutKill',
                 })
                 if(canMove) {
-                    if(!checkAfterMove({
-                        piece, toRow, toCol
-                    }))
-                    move({piece, toRow, toCol,
+                    if(!checkAfterMove({piece, toRow, toCol})) move({
+                        piece, toRow, toCol,
                         clearPosition: true,
                         passant: (piece.row - toRow === 2) ? {
                             id: piece.id,
@@ -65,61 +63,6 @@ const wantMove = {
                     });
                 }
             }
-            // if (toCol === piece.col) {
-            //     if(killPiece) return false;
-            //     const rowDifference = piece.row - toRow;
-            //     if (rowDifference === 1) {
-            //         if (!checkAfterMove({piece,toRow,toCol,killPiece})) {
-            //             move({piece, toRow, toCol, killPiece,
-            //                 clearPosition: true
-            //             });
-            //         }
-            //     }
-            //     else if (piece.row === startPawnRow && toRow === startPawnRow-1
-            //         && !cells[startPawnRow - 1][toCol] && !checkAfterMove({
-            //             piece, toRow, toCol, killPiece})) {
-            //         move({
-            //             piece, toRow, toCol, killPiece,
-            //             clearPosition: true,
-            //             passant: {
-            //                 id: piece.id,
-            //                 col: maxRowAndCol - toCol
-            //             }
-            //         });
-            //     }
-            // } else {
-            //     if (piece.canMove({
-            //         toRow, toCol,
-            //         moveType: "killOpponentPiece"
-            //     })) {
-            //         if (gameState.moveOnPassantExist) {
-            //             changeVar(false, "moveOnPassantExist");
-            //             const PieceThatKillsOnPassantId =
-            //                 cells[3][gameState.passant.col];
-            //             const PieceThatKillsOnPassant =
-            //                 pieces[PieceThatKillsOnPassantId];
-            //             PieceThatKillsOnPassant.HTMLImage.remove();
-            //             changePiecesArray(PieceThatKillsOnPassantId, null);
-            //             changeCell(3, toCol, undefined);
-            //             move({
-            //                 piece,
-            //                 toRow: 2,
-            //                 toCol,
-            //                 clearPosition: true,
-            //                 dontSendPacket: true
-            //             });
-            //             sendPacket('passant', {
-            //                 pieceId: piece.id,
-            //                 toCol: maxRowAndCol - toCol,
-            //                 killId: PieceThatKillsOnPassantId,
-            //             })
-            //         } else if (!checkAfterMove({
-            //             piece, toRow, toCol, killPiece
-            //         }))
-            //             move({piece, toRow, toCol,
-            //                 killPiece, clearPosition: true});
-            //     }
-            // }
         } else {
             if (toCol === piece.col && !killPiece && !checkAfterMove({piece, toRow, toCol})) {
                 const backgroundImage =

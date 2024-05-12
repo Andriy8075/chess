@@ -10,7 +10,8 @@ const canMoveTo = (piece, toRow, toCol) => {
         let pieceOnCellMoveTo = pieces[pieceIdOnCellMoveTo];
         if (pieceOnCellMoveTo.color === gameState.oppositeColor) {
             return !checkAfterMove({
-                piece, toRow, toCol, pieceOnCellMoveTo
+                piece, toRow, toCol,
+                killPiece: pieceOnCellMoveTo
             })
         }
     }
