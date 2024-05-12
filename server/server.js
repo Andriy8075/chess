@@ -1,19 +1,17 @@
-'use strict';
+"use strict";
 
-const fs = require('node:fs');
-const http = require('node:http');
-const {OPEN, Server} = require('ws');
+const fs = require("node:fs");
+const http = require("node:http");
+const { OPEN, Server } = require("ws");
 
-const index = fs.readFileSync('../client/index.html', 'utf8');
+const index = fs.readFileSync("../client/index.html", "utf8");
 
-const server = http.createServer
-((req, res) => {
+const server = http.createServer((req, res) => {
   res.writeHead(200);
   res.end(index);
 });
 
-server.listen(7992, () => {
-});
+server.listen(7992, () => {});
 
 const ws = new Server({ server });
 
@@ -29,79 +27,77 @@ const sendPacket = (user, data) => {
 };
 
 const methods = {
-  assignID: (connection, {userId}) => {
+  assignID: (connection, { userId }) => {
     connection.id = userId;
     sockets[userId] = connection;
   },
-  chooseColor: (connection, {color, userId}) => {
-    const oppositeColor = color === 'white' ? 'black' : 'white';
-    const method = 'receiveColor';
+  chooseColor: (connection, { color, userId }) => {
+    const oppositeColor = color === "white" ? "black" : "white";
+    const method = "receiveColor";
     const ourPacket = { method, color: color };
     const opponentPacket = { method, color: oppositeColor };
 
     const { connectedTo } = sockets[userId];
     const sent = sendPacket(connectedTo, opponentPacket);
-    if(sent) sendPacket(userId, ourPacket);
+    if (sent) sendPacket(userId, ourPacket);
   },
-  connectToID: (connection, {from, to, quickPlay}) => {
+  connectToID: (connection, { from, to, quickPlay }) => {
     if (to === from) return;
     const packet = {
-      method: 'connectToID',
-      userId: from,
-      color: quickPlay ? 'white' : undefined,
+      method: "connectToID",
+      connectTo: from,
+      color: quickPlay ? "white" : undefined,
     };
     const findId = sendPacket(to, packet);
     if (findId) {
       sockets[from].connectedTo = to;
       sockets[to].connectedTo = from;
       const packet = {
-        method: 'connectToID',
-        userId: to,
-        color: quickPlay ? 'black' : undefined,
+        method: "connectToID",
+        connectTo: to,
+        color: quickPlay ? "black" : undefined,
       };
       sendPacket(from, packet);
     }
   },
-  quickPlay: (connection, {userId, quickPlay}) => {
-    if(sockets[userId].connectedTo) return;
-    if(!quickPlay) {
-      if(waitingGame) {
+  quickPlay: (connection, { userId, quickPlay }) => {
+    if (sockets[userId].connectedTo) return;
+    if (!quickPlay) {
+      if (waitingGame) {
         methods.connectToID(connection, {
           from: userId,
           to: waitingGame.id,
           quickPlay: true,
-        })
+        });
         waitingGame = null;
-      }
-      else {
+      } else {
         waitingGame = connection;
       }
-    }
-    else {
+    } else {
       waitingGame = null;
       const packet = {
-        method: 'cancelNextGame',
-      }
+        method: "cancelNextGame",
+      };
       sendPacket(userId, packet);
     }
-  }
+  },
 };
 
-ws.on('connection', (connection) => {
-  connection.on('message', (message) => {
+ws.on("connection", (connection) => {
+  connection.on("message", (message) => {
     const parsed = JSON.parse(message);
     const method = methods[parsed.method];
     if (method) return void method(connection, parsed);
     const { connectedTo } = sockets[parsed.userId];
     sendPacket(connectedTo, parsed);
   });
-  connection.on('close', () => {
+  connection.on("close", () => {
     const opponentId = connection.connectedTo;
     const opponent = sockets[opponentId];
     if (opponent) opponent.connectedTo = null;
     delete sockets[connection.id];
     const packet = {
-      method: 'disconnect',
+      method: "disconnect",
     };
     sendPacket(opponentId, packet);
   });

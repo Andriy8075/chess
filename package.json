@@ -11,7 +11,8 @@
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-n": "^16.6.2",
-    "eslint-plugin-promise": "^6.1.1"
+    "eslint-plugin-promise": "^6.1.1",
+    "prettier": "3.2.5"
   },
   "name": "chess",
   "description": "1. Launch server.js\r 2. Launch index.htmnl 2 times (for 2 clients (white and black))\r 3. In tab of one client copy its userId and input in another player`s tab\r 4. Choose color in tab of any client\r 5. Play :)\r 6. video with project overview: https://youtu.be/mh2262tCKLA",

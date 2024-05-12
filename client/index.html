@@ -1,114 +1,116 @@
 <!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8"/>
-    <link href="styles.css" rel="stylesheet"/>
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <link href="styles.css" rel="stylesheet" />
+  </head>
 
-<body>
-<div class="globalDiv" id="globalDiv">
-    <div class="boardDiv" id="boardDiv">
+  <body>
+    <div class="globalDiv" id="globalDiv">
+      <div class="boardDiv" id="boardDiv">
         <img
-                alt="board"
-                class="boardImage"
-                id="boardImage"
-                src="images/board.png"
-                usemap="#board"
+          alt="board"
+          class="boardImage"
+          id="boardImage"
+          src="images/board.png"
+          usemap="#board"
         />
         <map id="boardMap" name="board"></map>
         <div class="pieces" id="pieces"></div>
-    </div>
-    <div class="systemMessages" id="systemMessages">
-        <h3 id="connectionError" class="connectionError systemMessage">connection error</h3>
-        <h3 id="yourId" class="systemMessage"></h3>
-        <h3 class="inputAnotherPlayersIDHere systemMessage" id="inputAnotherPlayersIDHere">
-            Input another player`s id here:
+      </div>
+      <div class="systemMessages" id="systemMessages">
+        <h3 id="connectionError" class="connectionError systemMessage">
+          connection error
         </h3>
-        <input class="inputId systemMessage" id="inputId"/>
+        <h3 id="yourId" class="systemMessage"></h3>
+        <h3
+          class="inputAnotherPlayersIDHere systemMessage"
+          id="inputAnotherPlayersIDHere"
+        >
+          Input another player`s id here:
+        </h3>
+        <input class="inputId systemMessage" id="inputId" />
         <h3 id="connected" class="systemMessage connected"></h3>
         <h3 class="gameResult systemMessage" id="gameResult"></h3>
         <div class="imagesDiv systemMessage" id="imagesDiv">
-            <img
-                    class="chooseColorImages"
-                    id="white"
-                    src="images/whitePawn.png"
-            />
-            <img
-                    class="chooseColorImages"
-                    id="random"
-                    src="images/random.png"
-            />
-            <img
-                    class="chooseColorImages"
-                    id="black"
-                    src="images/blackPawn.png"
-            />
-            <img
-                    class="blackPromotionImages promotionImage"
-                    id="blackQueen"
-                    src="images/blackQueen.png"
-            />
-            <img
-                    class="blackPromotionImages promotionImage"
-                    id="blackRook"
-                    src="images/blackRook.png"
-            />
-            <img
-                    class="blackPromotionImages promotionImage"
-                    id="blackKnight"
-                    src="images/blackKnight.png"
-            />
-            <img
-                    class="blackPromotionImages promotionImage"
-                    id="blackBishop"
-                    src="images/blackBishop.png"
-            />
-            <img
-                    class="whitePromotionImages promotionImage"
-                    id="whiteQueen"
-                    src="images/whiteQueen.png"
-            />
-            <img
-                    class="whitePromotionImages promotionImage"
-                    id="whiteRook"
-                    src="images/whiteRook.png"
-            />
-            <img
-                    class="whitePromotionImages promotionImage"
-                    id="whiteKnight"
-                    src="images/whiteKnight.png"
-            />
-            <img
-                    class="whitePromotionImages promotionImage"
-                    id="whiteBishop"
-                    src="images/whiteBishop.png"
-            />
+          <img
+            class="chooseColorImages"
+            id="white"
+            src="images/whitePawn.png"
+          />
+          <img class="chooseColorImages" id="random" src="images/random.png" />
+          <img
+            class="chooseColorImages"
+            id="black"
+            src="images/blackPawn.png"
+          />
+          <img
+            class="blackPromotionImages promotionImage"
+            id="blackQueen"
+            src="images/blackQueen.png"
+          />
+          <img
+            class="blackPromotionImages promotionImage"
+            id="blackRook"
+            src="images/blackRook.png"
+          />
+          <img
+            class="blackPromotionImages promotionImage"
+            id="blackKnight"
+            src="images/blackKnight.png"
+          />
+          <img
+            class="blackPromotionImages promotionImage"
+            id="blackBishop"
+            src="images/blackBishop.png"
+          />
+          <img
+            class="whitePromotionImages promotionImage"
+            id="whiteQueen"
+            src="images/whiteQueen.png"
+          />
+          <img
+            class="whitePromotionImages promotionImage"
+            id="whiteRook"
+            src="images/whiteRook.png"
+          />
+          <img
+            class="whitePromotionImages promotionImage"
+            id="whiteKnight"
+            src="images/whiteKnight.png"
+          />
+          <img
+            class="whitePromotionImages promotionImage"
+            id="whiteBishop"
+            src="images/whiteBishop.png"
+          />
         </div>
-        <div id="buttons" class ="buttons systemMessage">
-            <button class="rematch gameManageButtons" id="rematch" >rematch</button>
-            <button class="newGame gameManageButtons" id="newGame">new game</button>
-            <button class="quickPlay gameManageButtons" id="quickPlay" >quick play</button>
-            <button class="playWithFriend gameManageButtons" id="playWithFriend">play with friend</button>
+        <div id="buttons" class="buttons systemMessage">
+          <button class="rematch gameManageButtons" id="rematch">
+            rematch
+          </button>
+          <button class="newGame gameManageButtons" id="newGame">
+            new game
+          </button>
+          <button class="quickPlay gameManageButtons" id="quickPlay">
+            quick play
+          </button>
+          <button class="playWithFriend gameManageButtons" id="playWithFriend">
+            play with friend
+          </button>
         </div>
         <p id="nextGame" class="nextGame systemMessage"></p>
         <div class="chat systemMessage" id="chat">
-            <div id="divChatLabel" class="divChatLabel chatDiv">
-                <h2 id="chatLabel" class="chatLabel">chat</h2>
-            </div>
-            <div id="chatMessages" class="chatMessages chatDiv">
-
-            </div>
-            <div id="inputMessageDiv" class="inputMessageDiv chatDiv">
-                <input class="inputMessage" id="inputMessage"/>
-            </div>
-
-
-
-
-
+          <div id="divChatLabel" class="divChatLabel chatDiv">
+            <h2 id="chatLabel" class="chatLabel">chat</h2>
+          </div>
+          <div id="chatMessages" class="chatMessages chatDiv"></div>
+          <div id="inputMessageDiv" class="inputMessageDiv chatDiv">
+            <input class="inputMessage" id="inputMessage" />
+          </div>
         </div>
+      </div>
     </div>
-</div>
-<script src="htmlElementsEventListeners.mjs" type="module"></script>
-</body>
+    <script src="htmlElementsEventListeners.mjs" type="module"></script>
+  </body>
 </html>
